@@ -34,3 +34,10 @@ Aplikasi ini memiliki beberapa jenis pengguna dengan peran sebagai berikut:
 3. **Pemilik Restoran**: Dapat mendaftarkan restoran atau kafe mereka, mengelola profil bisnis.
 
 ## Alur pengintegrasian dengan web service
+
+Berikut adalah langkah-langkah yang kami lakukan untuk mengintegrasikan aplikasi dengan server web:
+
+1. Membuat wrapper class dengan menggunakan library HTTP dan map untuk mendukung autentikasi berbasis cookie dalam aplikasi.
+2. Mengimplementasikan REST API di setiap modul Django (views.py) dengan menggunakan JsonResponse atau Django JSON Serializer untuk pertukaran data.
+3. Mendesain tampilan aplikasi berdasarkan desain website yang telah dibuat pada proyek tengah semester sebelumnya.
+4. Melakukan integrasi antara frontend dan backend menggunakan konsep asynchronous HTTP untuk meningkatkan kecepatan dan responsivitas aplikasi.
