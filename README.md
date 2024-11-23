@@ -1,4 +1,5 @@
 # 🍽️ RasaPalembangMobile 🍽️
+![rasapalembang](https://github.com/user-attachments/assets/317469a4-de19-450f-94ec-28102dd20121)
 
 ## Anggota Kelompok
 
@@ -11,7 +12,7 @@
 
 ## 💁 Deskripsi dan Manfaat Aplikasi 💁
 
-RasaPalembang adalah aplikasi berbasis web yang dirancang untuk membantu wisatawan dan penduduk lokal menemukan berbagai produk kuliner di Palembang. Dengan antarmuka yang intuitif, pengguna dapat menjelajahi kuliner khas Palembang, membaca ulasan, serta berbagi pengalaman mereka.
+RasaPalembang adalah aplikasi berbasis web dan android yang dirancang untuk membantu wisatawan dan penduduk lokal menemukan berbagai produk kuliner di Palembang. Dengan antarmuka yang intuitif, pengguna dapat menjelajahi kuliner khas Palembang, membaca ulasan, serta berbagi pengalaman mereka.
 
 Terkadang wisatawan yang berkunjung ke Palembang merasa bingung untuk mencari tempat makan yang sesuai dengan selera mereka. Banyaknya pilihan kuliner di Palembang bisa membuat wisatawan kesulitan menentukan restoran mana yang sebaiknya dikunjungi, terutama jika mereka baru pertama kali datang. Tak terbatas untuk wisatawan saja, penduduk lokal juga dapat menemukan restoran-restoran atau makanan-makanan baru yang ada di Palembang.
 
@@ -33,7 +34,7 @@ Aplikasi ini memiliki beberapa jenis pengguna dengan peran sebagai berikut:
 2. **Pengulas**: Dapat memberikan ulasan yang mendetail tentang pengalaman kuliner dan kunjungan mereka, membantu orang lain dalam membuat pilihan yang lebih baik.
 3. **Pemilik Restoran**: Dapat mendaftarkan restoran atau kafe mereka, mengelola profil bisnis.
 
-## Alur pengintegrasian dengan web service
+## ⛓️ Alur Pengintegrasian dengan Web Service ⛓️
 
 Berikut adalah langkah-langkah yang kami lakukan untuk mengintegrasikan aplikasi dengan server web:
 
