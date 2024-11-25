@@ -43,4 +43,22 @@ Berikut adalah langkah-langkah yang kami lakukan untuk mengintegrasikan aplikasi
 3. Mendesain tampilan aplikasi berdasarkan desain website yang telah dibuat pada proyek tengah semester sebelumnya.
 4. Melakukan integrasi antara frontend dan backend menggunakan konsep asynchronous HTTP untuk meningkatkan kecepatan dan responsivitas aplikasi.
 
-![image](https://github.com/user-attachments/assets/27e554a6-1dd9-4472-92fd-d39cd9470575)
+![gambar-diagram-alur-pengintegrasian-rasa-palembang-mobile-dengan-rasa-palembang-django](https://github.com/user-attachments/assets/b83ae2ed-fdc5-4e85-9155-1cac28691f47)
+
+Berikut adalah penjelasan dari diagram alur pengintegrasian Flutter dengan web service:
+
+1. Pengguna membuat permintaan dari aplikasi RasaPalembangMobile ke internet, misalnya saat ingin melihat minuman. Internet kemudian meneruskan permintaan tersebut ke aplikasi web RasaPalembang (Django).
+
+2. Aplikasi Django menerima permintaan dari internet dan memproses di file views.py untuk menentukan fungsi yang tepat untuk menangani permintaan.
+
+3. File views.py berkomunikasi dengan file models.py untuk melakukan operasi database yang diperlukan.
+
+4. File models.py berinteraksi dengan database untuk memproses operasi terkait database, seperti membuat produk.
+
+5. Data yang diterima dari file models.py diproses oleh serializer untuk dikonversi ke format JSON, lalu dikirim kembali ke file views.py.
+
+6. Serializer digunakan untuk menerjemahkan objek model ke format lain, dalam hal ini JSON.
+
+7. File views.py menyediakan data JSON, yang kemudian dikirim oleh Django melalui internet ke aplikasi Flutter.
+
+8. Aplikasi Flutter menerima data dalam format JSON dan menampilkannya di aplikasi RasaPalembangMobile, yang dapat dilihat oleh pengguna.
