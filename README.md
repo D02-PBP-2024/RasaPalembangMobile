@@ -45,7 +45,7 @@ Berikut adalah langkah-langkah yang kami lakukan untuk mengintegrasikan aplikasi
 
 ![gambar-diagram-alur-pengintegrasian-rasa-palembang-mobile-dengan-rasa-palembang-django](https://github.com/user-attachments/assets/b83ae2ed-fdc5-4e85-9155-1cac28691f47)
 
-Berikut adalah penjelasan dari diagram alur pengintegrasian Flutter dengan web service:
+Berikut adalah penjelasan dari diagram alur pengintegrasian RasaPalembangMobile dengan web service (RasaPalembang Django):
 
 1. Pengguna membuat permintaan dari aplikasi RasaPalembangMobile ke internet, misalnya saat ingin melihat minuman. Internet kemudian meneruskan permintaan tersebut ke aplikasi web RasaPalembang (Django).
 
@@ -53,12 +53,12 @@ Berikut adalah penjelasan dari diagram alur pengintegrasian Flutter dengan web s
 
 3. File views.py berkomunikasi dengan file models.py untuk melakukan operasi database yang diperlukan.
 
-4. File models.py berinteraksi dengan database untuk memproses operasi terkait database, seperti membuat produk.
+4. File models.py berinteraksi dengan database untuk memproses operasi terkait database, seperti memuat minuman.
 
-5. Data yang diterima dari file models.py diproses oleh serializer untuk dikonversi ke format JSON, lalu dikirim kembali ke file views.py.
+5. Data objek model yang berasal dari file models.py dikirim menuju serializer.
 
 6. Serializer digunakan untuk menerjemahkan objek model ke format lain, dalam hal ini JSON.
 
-7. File views.py menyediakan data JSON, yang kemudian dikirim oleh Django melalui internet ke aplikasi Flutter.
+7. File views.py menyediakan data JSON, yang kemudian dikirim oleh Django melalui internet ke aplikasi RasaPalembangMobile.
 
-8. Aplikasi Flutter menerima data dalam format JSON dan menampilkannya di aplikasi RasaPalembangMobile, yang dapat dilihat oleh pengguna.
+8. Aplikasi RasaPalembangMobile menerima data dalam format JSON dan menampilkannya di aplikasi sehingga dapat dilihat oleh pengguna.
