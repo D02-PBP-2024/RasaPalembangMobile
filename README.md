@@ -42,3 +42,5 @@ Berikut adalah langkah-langkah yang kami lakukan untuk mengintegrasikan aplikasi
 2. Mengimplementasikan REST API di setiap modul Django (views.py) dengan menggunakan JsonResponse atau Django JSON Serializer untuk pertukaran data.
 3. Mendesain tampilan aplikasi berdasarkan desain website yang telah dibuat pada proyek tengah semester sebelumnya.
 4. Melakukan integrasi antara frontend dan backend menggunakan konsep asynchronous HTTP untuk meningkatkan kecepatan dan responsivitas aplikasi.
+
+![image](https://github.com/user-attachments/assets/27e554a6-1dd9-4472-92fd-d39cd9470575)
