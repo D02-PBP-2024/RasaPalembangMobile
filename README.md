@@ -66,73 +66,73 @@ Berikut adalah penjelasan dari diagram alur pengintegrasian RasaPalembangMobile 
 ## 📄 Dokumentasi API 📄
 
 ### Authentication
-| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
-|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|
-| POST       | /v1/signup/                             | Mendaftar user                                     | ❌                    |
-| POST       | /v1/login/                              | Login user                                         | ❌                    |
-| POST       | /v1/logout/                             | Logout user                                        | ✅                    |
-| GET        | /v1/profile/{username}/                 | Profile user                                       | ❌                    |
-| POST       | /v1/profile/{username}/                 | Update user                                        | ✅                    |
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |      **Privilege Owner**      |
+|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|:-----------------------------:|
+| POST       | /v1/signup/                             | Mendaftar user                                     | ❌                    | -                             |
+| POST       | /v1/login/                              | Login user                                         | ❌                    | -                             |
+| POST       | /v1/logout/                             | Logout user                                        | ✅                    | `pengulas` `pemilik_restoran` |
+| GET        | /v1/profile/{username}/                 | Profile user                                       | ❌                    | -                             |
+| POST       | /v1/profile/{username}/                 | Update user                                        | ✅                    | `pengulas` `pemilik_restoran` |
 
 ### Makanan
 
-| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
-|:----------:|:----------------------------------------|:---------------------------------------------------|:--------------------:|
-| GET        | /v1/makanan/                            | Menampilkan seluruh makanan                        | ❌                    |
-| GET        | /v1/makanan/{id_makanan}/               | Menampilkan makanan berdasarkan id                 | ❌                    |
-| PUT        | /v1/makanan/{id_makanan}/               | Update makanan                                     | ✅                    |
-| DELETE     | /v1/makanan/{id_makanan}/               | Delete makanan                                     | ✅                    |
-| GET        | /v1/restoran/{id_restoran}/makanan/     | Menampilkan makanan berdasarkan restoran           | ❌                    |
-| POST       | /v1/restoran/{id_restoran}/makanan/     | Menambahkan makanan ke sebuah restoran             | ✅                    |
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |      **Privilege Owner**      |
+|:----------:|:----------------------------------------|:---------------------------------------------------|:--------------------:|:-----------------------------:|
+| GET        | /v1/makanan/                            | Menampilkan seluruh makanan                        | ❌                    | -                             |
+| GET        | /v1/makanan/{id_makanan}/               | Menampilkan makanan berdasarkan id                 | ❌                    | -                             |
+| PUT        | /v1/makanan/{id_makanan}/               | Update makanan                                     | ✅                    | `pemilik_restoran`            |
+| DELETE     | /v1/makanan/{id_makanan}/               | Delete makanan                                     | ✅                    | `pemilik_restoran`            |
+| GET        | /v1/restoran/{id_restoran}/makanan/     | Menampilkan makanan berdasarkan restoran           | ❌                    | -                             |
+| POST       | /v1/restoran/{id_restoran}/makanan/     | Menambahkan makanan ke sebuah restoran             | ✅                    | `pemilik_restoran`            |
 
 ### Minuman
 
-| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
-|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|
-| GET        | /v1/minuman/                            | Menampilkan seluruh minuman                        | ❌                    |
-| GET        | /v1/minuman/{id_minuman}/               | Menampilkan minuman berdasarkan id                 | ❌                    |
-| PUT        | /v1/minuman/{id_minuman}/               | Update minuman                                     | ✅                    |
-| DELETE     | /v1/minuman/{id_minuman}/               | Delete minuman                                     | ✅                    |
-| GET        | /v1/restoran/{id_restoran}/minuman/     | Menampilkan minuman berdasarkan restoran           | ❌                    |
-| POST       | /v1/restoran/{id_restoran}/minuman/     | Menambahkan minuman ke sebuah restoran             | ✅                    |
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |      **Privilege Owner**      |
+|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|:-----------------------------:|
+| GET        | /v1/minuman/                            | Menampilkan seluruh minuman                        | ❌                    | -                             |
+| GET        | /v1/minuman/{id_minuman}/               | Menampilkan minuman berdasarkan id                 | ❌                    | -                             |
+| PUT        | /v1/minuman/{id_minuman}/               | Update minuman                                     | ✅                    | `pemilik_restoran`            |
+| DELETE     | /v1/minuman/{id_minuman}/               | Delete minuman                                     | ✅                    | `pemilik_restoran`            |
+| GET        | /v1/restoran/{id_restoran}/minuman/     | Menampilkan minuman berdasarkan restoran           | ❌                    | -                             |
+| POST       | /v1/restoran/{id_restoran}/minuman/     | Menambahkan minuman ke sebuah restoran             | ✅                    | `pemilik_restoran`            |
 
 ### Restoran
-| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
-|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|
-| GET        | /v1/restoran/                           | Menampilkan seluruh restoran                       | ❌                    |
-| POST       | /v1/restoran/                           | Menambahkan restoran                               | ✅                    |
-| GET        | /v1/restoran/{username}/                | Menampilkan restoran berdasarkan user              | ❌                    |
-| GET        | /v1/restoran/{id_restoran}/             | Menampilkan restoran berdasarkan id                | ❌                    |
-| PUT        | /v1/restoran/{id_restoran}/             | Update restoran                                    | ✅                    |
-| DELETE     | /v1/restoran/{id_restoran}/             | Delete restoran                                    | ✅                    |
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |      **Privilege Owner**      |
+|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|:-----------------------------:|
+| GET        | /v1/restoran/                           | Menampilkan seluruh restoran                       | ❌                    | -                             |
+| POST       | /v1/restoran/                           | Menambahkan restoran                               | ✅                    | `pemilik_restoran`            |
+| GET        | /v1/restoran/{username}/                | Menampilkan restoran berdasarkan user              | ❌                    | -                             |
+| GET        | /v1/restoran/{id_restoran}/             | Menampilkan restoran berdasarkan id                | ❌                    | -                             |
+| PUT        | /v1/restoran/{id_restoran}/             | Update restoran                                    | ✅                    | `pemilik_restoran`            |
+| DELETE     | /v1/restoran/{id_restoran}/             | Delete restoran                                    | ✅                    | `pemilik_restoran`            |
 
 ### Ulasan dan Rating
-| **Method** |                **Path**                                           |                     **Detail**                     |  **Login Required**  |
-|:----------:|:------------------------------------------------------------------|----------------------------------------------------|:--------------------:|
-| GET        | /v1/ulasan/{username}/                                            | Menampilkan ulasan berdasarkan user                | ❌                    |
-| PUT        | /v1/ulasan/{id_ulasan}/                                           | Update ulasan                                      | ✅                    |
-| DELETE     | /v1/ulasan/{id_ulasan}/                                           | Delete ulasan                                      | ✅                    |
-| GET        | /v1/restoran/{id_restoran}/ulasan/                                | Menampilkan ulasan berdasarkan restoran            | ❌                    |
-| POST       | /v1/restoran/{id_restoran}/ulasan/                                | Menambahkan ulasan ke sebuah restoran              | ✅                    |
+| **Method** |                **Path**                                           |                     **Detail**                     |  **Login Required**  |      **Privilege Owner**      |
+|:----------:|:------------------------------------------------------------------|----------------------------------------------------|:--------------------:|:-----------------------------:|
+| GET        | /v1/ulasan/{username}/                                            | Menampilkan ulasan berdasarkan user                | ❌                    | -                             |
+| GET        | /v1/restoran/{id_restoran}/ulasan/                                | Menampilkan ulasan berdasarkan restoran            | ❌                    | -                             |
+| POST       | /v1/restoran/{id_restoran}/ulasan/                                | Menambahkan ulasan ke sebuah restoran              | ✅                    | `pengulas`                    |
+| PUT        | /v1/ulasan/{id_ulasan}/                                           | Update ulasan                                      | ✅                    | `pengulas`                    |
+| DELETE     | /v1/ulasan/{id_ulasan}/                                           | Delete ulasan                                      | ✅                    | `pengulas`                    |
 
 ### Forum Diskusi
-| **Method** |                **Path**                                           |                     **Detail**                     |  **Login Required**  |
-|:----------:|:------------------------------------------------------------------|----------------------------------------------------|:--------------------:|
-| GET        | /v1/forum/{id_forum}/                                             | Menampilkan forum berdasarkan id                   | ❌                    |
-| PUT        | /v1/forum/{id_forum}/                                             | Update forum                                       | ✅                    |
-| DELETE     | /v1/forum/{id_forum}/                                             | Delete forum                                       | ✅                    |
-| GET        | /v1/forum/{id_forum}/balasan/                                     | Menampilkan balasan di sebuah forum                | ❌                    |
-| POST       | /v1/forum/{id_forum}/balasan/                                     | Menambahkan balasan ke sebuah forum                | ✅                    |
-| PUT        | /v1/balasan/{id_balasan}/                                         | Update balasan                                     | ✅                    |
-| DELETE     | /v1/balasan/{id_balasan}/                                         | Delete balasan                                     | ✅                    |
-| GET        | /v1/restoran/{id_restoran}/forum/                                 | Menampilkan forum berdasarkan restoran             | ❌                    |
-| POST       | /v1/restoran/{id_restoran}/forum/                                 | Menambahkan forum ke sebuah restoran               | ✅                    |
+| **Method** |                **Path**                                           |                     **Detail**                     |  **Login Required**  |      **Privilege Owner**      |
+|:----------:|:------------------------------------------------------------------|----------------------------------------------------|:--------------------:|:-----------------------------:|
+| GET        | /v1/restoran/{id_restoran}/forum/                                 | Menampilkan forum berdasarkan restoran             | ❌                    | -                             |
+| POST       | /v1/restoran/{id_restoran}/forum/                                 | Menambahkan forum ke sebuah restoran               | ✅                    | `pengulas`                    |
+| GET        | /v1/forum/{id_forum}/                                             | Menampilkan forum berdasarkan id                   | ❌                    | -                             |
+| PUT        | /v1/forum/{id_forum}/                                             | Update forum                                       | ✅                    | `pengulas`                    |
+| DELETE     | /v1/forum/{id_forum}/                                             | Delete forum                                       | ✅                    | `pengulas`                    |
+| GET        | /v1/forum/{id_forum}/balasan/                                     | Menampilkan balasan di sebuah forum                | ❌                    | -                             |
+| POST       | /v1/forum/{id_forum}/balasan/                                     | Menambahkan balasan ke sebuah forum                | ✅                    | `pengulas` `pemilik_restoran` |
+| PUT        | /v1/balasan/{id_balasan}/                                         | Update balasan                                     | ✅                    | `pengulas` `pemilik_restoran` |
+| DELETE     | /v1/balasan/{id_balasan}/                                         | Delete balasan                                     | ✅                    | `pengulas` `pemilik_restoran` |
 
 ### Favorit
-| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
-|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|
-| GET        | /v1/favorit/                            | Menampilkan seluruh favorit yang dimiliki user     | ✅                    |
-| POST       | /v1/favorit/                            | Menambahkan favorit                                | ✅                    |
-| GET        | /v1/favorit/{id_favorit}/               | Menampilkan favorit berdasarkan id                 | ✅                    |
-| PUT        | /v1/favorit/{id_favorit}/               | Update favorit                                     | ✅                    |
-| DELETE     | /v1/favorit/{id_favorit}/               | Delete favorit                                     | ✅                    |
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |      **Privilege Owner**      |
+|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|:-----------------------------:|
+| GET        | /v1/favorit/                            | Menampilkan seluruh favorit yang dimiliki user     | ✅                    | `pengulas` `pemilik_restoran` |
+| POST       | /v1/favorit/                            | Menambahkan favorit                                | ✅                    | `pengulas` `pemilik_restoran` |
+| GET        | /v1/favorit/{id_favorit}/               | Menampilkan favorit berdasarkan id                 | ✅                    | `pengulas` `pemilik_restoran` |
+| PUT        | /v1/favorit/{id_favorit}/               | Update favorit                                     | ✅                    | `pengulas` `pemilik_restoran` |
+| DELETE     | /v1/favorit/{id_favorit}/               | Delete favorit                                     | ✅                    | `pengulas` `pemilik_restoran` |
