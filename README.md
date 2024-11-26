@@ -62,3 +62,77 @@ Berikut adalah penjelasan dari diagram alur pengintegrasian RasaPalembangMobile 
 7. File views.py menyediakan data JSON, yang kemudian dikirim oleh Django melalui internet ke aplikasi RasaPalembangMobile.
 
 8. Aplikasi RasaPalembangMobile menerima data dalam format JSON dan menampilkannya di aplikasi sehingga dapat dilihat oleh pengguna.
+
+## 📄 Dokumentasi API 📄
+
+### Authentication
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
+|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|
+| POST       | /v1/signup/                             | Mendaftar user                                     | ❌                    |
+| POST       | /v1/login/                              | Login user                                         | ❌                    |
+| POST       | /v1/logout/                             | Logout user                                        | ✅                    |
+| GET        | /v1/profile/{username}/                 | Profile user                                       | ❌                    |
+| POST       | /v1/profile/{username}/                 | Update user                                        | ✅                    |
+
+### Makanan
+
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
+|:----------:|:----------------------------------------|:---------------------------------------------------|:--------------------:|
+| GET        | /v1/makanan/                            | Menampilkan seluruh makanan                        | ❌                    |
+| GET        | /v1/makanan/{id_makanan}/               | Menampilkan makanan berdasarkan id                 | ❌                    |
+| PUT        | /v1/makanan/{id_makanan}/               | Update makanan                                     | ✅                    |
+| DELETE     | /v1/makanan/{id_makanan}/               | Delete makanan                                     | ✅                    |
+| GET        | /v1/restoran/{id_restoran}/makanan/     | Menampilkan makanan berdasarkan restoran           | ❌                    |
+| POST       | /v1/restoran/{id_restoran}/makanan/     | Menambahkan makanan ke sebuah restoran             | ✅                    |
+
+### Minuman
+
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
+|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|
+| GET        | /v1/minuman/                            | Menampilkan seluruh minuman                        | ❌                    |
+| GET        | /v1/minuman/{id_minuman}/               | Menampilkan minuman berdasarkan id                 | ❌                    |
+| PUT        | /v1/minuman/{id_minuman}/               | Update minuman                                     | ✅                    |
+| DELETE     | /v1/minuman/{id_minuman}/               | Delete minuman                                     | ✅                    |
+| GET        | /v1/restoran/{id_restoran}/minuman/     | Menampilkan minuman berdasarkan restoran           | ❌                    |
+| POST       | /v1/restoran/{id_restoran}/minuman/     | Menambahkan minuman ke sebuah restoran             | ✅                    |
+
+### Restoran
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
+|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|
+| GET        | /v1/restoran/                           | Menampilkan seluruh restoran                       | ❌                    |
+| POST       | /v1/restoran/                           | Menambahkan restoran                               | ✅                    |
+| GET        | /v1/restoran/{username}/                | Menampilkan restoran berdasarkan user              | ❌                    |
+| GET        | /v1/restoran/{id_restoran}/             | Menampilkan restoran berdasarkan id                | ❌                    |
+| PUT        | /v1/restoran/{id_restoran}/             | Update restoran                                    | ✅                    |
+| DELETE     | /v1/restoran/{id_restoran}/             | Delete restoran                                    | ✅                    |
+
+### Ulasan dan Rating
+| **Method** |                **Path**                                           |                     **Detail**                     |  **Login Required**  |
+|:----------:|:------------------------------------------------------------------|----------------------------------------------------|:--------------------:|
+| GET        | /v1/ulasan/{username}/                                            | Menampilkan ulasan berdasarkan user                | ❌                    |
+| PUT        | /v1/ulasan/{id_ulasan}/                                           | Update ulasan                                      | ✅                    |
+| DELETE     | /v1/ulasan/{id_ulasan}/                                           | Delete ulasan                                      | ✅                    |
+| GET        | /v1/restoran/{id_restoran}/ulasan/                                | Menampilkan ulasan berdasarkan restoran            | ❌                    |
+| POST       | /v1/restoran/{id_restoran}/ulasan/                                | Menambahkan ulasan ke sebuah restoran              | ✅                    |
+
+### Forum Diskusi
+| **Method** |                **Path**                                           |                     **Detail**                     |  **Login Required**  |
+|:----------:|:------------------------------------------------------------------|----------------------------------------------------|:--------------------:|
+| GET        | /v1/forum/{id_forum}/                                             | Menampilkan forum berdasarkan id                   | ❌                    |
+| PUT        | /v1/forum/{id_forum}/                                             | Update forum                                       | ✅                    |
+| DELETE     | /v1/forum/{id_forum}/                                             | Delete forum                                       | ✅                    |
+| GET        | /v1/forum/{id_forum}/balasan/                                     | Menampilkan balasan di sebuah forum                | ❌                    |
+| POST       | /v1/forum/{id_forum}/balasan/                                     | Menambahkan balasan ke sebuah forum                | ✅                    |
+| PUT        | /v1/balasan/{id_balasan}/                                         | Update balasan                                     | ✅                    |
+| DELETE     | /v1/balasan/{id_balasan}/                                         | Delete balasan                                     | ✅                    |
+| GET        | /v1/restoran/{id_restoran}/forum/                                 | Menampilkan forum berdasarkan restoran             | ❌                    |
+| POST       | /v1/restoran/{id_restoran}/forum/                                 | Menambahkan forum ke sebuah restoran               | ✅                    |
+
+### Favorit
+| **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |
+|:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|
+| GET        | /v1/favorit/                            | Menampilkan seluruh favorit yang dimiliki user     | ✅                    |
+| POST       | /v1/favorit/                            | Menambahkan favorit                                | ✅                    |
+| GET        | /v1/favorit/{id_favorit}/               | Menampilkan favorit berdasarkan id                 | ✅                    |
+| PUT        | /v1/favorit/{id_favorit}/               | Update favorit                                     | ✅                    |
+| DELETE     | /v1/favorit/{id_favorit}/               | Delete favorit                                     | ✅                    |
