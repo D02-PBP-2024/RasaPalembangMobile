@@ -132,7 +132,9 @@ Berikut adalah penjelasan dari diagram alur pengintegrasian RasaPalembangMobile 
 | **Method** |                **Path**                 |                     **Detail**                     |  **Login Required**  |      **Privilege Owner**      |
 |:----------:|:----------------------------------------|----------------------------------------------------|:--------------------:|:-----------------------------:|
 | GET        | /v1/favorit/                            | Menampilkan seluruh favorit yang dimiliki user     | ✅                    | `pengulas` `pemilik_restoran` |
-| POST       | /v1/favorit/                            | Menambahkan favorit                                | ✅                    | `pengulas` `pemilik_restoran` |
 | GET        | /v1/favorit/{id_favorit}/               | Menampilkan favorit berdasarkan id                 | ✅                    | `pengulas` `pemilik_restoran` |
 | PUT        | /v1/favorit/{id_favorit}/               | Update favorit                                     | ✅                    | `pengulas` `pemilik_restoran` |
 | DELETE     | /v1/favorit/{id_favorit}/               | Delete favorit                                     | ✅                    | `pengulas` `pemilik_restoran` |
+| POST       | /v1/makanan/{id_makanan}/favorit/       | Menambahkan makanan ke favorit                     | ✅                    | `pengulas` `pemilik_restoran` |
+| POST       | /v1/minuman/{id_minuman}/favorit/       | Menambahkan minuman ke favorit                     | ✅                    | `pengulas` `pemilik_restoran` |
+| POST       | /v1/restoran/{id_restoran}/favorit/     | Menambahkan restoran ke favorit                    | ✅                    | `pengulas` `pemilik_restoran` |
