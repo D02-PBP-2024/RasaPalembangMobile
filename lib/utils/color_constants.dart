@@ -9,4 +9,6 @@ class RPColors {
   static const Color kuningTua = Color(0xFFC2A046);
   static const Color textFieldBackground = Color(0xFFF3F4F6);
   static const Color textFieldPlaceholder = Color(0xFF737373);
+  static const Color textPrimary = Color(0xFF000000);
+  static const Color textSecondary = Color(0xFF737373);
 }

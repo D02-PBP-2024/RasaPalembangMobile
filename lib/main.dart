@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
-import 'package:rasapalembang/widget/RPBottomNavbar.dart';
+import 'package:rasapalembang/widget/rp_bottom_navbar.dart';
 
 void main() {
   runApp(const MyApp());

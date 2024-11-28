@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/widget/RPButton.dart';
-import 'package:rasapalembang/widget/RPTextFormField.dart';
+import 'package:rasapalembang/widget/rp_button.dart';
+import 'package:rasapalembang/widget/rp_text_form_field.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
-import 'package:rasapalembang/widget/RPDropdownButton.dart';
+import 'package:rasapalembang/widget/rp_dropdown_button.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
