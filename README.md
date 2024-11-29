@@ -72,7 +72,7 @@ Berikut adalah penjelasan dari diagram alur pengintegrasian RasaPalembangMobile 
 |    POST    | /v1/login/              | Login user     |         ❌          |               -               |
 |    POST    | /v1/logout/             | Logout user    |         ✅          | `pengulas` `pemilik_restoran` |
 |    GET     | /v1/profile/{username}/ | Profile user   |         ❌          |               -               |
-|    POST    | /v1/profile/{username}/ | Update user    |         ✅          | `pengulas` `pemilik_restoran` |
+|    PUT     | /v1/profile/{username}/ | Update user    |         ✅          | `pengulas` `pemilik_restoran` |
 
 ### Makanan
 
