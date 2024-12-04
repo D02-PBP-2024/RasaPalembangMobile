@@ -80,9 +80,13 @@ class CookieRequest {
       c.withCredentials = true;
     }
 
-    http.Response response =
-        await _client.post(Uri.parse(url), body: data, headers: headers);
+    // Add additional header
+    headers['Content-Type'] = 'application/json; charset=UTF-8';
+    http.Response response = await _client.post(Uri.parse(url),
+        body: jsonEncode(data), headers: headers);
 
+    // Remove used additional header
+    headers.remove('Content-Type');
     await _updateCookie(response);
 
     if (response.statusCode == 200) {

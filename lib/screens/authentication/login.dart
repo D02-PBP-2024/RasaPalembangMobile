@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                         });
 
                         if (context.mounted) {
-                          if (response['status'] == 200) {
+                          if (request.loggedIn) {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

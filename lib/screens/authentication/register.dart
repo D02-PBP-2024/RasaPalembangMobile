@@ -135,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             }));
 
                         if (context.mounted) {
-                          if (response['status'] == 201) {
+                          if (response['success'] == true) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(response['message']),
