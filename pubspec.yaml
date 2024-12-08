@@ -38,6 +38,7 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.3
   http: ^1.2.2
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +63,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/rasapalembang.png
+    - assets/images/banner.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
