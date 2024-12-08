@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/widget/rp_card.dart';
+import 'package:rasapalembang/models/minuman.dart';
+import 'package:rasapalembang/screens/minuman/minuman_detail.dart';
+import 'package:rasapalembang/widget/rp_menu_card.dart';
 
 class MinumanListPage extends StatelessWidget {
   final List<Map<String, dynamic>> minumanList = [
     {
-      'gambarUrl': 'http://muhammad-fazil31-rasapalembang.pbp.cs.ui.ac.id/media/gambar_minuman/9fdf8667-faf3-4413-b01d-219ac847cf07.jpg',
-      'namaMinuman': 'Boba ini namanya sangat panjang kurang panjang ternyata masih kurang panjang',
-      'harga': 35000,
-      'restoranName': 'Sushi Tei Palembang',
-      'restoranUrl': '/restoran/123',
-      'detailUrl': '/minuman/456',
+      "pk": "052e46d2-d529-4f15-a912-6e57dfdf758c",
+      "fields": {
+        "nama": "Boba Ceritanya tulisan ini sangat panjang ya, apa yang tejadi?",
+        "harga": 35000,
+        "deskripsi": "Boba yang kenyal dan lezat, disajikan dalam minuman segar dengan berbagai pilihan rasa, seperti teh, susu, atau buah. Menawarkan pengalaman tekstur yang unik dan menyenangkan di setiap tegukan. Cocok untuk dinikmati kapan saja, baik sebagai camilan atau minuman menyegarkan.",
+        "gambar": "https://raw.githubusercontent.com/D02-PBP-2024/mediafiles/refs/heads/main/gambar_minuman/00c689af-ca68-49a5-9f24-6bf550c3a65f.jpg",
+        "ukuran": "BESAR",
+        "tingkat_kemanisan": 100,
+        "restoran": "130561a8-c4d5-4b8e-ba5c-a36deeafd14d"
+      }
     },
     {
-      'gambarUrl': 'http://muhammad-fazil31-rasapalembang.pbp.cs.ui.ac.id/media/gambar_minuman/5bbfa325-0ce2-4bfa-b2d7-26ca59d40fce.jpg',
-      'namaMinuman': 'Chicken Honey Mustard Salad',
-      'harga': 15000,
-      'restoranName': 'Sentral Kampung Pempek Palembang',
-      'restoranUrl': '/restoran/124',
-      'detailUrl': '/minuman/457',
-    },
-    {
-      'gambarUrl': 'http://muhammad-fazil31-rasapalembang.pbp.cs.ui.ac.id/media/gambar_minuman/f625a53d-d917-43ec-aeb2-77885d9e578e.jpg',
-      'namaMinuman': 'Es Taro',
-      'harga': 22000,
-      'restoranName': 'RM Sri Melayu',
-      'restoranUrl': '/restoran/125',
-      'detailUrl': '/minuman/458',
-    },
+      "pk": "052e46d2-d529-4f15-a912-6e57dfdf758c",
+      "fields": {
+        "nama": "Lemon",
+        "harga": 35000,
+        "deskripsi": "Boba yang kenyal dan lezat, disajikan dalam minuman segar dengan berbagai pilihan rasa, seperti teh, susu, atau buah. Menawarkan pengalaman tekstur yang unik dan menyenangkan di setiap tegukan. Cocok untuk dinikmati kapan saja, baik sebagai camilan atau minuman menyegarkan.",
+        "gambar": "https://raw.githubusercontent.com/D02-PBP-2024/mediafiles/refs/heads/main/gambar_minuman/00c689af-ca68-49a5-9f24-6bf550c3a65f.jpg",
+        "ukuran": "BESAR",
+        "tingkat_kemanisan": 100,
+        "restoran": "130561a8-c4d5-4b8e-ba5c-a36deeafd14d"
+      }
+    }
   ];
 
   MinumanListPage({super.key});
@@ -35,7 +37,7 @@ class MinumanListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 32.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -45,15 +47,14 @@ class MinumanListPage extends StatelessWidget {
           ),
           itemCount: minumanList.length,
           itemBuilder: (context, index) {
-            final minuman = minumanList[index];
+            final minuman = Minuman.fromJson(minumanList[index]);
 
-            return RPCard(
-              imageUrl: minuman['gambarUrl'],
-              name: minuman['namaMinuman'],
-              price: minuman['harga'],
-              restoranName: minuman['restoranName'],
-              restoranUrl: minuman['restoranUrl'],
-              detailUrl: minuman['detailUrl'],
+            return RPMenuCard(
+              gambar: minuman.fields.gambar,
+              nama: minuman.fields.nama,
+              harga: minuman.fields.harga,
+              restoran: minuman.fields.restoran,
+              menuDetailPage: MinumanDetailPage(minuman: minuman),
             );
           },
         ),

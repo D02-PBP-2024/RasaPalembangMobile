@@ -42,23 +42,23 @@ class _RPBottomNavbarState extends State<RPBottomNavbar> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: "Beranda"
+            label: 'Beranda',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.fastfood),
-            label: "Makanan"
+            label: 'Makanan',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.wine_bar),
-            label: "Minuman"
+            label: 'Minuman',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.restaurant),
-            label: "Restoran"
+            label: 'Restoran',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: "Akun"
+            label: 'Akun',
           ),
         ],
       ),

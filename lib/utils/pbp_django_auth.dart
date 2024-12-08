@@ -83,7 +83,7 @@ class CookieRequest {
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
     http.Response response = await _client.post(Uri.parse(url),
-        body: jsonEncode(data), headers: headers);
+        body: data, headers: headers);
 
     // Remove used additional header
     headers.remove('Content-Type');
