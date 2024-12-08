@@ -1,8 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/widget/rp_button.dart';
-import 'package:rasapalembang/widget/rp_text_form_field.dart';
+import 'package:provider/provider.dart';
+import 'package:rasapalembang/screens/home.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/pbp_django_auth.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_dropdown_button.dart';
+import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -21,10 +26,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -111,18 +121,54 @@ class _RegisterPageState extends State<RegisterPage> {
                   label: 'Daftar',
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      String name = _nameController.text;
+                      String nama = _nameController.text;
                       String username = _usernameController.text;
                       String password1 = _passwordController.text;
                       String password2 = _confirmPasswordController.text;
                       String? peran = _peranController.value;
 
-                      print(name);
-                      print(username);
-                      print(password1);
-                      print(password2);
-                      print(peran);
-
+                      final response = await request.postJson(
+                        '${RPUrls.baseUrl}/v1/register/',
+                        jsonEncode({
+                          'nama': nama,
+                          'username': username,
+                          'password1': password1,
+                          'password2': password2,
+                          'peran': peran,
+                        })
+                      );
+                      if (context.mounted) {
+                        if (response['success'] == true) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(response['message']),
+                            ),
+                          );
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomePage()),
+                          );
+                        } else {
+                          if (context.mounted) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Registrasi Gagal'),
+                                content: Text(response['message']),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        }
+                      }
                     }
                   }
                 ),
