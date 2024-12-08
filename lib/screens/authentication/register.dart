@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/widget/rp_button.dart';
-import 'package:rasapalembang/widget/rp_text_form_field.dart';
+import 'package:provider/provider.dart';
+import 'package:rasapalembang/screens/authentication/login.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/pbp_django_auth.dart';
+import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_dropdown_button.dart';
+import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -21,6 +26,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -108,24 +115,59 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 32.0),
                 RPButton(
-                  label: 'Daftar',
-                  onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      String name = _nameController.text;
-                      String username = _usernameController.text;
-                      String password1 = _passwordController.text;
-                      String password2 = _confirmPasswordController.text;
-                      String? peran = _peranController.value;
+                    label: 'Daftar',
+                    onPressed: () async {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        String nama = _nameController.text;
+                        String username = _usernameController.text;
+                        String password1 = _passwordController.text;
+                        String password2 = _confirmPasswordController.text;
+                        String? peran = _peranController.value;
 
-                      print(name);
-                      print(username);
-                      print(password1);
-                      print(password2);
-                      print(peran);
+                        final response = await request.postJson(
+                            "http://localhost:8000/v1/register/",
+                            jsonEncode({
+                              "nama": nama,
+                              "username": username,
+                              "password1": password1,
+                              "password2": password2,
+                              "peran": peran,
+                            }));
 
-                    }
-                  }
-                ),
+                        if (context.mounted) {
+                          if (response['success'] == true) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(response['message']),
+                              ),
+                            );
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
+                            );
+                          } else {
+                            if (context.mounted) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Registrasi Gagal'),
+                                  content: Text(response['message']),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('OK'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      }
+                    }),
                 const SizedBox(height: 16.0),
                 Center(
                   child: Row(

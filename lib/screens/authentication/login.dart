@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rasapalembang/screens/home.dart';
+import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/pbp_django_auth.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
-import 'package:rasapalembang/utils/color_constants.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,6 +20,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -56,17 +61,50 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 32.0),
                 RPButton(
-                  label: 'Masuk',
-                  onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      String username = _usernameController.text;
-                      String password = _passwordController.text;
+                    label: 'Masuk',
+                    onPressed: () async {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        String username = _usernameController.text;
+                        String password = _passwordController.text;
 
-                      print(username);
-                      print(password);
-                    }
-                  }
-                ),
+                        final response = await request
+                            .login("http://localhost:8000/v1/login/", {
+                          'username': username,
+                          'password': password,
+                        });
+
+                        if (context.mounted) {
+                          if (request.loggedIn) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()),
+                            );
+                            ScaffoldMessenger.of(context)
+                              ..hideCurrentSnackBar()
+                              ..showSnackBar(
+                                SnackBar(content: Text(response['message'])),
+                              );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Login Gagal'),
+                                content: Text(response['message']),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        }
+                      }
+                    }),
                 const SizedBox(height: 16.0),
                 Center(
                   child: Row(
