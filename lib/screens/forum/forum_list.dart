@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/forum.dart';
+import 'package:rasapalembang/screens/forum/forum_detail.dart';
 import 'package:rasapalembang/widget/rp_forum_card.dart';
 
 class ForumListPage extends StatelessWidget {
@@ -52,7 +53,7 @@ class ForumListPage extends StatelessWidget {
             topik: forum.fields.topik,
             pesan: forum.fields.pesan,
             tanggalPosting: forum.fields.tanggalPosting,
-            user: "userDummy",
+            user: "userDummy", // TODO: masih userDummy, nanti benerin lagi
             onTap: () {
               Navigator.push(
                 context,
@@ -63,24 +64,6 @@ class ForumListPage extends StatelessWidget {
             },
           );
         },
-      ),
-    );
-  }
-}
-
-class ForumDetailPage extends StatelessWidget {
-  final Forum forum;
-
-  const ForumDetailPage({super.key, required this.forum});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Detail Forum"),
-      ),
-      body: Center(
-        child: Text("Detail untuk Forum PK: $forum"),
       ),
     );
   }
