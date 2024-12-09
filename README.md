@@ -65,6 +65,10 @@ Berikut adalah penjelasan dari diagram alur pengintegrasian RasaPalembangMobile 
 
 ## 📄 Dokumentasi API 📄
 
+Keterangan:\
+\* menggunakan multipart/form-data \
+lainnya menggunakan application/json
+
 ### Authentication
 | **Method** | **Path**                | **Detail**     | **Login Required** |      **Privilege Owner**      |
 |:----------:|:------------------------|----------------|:------------------:|:-----------------------------:|
@@ -72,7 +76,7 @@ Berikut adalah penjelasan dari diagram alur pengintegrasian RasaPalembangMobile 
 |    POST    | /v1/login/              | Login user     |         ❌          |               -               |
 |    POST    | /v1/logout/             | Logout user    |         ✅          | `pengulas` `pemilik_restoran` |
 |    GET     | /v1/profile/{username}/ | Profile user   |         ❌          |               -               |
-|    PUT     | /v1/profile/{username}/ | Update user    |         ✅          | `pengulas` `pemilik_restoran` |
+|    POST    | /v1/profile/{username}/ | Update user*   |         ✅          | `pengulas` `pemilik_restoran` |
 
 ### Makanan
 
@@ -80,10 +84,10 @@ Berikut adalah penjelasan dari diagram alur pengintegrasian RasaPalembangMobile 
 |:----------:|:------------------------------------|:-----------------------------------------|:------------------:|:-------------------:|
 |    GET     | /v1/makanan/                        | Menampilkan seluruh makanan              |         ❌          |          -          |
 |    GET     | /v1/makanan/{id_makanan}/           | Menampilkan makanan berdasarkan id       |         ❌          |          -          |
-|    PUT     | /v1/makanan/{id_makanan}/           | Update makanan                           |         ✅          | `pemilik_restoran`  |
+|    POST    | /v1/makanan/{id_makanan}/           | Update makanan*                          |         ✅          | `pemilik_restoran`  |
 |   DELETE   | /v1/makanan/{id_makanan}/           | Delete makanan                           |         ✅          | `pemilik_restoran`  |
 |    GET     | /v1/restoran/{id_restoran}/makanan/ | Menampilkan makanan berdasarkan restoran |         ❌          |          -          |
-|    POST    | /v1/restoran/{id_restoran}/makanan/ | Menambahkan makanan ke sebuah restoran   |         ✅          | `pemilik_restoran`  |
+|    POST    | /v1/restoran/{id_restoran}/makanan/ | Menambahkan makanan ke sebuah restoran*  |         ✅          | `pemilik_restoran`  |
 
 ### Minuman
 
@@ -91,19 +95,19 @@ Berikut adalah penjelasan dari diagram alur pengintegrasian RasaPalembangMobile 
 |:----------:|:------------------------------------|------------------------------------------|:------------------:|:-------------------:|
 |    GET     | /v1/minuman/                        | Menampilkan seluruh minuman              |         ❌          |          -          |
 |    GET     | /v1/minuman/{id_minuman}/           | Menampilkan minuman berdasarkan id       |         ❌          |          -          |
-|    PUT     | /v1/minuman/{id_minuman}/           | Update minuman                           |         ✅          | `pemilik_restoran`  |
+|    POST    | /v1/minuman/{id_minuman}/           | Update minuman*                          |         ✅          | `pemilik_restoran`  |
 |   DELETE   | /v1/minuman/{id_minuman}/           | Delete minuman                           |         ✅          | `pemilik_restoran`  |
 |    GET     | /v1/restoran/{id_restoran}/minuman/ | Menampilkan minuman berdasarkan restoran |         ❌          |          -          |
-|    POST    | /v1/restoran/{id_restoran}/minuman/ | Menambahkan minuman ke sebuah restoran   |         ✅          | `pemilik_restoran`  |
+|    POST    | /v1/restoran/{id_restoran}/minuman/ | Menambahkan minuman ke sebuah restoran*  |         ✅          | `pemilik_restoran`  |
 
 ### Restoran
 | **Method** | **Path**                    | **Detail**                            | **Login Required** | **Privilege Owner** |
 |:----------:|:----------------------------|---------------------------------------|:------------------:|:-------------------:|
 |    GET     | /v1/restoran/               | Menampilkan seluruh restoran          |         ❌          |          -          |
-|    POST    | /v1/restoran/               | Menambahkan restoran                  |         ✅          | `pemilik_restoran`  |
+|    POST    | /v1/restoran/               | Menambahkan restoran*                 |         ✅          | `pemilik_restoran`  |
 |    GET     | /v1/restoran/{username}/    | Menampilkan restoran berdasarkan user |         ❌          |          -          |
 |    GET     | /v1/restoran/{id_restoran}/ | Menampilkan restoran berdasarkan id   |         ❌          |          -          |
-|    PUT     | /v1/restoran/{id_restoran}/ | Update restoran                       |         ✅          | `pemilik_restoran`  |
+|    POST    | /v1/restoran/{id_restoran}/ | Update restoran*                      |         ✅          | `pemilik_restoran`  |
 |   DELETE   | /v1/restoran/{id_restoran}/ | Delete restoran                       |         ✅          | `pemilik_restoran`  |
 
 ### Ulasan dan Rating
