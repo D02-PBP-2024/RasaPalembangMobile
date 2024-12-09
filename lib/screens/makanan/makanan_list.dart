@@ -9,7 +9,7 @@ class MakananListPage extends StatelessWidget {
       "pk": "d758afc4-0162-4e1b-9490-cad603b5cf2a",
       "fields": {
           "nama": "Pempek Lenjer",
-          "harga": "15000",
+          "harga": 15000,
           "deskripsi": "Pempek panjang yang kenyal, cocok disajikan dengan cuka pempek.",
           "gambar": "gambar_makanan/f4709b47-b2e2-431e-b18b-d67b90a4663f.jpg",
           "kalori": 90,
@@ -23,7 +23,7 @@ class MakananListPage extends StatelessWidget {
       "pk": "52aad79b-167a-487b-8056-940cc3d0c0c2",
       "fields": {
           "nama": "Tsukune Nokke Sushi",
-          "harga": "68000",
+          "harga": 68000,
           "deskripsi": "Tsukune Nokke Sushi adalah hidangan sushi yang unik, menggabungkan bola daging ayam (tsukune) yang dibumbui dengan nasi sushi. Disajikan dengan saus tare yang manis dan hiasan wijen atau bawang hijau, hidangan ini menawarkan perpaduan rasa gurih dan tekstur yang kenyal, cocok sebagai camilan atau hidangan utama.",
           "gambar": "gambar_makanan/691d850c-dd91-4ee9-b7b0-0f921c9ba780.jpg",
           "kalori": 80,
