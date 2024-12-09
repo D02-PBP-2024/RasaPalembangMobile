@@ -11,11 +11,11 @@ class RPTheme {
         fillColor: RPColors.textFieldBackground,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(color: Colors.transparent, width: 1.0),
+          borderSide: const BorderSide(color: Colors.transparent),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(color: RPColors.biruMuda, width: 1.0),
+          borderSide: const BorderSide(color: Colors.transparent),
         ),
         errorStyle: const TextStyle(
           color: RPColors.merahMuda,

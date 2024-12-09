@@ -3,23 +3,25 @@ import 'package:flutter/services.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 
 class RPTextFormField extends StatelessWidget {
-  final String labelText;
+  final String? labelText;
   final String hintText;
   final List<TextInputFormatter>? inputFormatter;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
   final bool obscureText;
+  final IconData? prefixIcon;
 
   const RPTextFormField({
     super.key,
     this.controller,
-    required this.labelText,
+    this.labelText,
     required this.hintText,
     this.inputFormatter,
     this.keyboardType,
     this.validator,
     this.obscureText = false,
+    this.prefixIcon,
   });
 
   @override
@@ -28,17 +30,18 @@ class RPTextFormField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            const SizedBox(width: 8.0),
-            Text(
-              labelText,
-              style: const TextStyle(
-                fontSize: 14.0,
+        if (labelText != null)
+          Row(
+            children: [
+              const SizedBox(width: 8.0),
+              Text(
+                labelText!,
+                style: const TextStyle(
+                  fontSize: 14.0,
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         const SizedBox(height: 8.0),
         TextFormField(
           obscureText: obscureText,
@@ -53,6 +56,16 @@ class RPTextFormField extends StatelessWidget {
               fontWeight: FontWeight.w400,
               color: RPColors.textFieldPlaceholder,
             ),
+            prefixIcon: prefixIcon != null
+              ? IconButton(
+              icon: Icon(
+                prefixIcon,
+                color: RPColors.textFieldPlaceholder,
+              ),
+              onPressed: () {
+
+              },
+            ) : null,
           ),
         ),
       ],
