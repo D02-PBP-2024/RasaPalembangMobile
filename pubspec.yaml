@@ -40,6 +40,10 @@ dependencies:
   http: ^1.2.2
   intl: ^0.20.1
   image_picker: ^1.1.2
+  google_maps_flutter: ^2.2.0
+  geocoding: ^2.0.5
+
+
 
 dev_dependencies:
   flutter_test:
