@@ -1,57 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/screens/restoran/restoran_detail.dart';
+import 'package:rasapalembang/screens/restoran/restoran_form.dart';
 import 'package:rasapalembang/widget/rp_menu_card.dart';
 
-class RestoranListPage extends StatelessWidget {
-  final List<Map<String, dynamic>> restoranList = [
-    {
-      "id": "052e46d2-d529-4f15-a912-6e57dfdf758c",
-      "nama": "Restoran Ceritanya tulisan ini sangat panjang ya, apa yang terjadi?",
-      "alamat": "Jl. Maju Bersama No. 10",
-      "jam_buka": "08:00",
-      "jam_tutup": "22:00",
-      "nomor_telepon": "081234567890",
-      "gambar":
-          "https://raw.githubusercontent.com/D02-PBP-2024/mediafiles/refs/heads/main/gambar_restoran/00c689af-ca68-49a5-9f24-6bf550c3a65f.jpg",
-      "user": "123"
-    },
-    {
-      "id": "130561a8-c4d5-4b8e-ba5c-a36deeafd14d",
-      "nama": "Restoran Lemon",
-      "alamat": "Jl. Sehat No. 21",
-      "jam_buka": "09:00",
-      "jam_tutup": "23:00",
-      "nomor_telepon": "081298765432",
-      "gambar":
-          "https://raw.githubusercontent.com/D02-PBP-2024/mediafiles/refs/heads/main/gambar_restoran/00c689af-ca68-49a5-9f24-6bf550c3a65f.jpg",
-      "user": "456"
-    }
-  ];
+class RestoranListPage extends StatefulWidget {
+  const RestoranListPage({super.key});
 
-  RestoranListPage({super.key});
+  @override
+  State<RestoranListPage> createState() => _RestoranListPageState();
+}
+
+class _RestoranListPageState extends State<RestoranListPage> {
+  final List<Map<String, dynamic>> restoranList = [];
+
+  void _addNewRestoran(Map<String, dynamic> newRestoran) {
+    setState(() {
+      restoranList.add(newRestoran);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Daftar Restoran'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: ElevatedButton(
+              onPressed: () async {
+                final newRestoran = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RestoranFormPage(),
+                  ),
+                );
+
+                if (newRestoran != null) {
+                  _addNewRestoran(newRestoran);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF54BAB9), // Warna tombol
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: const Text('Tambah Restoran'),
+            ),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+            crossAxisCount: 2, // 2 kartu per baris
             crossAxisSpacing: 8.0,
             mainAxisSpacing: 8.0,
-            childAspectRatio: 0.60,
+            childAspectRatio: 0.7, // Menyesuaikan rasio kartu
           ),
           itemCount: restoranList.length,
           itemBuilder: (context, index) {
             final restoran = Restoran.fromJson(restoranList[index]);
 
             return RPMenuCard(
-              gambar: restoran.gambar ?? '',
-              nama: restoran.nama,
-              harga: 0, // Restoran tidak memiliki harga
-              restoran: restoran.id,
+              gambar: restoran.fields.gambar,
+              nama: restoran.fields.nama,
+              harga: 0, // Harga tidak ada di restoran
+              restoran: restoran.pk,
               menuDetailPage: RestoranDetailPage(restoran: restoran),
             );
           },
