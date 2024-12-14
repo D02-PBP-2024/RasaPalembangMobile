@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rasapalembang/providers/tab_provider.dart';
 import 'package:rasapalembang/screens/home.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/pbp_django_auth.dart';
@@ -27,6 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+    final selectedTab = Provider.of<TabProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -144,6 +146,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               content: Text(response['message']),
                             ),
                           );
+                          selectedTab.tab = 0;
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(

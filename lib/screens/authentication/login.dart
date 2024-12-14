@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rasapalembang/providers/tab_provider.dart';
 import 'package:rasapalembang/screens/home.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/pbp_django_auth.dart';
@@ -23,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+    final selectedTab = Provider.of<TabProvider>(context);
 
     return Scaffold(
       body: Center(
@@ -80,16 +82,17 @@ class _LoginPageState extends State<LoginPage> {
 
                           if (context.mounted) {
                             if (request.loggedIn) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const HomePage()),
-                              );
                               ScaffoldMessenger.of(context)
                                 ..hideCurrentSnackBar()
                                 ..showSnackBar(
                                   SnackBar(content: Text(response['message'])),
                                 );
+                              selectedTab.tab = 0;
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomePage()),
+                              );
                             } else {
                               showDialog(
                                 context: context,
