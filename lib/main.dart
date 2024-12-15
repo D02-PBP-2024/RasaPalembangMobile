@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/providers/tab_provider.dart';
-import 'package:rasapalembang/utils/pbp_django_auth.dart';
+import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/widget/rp_bottom_navbar.dart';
 import 'package:rasapalembang/widget/rp_theme.dart';
 
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider(
           create: (_) {
-            CookieRequest request = CookieRequest();
+            UserService request = UserService();
             return request;
           },
         ),
