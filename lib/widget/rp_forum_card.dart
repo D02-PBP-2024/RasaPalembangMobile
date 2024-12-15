@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:rasapalembang/utils/color_constants.dart';
 
 class RPForumCard extends StatelessWidget {
   final String topik;
@@ -43,19 +45,19 @@ class RPForumCard extends StatelessWidget {
                 pesan,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
+                style: const TextStyle(fontSize: 14, color: RPColors.textSecondary),
               ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "User ID: $user",
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    "Diunggah oleh $user",
+                    style: const TextStyle(fontSize: 12, color: RPColors.textSecondary),
                   ),
                   Text(
-                    "Posted: ${tanggalPosting.toLocal()}".split(' ')[0],
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    "Posted: ${DateFormat('dd MMM yyyy').format(tanggalPosting)}",
+                    style: const TextStyle(fontSize: 12, color: RPColors.textSecondary),
                   ),
                 ],
               ),
