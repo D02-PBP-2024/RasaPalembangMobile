@@ -85,7 +85,7 @@ class _RestoranListPageState extends State<RestoranListPage> {
               child: RPRestoCard(
                 nama: restoran.fields.nama,
                 gambar: restoran.fields.gambar,
-                rating: '4.5', // Nilai rating default, bisa disesuaikan
+                rating: '4.5', // placeholder
                 jamBuka: restoran.fields.jamBuka,
                 jamTutup: restoran.fields.jamTutup,
                 isOpen: _isCurrentlyOpen(
@@ -109,13 +109,14 @@ class _RestoranListPageState extends State<RestoranListPage> {
 
       if (buka == null || tutup == null) return false;
 
+      // Konversi TimeOfDay ke menit sejak tengah malam
       final nowMinutes = now.hour * 60 + now.minute;
       final bukaMinutes = buka.hour * 60 + buka.minute;
       final tutupMinutes = tutup.hour * 60 + tutup.minute;
 
-      if (bukaMinutes <= tutupMinutes) {
+      if (bukaMinutes < tutupMinutes) {
         // Restoran buka dan tutup di hari yang sama
-        return nowMinutes >= bukaMinutes && nowMinutes <= tutupMinutes;
+        return bukaMinutes <= nowMinutes && nowMinutes <= tutupMinutes;
       } else {
         // Restoran buka melewati tengah malam
         return nowMinutes >= bukaMinutes || nowMinutes <= tutupMinutes;

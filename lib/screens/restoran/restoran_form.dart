@@ -10,14 +10,15 @@ class RestoranFormPage extends StatefulWidget {
 }
 
 class _RestoranFormPageState extends State<RestoranFormPage> {
-  final TextEditingController namaController = TextEditingController();
-  final TextEditingController alamatController = TextEditingController();
-  final TextEditingController jamBukaController = TextEditingController();
-  final TextEditingController jamTutupController = TextEditingController();
-  final TextEditingController nomorTeleponController = TextEditingController();
+  final Map<String, TextEditingController> controllers = {
+    "Nama restoran": TextEditingController(),
+    "Alamat restoran": TextEditingController(),
+    "Jam buka": TextEditingController(),
+    "Jam tutup": TextEditingController(),
+    "Nomor telepon": TextEditingController(),
+  };
 
   File? selectedImage;
-
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
@@ -38,6 +39,52 @@ class _RestoranFormPageState extends State<RestoranFormPage> {
     }
   }
 
+  void _validateAndSave() {
+    List<String> errors = [];
+
+    // Validasi semua field secara otomatis
+    controllers.forEach((key, controller) {
+      if (controller.text.isEmpty) {
+        errors.add('$key tidak boleh kosong');
+      }
+    });
+
+    // Validasi gambar
+    if (selectedImage == null) {
+      errors.add('Gambar restoran harus dipilih');
+    }
+
+    if (errors.isNotEmpty) {
+      // Tampilkan semua pesan kesalahan
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errors.join('\n')),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    // Buat data restoran baru jika validasi berhasil
+    final newRestoran = {
+      "model": "restoran",
+      "pk": DateTime.now().toString(), // ID unik
+      "fields": {
+        "nama": controllers["Nama restoran"]!.text,
+        "alamat": controllers["Alamat restoran"]!.text,
+        "jam_buka": controllers["Jam buka"]!.text,
+        "jam_tutup": controllers["Jam tutup"]!.text,
+        "nomor_telepon": controllers["Nomor telepon"]!.text,
+        "gambar": selectedImage!.path, // Path gambar
+        "user": 0 // User dapat disesuaikan
+      }
+    };
+
+    // Kembali ke halaman sebelumnya dengan data restoran baru
+    Navigator.pop(context, newRestoran);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,62 +97,29 @@ class _RestoranFormPageState extends State<RestoranFormPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(
-                controller: namaController,
-                label: 'Nama Restoran',
-                hintText: 'Masukkan nama restoran',
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: alamatController,
-                label: 'Alamat Restoran',
-                hintText: 'Masukkan alamat restoran',
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: jamBukaController,
-                label: 'Jam Buka',
-                hintText: '08:00',
-                keyboardType: TextInputType.datetime,
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: jamTutupController,
-                label: 'Jam Tutup',
-                hintText: '22:00',
-                keyboardType: TextInputType.datetime,
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: nomorTeleponController,
-                label: 'Nomor Telepon',
-                hintText: 'Masukkan nomor telepon',
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 16),
+              ...controllers.entries.map((entry) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTextField(
+                      controller: entry.value,
+                      label: entry.key,
+                      hintText: entry.key.contains("Jam")
+                          ? "08:00"
+                          : "Masukkan ${entry.key.toLowerCase()}",
+                      keyboardType: entry.key.contains("Jam")
+                          ? TextInputType.datetime
+                          : TextInputType.text,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }).toList(),
               _buildImagePicker(),
               const SizedBox(height: 32),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    final newRestoran = {
-                      "model": "restoran",
-                      "pk": DateTime.now().toString(), // ID unik
-                      "fields": {
-                        "nama": namaController.text,
-                        "alamat": alamatController.text,
-                        "jam_buka": jamBukaController.text,
-                        "jam_tutup": jamTutupController.text,
-                        "nomor_telepon": nomorTeleponController.text,
-                        "gambar": selectedImage != null
-                            ? selectedImage!.path
-                            : "", // Path gambar
-                        "user": 0 // User dapat disesuaikan
-                      }
-                    };
-
-                    Navigator.pop(context, newRestoran);
-                  },
+                  onPressed: _validateAndSave,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 32.0,

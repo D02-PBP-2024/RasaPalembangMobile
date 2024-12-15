@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geocoding/geocoding.dart'; // Tambahkan ini
+import 'package:geocoding/geocoding.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'dart:io';
+import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
+
 
 class RPRestoDetail extends StatefulWidget {
   final Restoran restoran;
@@ -14,8 +16,8 @@ class RPRestoDetail extends StatefulWidget {
 }
 
 class _RPRestoDetailState extends State<RPRestoDetail> {
-  LatLng? restoranLocation; // Lokasi koordinat restoran
-  bool isLoading = true; // Status untuk proses loading
+  LatLng? restoranLocation;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -23,18 +25,16 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
     _getCoordinatesFromAddress(widget.restoran.fields.alamat);
   }
 
-  // Fungsi untuk mendapatkan koordinat dari alamat
   Future<void> _getCoordinatesFromAddress(String address) async {
     try {
-      List<Location> locations = await locationFromAddress(address); // Geocoding alamat
+      List<Location> locations = await locationFromAddress(address);
       if (locations.isNotEmpty) {
         setState(() {
           restoranLocation = LatLng(locations.first.latitude, locations.first.longitude);
-          isLoading = false; // Selesai loading
+          isLoading = false;
         });
       }
     } catch (e) {
-      // Jika gagal mendapatkan koordinat
       debugPrint('Gagal mendapatkan koordinat: $e');
       setState(() {
         isLoading = false;
@@ -48,169 +48,226 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detail Restoran'),
-        backgroundColor: const Color(0xFF54BAB9),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Gambar Restoran
-            Stack(
-              children: [
-                Image.file(
-                  File(fields.gambar),
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-                Positioned(
-                  bottom: 16.0,
-                  left: 16.0,
-                  child: Text(
-                    fields.nama,
-                    style: const TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(0, 1),
-                          blurRadius: 6.0,
-                          color: Colors.black45,
+      extendBodyBehindAppBar: true,
+      body: Column(
+        children: [
+          // Gambar Restoran dengan semua informasi
+          Stack(
+            children: [
+              Image.file(
+                File(fields.gambar),
+                width: double.infinity,
+                height: 500,
+                fit: BoxFit.cover,
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.black87, Colors.transparent],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        fields.nama,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 28.0,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
+                      ),
+                      const SizedBox(height: 8.0),
+                      Row(
+                        children: [
+                          Text(
+                            _isCurrentlyOpen(fields.jamBuka, fields.jamTutup)
+                                ? 'Buka'
+                                : 'Tutup',
+                            style: TextStyle(
+                              color: _isCurrentlyOpen(fields.jamBuka, fields.jamTutup)
+                                  ? Colors.greenAccent
+                                  : Colors.redAccent,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 8.0),
+                          Text(
+                            '${fields.jamBuka} - ${fields.jamTutup}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8.0),
+                      Text(
+                        fields.alamat,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        fields.nomorTelepon,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Tombol Aksi dalam satu baris
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final updatedData = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RestoranEditForm(
+                            restoran: {
+                              'nama': fields.nama,
+                              'alamat': fields.alamat,
+                              'jamBuka': fields.jamBuka,
+                              'jamTutup': fields.jamTutup,
+                              'nomorTelepon': fields.nomorTelepon,
+                              'gambar': fields.gambar,
+                            },
+                          ),
+                        ),
+                      );
+
+                      if (updatedData != null) {
+                        setState(() {
+                          fields.nama = updatedData['nama'];
+                          fields.alamat = updatedData['alamat'];
+                          fields.jamBuka = updatedData['jamBuka'];
+                          fields.jamTutup = updatedData['jamTutup'];
+                          fields.nomorTelepon = updatedData['nomorTelepon'];
+                          fields.gambar = updatedData['gambar'];
+                        });
+                        // Update koordinat berdasarkan alamat yang baru
+                        setState(() {
+                          isLoading = true; // Aktifkan loading sebelum mendapatkan koordinat baru
+                        });
+                        await _getCoordinatesFromAddress(updatedData['alamat']);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.cyan[400],
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    ),
+                    child: const Text(
+                      'Ubah Restoran',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Aksi hapus restoran
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    ),
+                    child: const Text(
+                      'Hapus Restoran',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
                 ),
               ],
             ),
+          ),
 
-            // Informasi Restoran
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Alamat
-                  Text(
-                    fields.alamat,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-
-                  // Nomor Telepon
-                  Text(
-                    fields.nomorTelepon,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-
-                  // Jam Operasional
-                  Row(
-                    children: [
-                      Text(
-                        '${fields.jamBuka} - ${fields.jamTutup}',
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      Text(
-                        _isCurrentlyOpen(fields.jamBuka, fields.jamTutup) ? 'Buka' : 'Tutup',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                          color: _isCurrentlyOpen(fields.jamBuka, fields.jamTutup)
-                              ? Colors.green
-                              : Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Lokasi
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+          // Tambahkan judul lokasi
+          const Padding(
+            padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
               child: Text(
                 'Lokasi',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            const SizedBox(height: 8.0),
-            Container(
-              height: 300,
-              margin: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: isLoading
-                  ? const Center(child: CircularProgressIndicator()) // Loading
-                  : restoranLocation == null
-                  ? const Center(
-                child: Text(
-                  'Lokasi tidak ditemukan',
-                  style: TextStyle(fontSize: 16.0, color: Colors.red),
-                ),
-              ) // Jika lokasi tidak ditemukan
-                  : GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: restoranLocation!,
-                  zoom: 15,
-                ),
-                markers: {
-                  Marker(
-                    markerId: const MarkerId('restoran_marker'),
-                    position: restoranLocation!,
-                    infoWindow: InfoWindow(title: fields.nama),
+          ),
+
+          // Lokasi Google Maps
+          if (!isLoading && restoranLocation != null)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: restoranLocation!,
+                    zoom: 15,
                   ),
-                },
+                  markers: {
+                    Marker(
+                      markerId: const MarkerId('restoran_marker'),
+                      position: restoranLocation!,
+                      infoWindow: InfoWindow(title: fields.nama),
+                    ),
+                  },
+                ),
               ),
             ),
-            const SizedBox(height: 16.0),
-          ],
-        ),
+          if (isLoading) const Center(child: CircularProgressIndicator()),
+        ],
       ),
     );
   }
 
-  // Fungsi untuk menentukan apakah restoran buka berdasarkan jam operasional
   bool _isCurrentlyOpen(String jamBuka, String jamTutup) {
-    try {
-      final now = TimeOfDay.now();
-      final buka = _timeOfDayFromString(jamBuka);
-      final tutup = _timeOfDayFromString(jamTutup);
+    final now = TimeOfDay.now();
+    final buka = _timeOfDayFromString(jamBuka);
+    final tutup = _timeOfDayFromString(jamTutup);
 
-      if (buka == null || tutup == null) return false;
+    if (buka == null || tutup == null) return false;
 
-      final nowMinutes = now.hour * 60 + now.minute;
-      final bukaMinutes = buka.hour * 60 + buka.minute;
-      final tutupMinutes = tutup.hour * 60 + tutup.minute;
+    final nowMinutes = now.hour * 60 + now.minute;
+    final bukaMinutes = buka.hour * 60 + buka.minute;
+    final tutupMinutes = tutup.hour * 60 + tutup.minute;
 
-      if (bukaMinutes <= tutupMinutes) {
-        return nowMinutes >= bukaMinutes && nowMinutes <= tutupMinutes;
-      } else {
-        return nowMinutes >= bukaMinutes || nowMinutes <= tutupMinutes;
-      }
-    } catch (e) {
-      return false;
+    if (bukaMinutes <= tutupMinutes) {
+      return nowMinutes >= bukaMinutes && nowMinutes <= tutupMinutes;
+    } else {
+      return nowMinutes >= bukaMinutes || nowMinutes <= tutupMinutes;
     }
   }
 
   TimeOfDay? _timeOfDayFromString(String time) {
-    try {
-      final parts = time.split(':');
-      if (parts.length != 2) return null;
-      return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
-    } catch (e) {
-      return null;
-    }
+    final parts = time.split(':');
+    if (parts.length != 2) return null;
+    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
 }
