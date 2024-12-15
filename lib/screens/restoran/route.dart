@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/screens/forum/forum_list.dart';
+import 'package:rasapalembang/screens/restoran/restoran_list.dart';
 
 class RestoranRoute extends StatelessWidget {
   const RestoranRoute({super.key});
@@ -7,7 +7,7 @@ class RestoranRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ForumListPage(),
+      body: RestoranListPage(),
     );
   }
 }
