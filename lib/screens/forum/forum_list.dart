@@ -34,9 +34,9 @@ class ForumListPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final forum = forumList[index];
                 return RPForumCard(
-                  topik: forum.fields.topik,
-                  pesan: forum.fields.pesan,
-                  tanggalPosting: forum.fields.tanggalPosting,
+                  topik: forum.topik,
+                  pesan: forum.pesan,
+                  tanggalPosting: forum.tanggalPosting,
                   user: "userDummy", // TODO: masih userDummy, nanti benerin lagi
                   onTap: () {
                     Navigator.push(

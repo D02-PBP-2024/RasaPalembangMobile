@@ -15,7 +15,7 @@ class ForumDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(forum.fields.topik),
+        title: Text(forum.topik),
       ),
       body: FutureBuilder<List<Balasan>>(
         future: balasanService.get(forum.pk),
@@ -35,7 +35,7 @@ class ForumDetailPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    forum.fields.pesan,
+                    forum.pesan,
                     style: const TextStyle(fontSize: 16.0),
                   ),
                 ),
@@ -48,16 +48,16 @@ class ForumDetailPage extends StatelessWidget {
                       return ListTile(
                         leading: const Icon(Icons.person), // TODO: bisa ganti gambar user juga
                         title: Text(
-                          "User: ${balasan.fields.user.username}",
+                          "User: ${balasan.user.username}",
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(balasan.fields.pesan),
+                            Text(balasan.pesan),
                             Text(
                               DateFormat('dd MMM yyyy, HH:mm').format(balasan
-                                  .fields.tanggalPosting),
+                                  .tanggalPosting),
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
