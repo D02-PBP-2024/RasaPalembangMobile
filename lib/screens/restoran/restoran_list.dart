@@ -83,14 +83,14 @@ class _RestoranListPageState extends State<RestoranListPage> {
                 );
               },
               child: RPRestoCard(
-                nama: restoran.fields.nama,
-                gambar: restoran.fields.gambar,
+                nama: restoran.nama,
+                gambar: restoran.gambar,
                 rating: '4.5', // placeholder
-                jamBuka: restoran.fields.jamBuka,
-                jamTutup: restoran.fields.jamTutup,
+                jamBuka: restoran.jamBuka,
+                jamTutup: restoran.jamTutup,
                 isOpen: _isCurrentlyOpen(
-                  restoran.fields.jamBuka,
-                  restoran.fields.jamTutup,
+                  restoran.jamBuka,
+                  restoran.jamTutup,
                 ),
               ),
             );

@@ -22,7 +22,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
   @override
   void initState() {
     super.initState();
-    _getCoordinatesFromAddress(widget.restoran.fields.alamat);
+    _getCoordinatesFromAddress(widget.restoran.alamat);
   }
 
   Future<void> _getCoordinatesFromAddress(String address) async {
@@ -44,7 +44,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final fields = widget.restoran.fields;
+    final restoran = widget.restoran;
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +59,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
           Stack(
             children: [
               Image.file(
-                File(fields.gambar),
+                File(restoran.gambar),
                 width: double.infinity,
                 height: 500,
                 fit: BoxFit.cover,
@@ -81,7 +81,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        fields.nama,
+                        restoran.nama,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 28.0,
@@ -92,11 +92,11 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                       Row(
                         children: [
                           Text(
-                            _isCurrentlyOpen(fields.jamBuka, fields.jamTutup)
+                            _isCurrentlyOpen(restoran.jamBuka, restoran.jamTutup)
                                 ? 'Buka'
                                 : 'Tutup',
                             style: TextStyle(
-                              color: _isCurrentlyOpen(fields.jamBuka, fields.jamTutup)
+                              color: _isCurrentlyOpen(restoran.jamBuka, restoran.jamTutup)
                                   ? Colors.greenAccent
                                   : Colors.redAccent,
                               fontSize: 18.0,
@@ -105,7 +105,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                           ),
                           const SizedBox(width: 8.0),
                           Text(
-                            '${fields.jamBuka} - ${fields.jamTutup}',
+                            '${restoran.jamBuka} - ${restoran.jamTutup}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16.0,
@@ -115,7 +115,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                       ),
                       const SizedBox(height: 8.0),
                       Text(
-                        fields.alamat,
+                        restoran.alamat,
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 16.0,
@@ -123,7 +123,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                       ),
                       const SizedBox(height: 4.0),
                       Text(
-                        fields.nomorTelepon,
+                        restoran.nomorTelepon,
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 16.0,
@@ -149,12 +149,12 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                         MaterialPageRoute(
                           builder: (context) => RestoranEditForm(
                             restoran: {
-                              'nama': fields.nama,
-                              'alamat': fields.alamat,
-                              'jamBuka': fields.jamBuka,
-                              'jamTutup': fields.jamTutup,
-                              'nomorTelepon': fields.nomorTelepon,
-                              'gambar': fields.gambar,
+                              'nama': restoran.nama,
+                              'alamat': restoran.alamat,
+                              'jamBuka': restoran.jamBuka,
+                              'jamTutup': restoran.jamTutup,
+                              'nomorTelepon': restoran.nomorTelepon,
+                              'gambar': restoran.gambar,
                             },
                           ),
                         ),
@@ -162,12 +162,12 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
 
                       if (updatedData != null) {
                         setState(() {
-                          fields.nama = updatedData['nama'];
-                          fields.alamat = updatedData['alamat'];
-                          fields.jamBuka = updatedData['jamBuka'];
-                          fields.jamTutup = updatedData['jamTutup'];
-                          fields.nomorTelepon = updatedData['nomorTelepon'];
-                          fields.gambar = updatedData['gambar'];
+                          restoran.nama = updatedData['nama'];
+                          restoran.alamat = updatedData['alamat'];
+                          restoran.jamBuka = updatedData['jamBuka'];
+                          restoran.jamTutup = updatedData['jamTutup'];
+                          restoran.nomorTelepon = updatedData['nomorTelepon'];
+                          restoran.gambar = updatedData['gambar'];
                         });
                         // Update koordinat berdasarkan alamat yang baru
                         setState(() {
@@ -235,7 +235,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                     Marker(
                       markerId: const MarkerId('restoran_marker'),
                       position: restoranLocation!,
-                      infoWindow: InfoWindow(title: fields.nama),
+                      infoWindow: InfoWindow(title: restoran.nama),
                     ),
                   },
                 ),

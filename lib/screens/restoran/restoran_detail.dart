@@ -13,7 +13,7 @@ class RestoranDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(restoran.fields.nama),
+        title: Text(restoran.nama),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -21,29 +21,29 @@ class RestoranDetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (restoran.fields.gambar.isNotEmpty)
+              if (restoran.gambar.isNotEmpty)
                 Image.network(
-                  restoran.fields.gambar,
+                  restoran.gambar,
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
                 ),
               const SizedBox(height: 16),
               Text(
-                restoran.fields.nama,
+                restoran.nama,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
-              Text("Alamat: ${restoran.fields.alamat}"),
+              Text("Alamat: ${restoran.alamat}"),
               const SizedBox(height: 8),
               Text(
-                  "Jam Buka: ${restoran.fields.jamBuka} - ${restoran.fields.jamTutup}"),
+                  "Jam Buka: ${restoran.jamBuka} - ${restoran.jamTutup}"),
               const SizedBox(height: 8),
               Text(
-                  "Nomor Telepon: ${restoran.fields.nomorTelepon.isNotEmpty ? restoran.fields.nomorTelepon : 'Tidak tersedia'}"),
+                  "Nomor Telepon: ${restoran.nomorTelepon.isNotEmpty ? restoran.nomorTelepon : 'Tidak tersedia'}"),
             ],
           ),
         ),

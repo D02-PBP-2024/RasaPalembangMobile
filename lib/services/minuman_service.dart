@@ -12,12 +12,13 @@ class MinumanService extends UserService {
       c.withCredentials = true;
     }
 
-    const String url = '${RPUrls.baseUrl}/v1/minuman/';
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/minuman/');
 
-    http.Response response = await client.get(Uri.parse(url));
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
 
     if (response.statusCode == 200) {
-      return minumanFromJson(response.body);
+      return minumanFromListJson(response.body);
     } else {
       throw Exception('Failed to load data');
     }

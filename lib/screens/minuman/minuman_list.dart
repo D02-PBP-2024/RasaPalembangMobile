@@ -33,10 +33,10 @@ class MinumanListPage extends StatelessWidget {
                     final minuman = snapshot.data[index];
 
                     return RPMenuCard(
-                      gambar: minuman.fields.gambar,
-                      nama: minuman.fields.nama,
-                      harga: minuman.fields.harga,
-                      restoran: minuman.fields.restoran.fields.nama,
+                      gambar: minuman.gambar,
+                      nama: minuman.nama,
+                      harga: minuman.harga,
+                      restoran: minuman.restoran.nama,
                       menuDetailPage: MinumanDetailPage(minuman: minuman),
                     );
                   },
