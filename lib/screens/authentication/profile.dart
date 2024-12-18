@@ -34,6 +34,26 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late String nama;
+  late String deskripsi;
+  late String foto;
+  late int imageKey;
+
+  @override
+  void initState() {
+    super.initState();
+    nama = widget.nama;
+    deskripsi = widget.deskripsi;
+    foto = widget.foto;
+  }
+
+  void updateUser(String nama, String deskripsi, String foto) {
+    setState(() {
+      this.nama = nama;
+      this.deskripsi = deskripsi;
+      this.foto = foto;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     left: 16,
                     child: ClipOval(
                       child: Image.network(
-                        widget.foto,
+                        foto,
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
@@ -81,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.nama,
+                    nama,
                     style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                   ),
                   Text(
@@ -90,7 +110,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    widget.deskripsi == "" ? 'Belum ada bio.' : widget.deskripsi,
+                    deskripsi == "" ? 'Belum ada bio.' : deskripsi,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 8.0),
@@ -137,9 +157,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ProfileEditPage(
-                                  nama: widget.nama,
-                                  deskripsi: widget.deskripsi,
-                                  foto: widget.foto,
+                                  onChanged: updateUser,
+                                  nama: nama,
+                                  deskripsi: deskripsi,
+                                  foto: foto,
                                 ),
                               ),
                             );
