@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class RestoranRoute extends StatelessWidget {
-  const RestoranRoute({super.key});
+class ForumRoute extends StatelessWidget {
+  const ForumRoute({super.key});
 
   @override
   Widget build(BuildContext context) {
