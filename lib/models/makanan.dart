@@ -30,12 +30,12 @@ class Makanan {
 
 class Fields {
   String nama;
+  int harga;
   String deskripsi;
   String gambar;
-  List<String> kategori;
   int kalori;
-  int harga;
   String restoran;
+  List<String> kategori;
 
   Fields({
     required this.nama,
@@ -51,7 +51,7 @@ class Fields {
         nama: json["nama"],
         deskripsi: json["deskripsi"],
         gambar: json["gambar"],
-        kategori: List<String>.from(json["kategori"]),
+        kategori: List<String>.from(json["kategori"].map((x) => x)),
         kalori: json["kalori"],
         harga: json["harga"],
         restoran: json["restoran"],
@@ -63,7 +63,7 @@ class Fields {
         "deskripsi": deskripsi,
         "gambar": gambar,
         "kalori": kalori,
-        "kategori": kategori,
+        "kategori": List<dynamic>.from(kategori.map((x) => x)),
         "restoran": restoran,
       };
 }
