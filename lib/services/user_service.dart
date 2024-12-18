@@ -29,7 +29,7 @@ class UserService {
   Map<String, String> headers = {};
   Map<String, Cookie> cookies = {};
   User? user;
-  final http.Client _client = http.Client();
+  final http.Client client = http.Client();
 
   late SharedPreferences local;
 
@@ -72,7 +72,7 @@ class UserService {
   Future<dynamic> register(String nama, String username, String password1, String password2, String peran) async {
     await init();
     if (kIsWeb) {
-      dynamic c = _client;
+      dynamic c = client;
       c.withCredentials = true;
     }
 
@@ -88,7 +88,7 @@ class UserService {
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
     http.Response response =
-    await _client.post(Uri.parse(url), body: data, headers: headers);
+    await client.post(Uri.parse(url), body: data, headers: headers);
 
     // Remove used additional header
     headers.remove('Content-Type');
@@ -107,7 +107,7 @@ class UserService {
   Future<dynamic> login(String username, String password) async {
     await init();
     if (kIsWeb) {
-      dynamic c = _client;
+      dynamic c = client;
       c.withCredentials = true;
     }
 
@@ -119,7 +119,7 @@ class UserService {
 
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
-    http.Response response = await _client.post(Uri.parse(url),
+    http.Response response = await client.post(Uri.parse(url),
         body: data, headers: headers);
 
     // Remove used additional header
@@ -139,14 +139,14 @@ class UserService {
   Future<dynamic> logout() async {
     await init();
     if (kIsWeb) {
-      dynamic c = _client;
+      dynamic c = client;
       c.withCredentials = true;
     }
 
     const String url = '${RPUrls.baseUrl}/v1/logout/';
 
     http.Response response =
-    await _client.post(Uri.parse(url), headers: headers);
+    await client.post(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
       loggedIn = false;

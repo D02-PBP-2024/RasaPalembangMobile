@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
 
 class RPMenuDetail extends StatelessWidget {
   final String nama;
@@ -31,6 +32,7 @@ class RPMenuDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -41,31 +43,14 @@ class RPMenuDetail extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                nama,
-                style: const TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.bold,
-                  color: RPColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12.0),
-              Text(
-                deskripsi,
-                style: const TextStyle(
-                  fontSize: 18.0,
-                  color: RPColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 20.0),
               Stack(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8.0),
                     child: Image.network(
-                      gambar,
+                      '${RPUrls.baseUrl}$gambar',
                       width: double.infinity,
-                      height: 250,
+                      height: screenWidth - 32,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -88,43 +73,71 @@ class RPMenuDetail extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20.0),
-              const Text(
-                'Detail Minuman',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              _buildDetailRow(Icons.attach_money, 'Harga', 'Rp${harga.toStringAsFixed(0)}'),
-              _buildDetailRow(Icons.wine_bar, 'Ukuran', ukuran),
-              _buildDetailRow(Icons.star, 'Tingkat Kemasan', '$tingkatKemanisan%'),
-              const SizedBox(height: 20.0),
-              const Text(
-                'Informasi Restoran',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold
+              Text(
+                nama,
+                style: const TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: RPColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 12.0),
-              GestureDetector(
-                onTap: () {
-                  //TODO: navigasi ke halaman restoran di sini
-                },
-                child: Text(
-                  namaRestoran,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    color: RPColors.biruMuda,
-                    fontWeight: FontWeight.bold
+              Text(
+                deskripsi,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  color: RPColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              Text(
+                'Rp${harga.toStringAsFixed(0)}',
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  color: RPColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              Card(
+                margin: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Text('Informasi Restoran'),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 12.0),
-              _buildDetailRow(Icons.location_on, 'Alamat', alamatRestoran),
-              _buildDetailRow(Icons.phone, 'Telepon', nomorTeleponRestoran),
-              _buildDetailRow(Icons.access_time, 'Jam Operasional', '$jamBukaRestoran - $jamTutupRestoran'),
+              // const Text(
+              //   'Informasi Restoran',
+              //   style: TextStyle(
+              //     fontSize: 24,
+              //     fontWeight: FontWeight.bold
+              //   ),
+              // ),
+              // const SizedBox(height: 12.0),
+              // GestureDetector(
+              //   onTap: () {
+              //     //TODO: navigasi ke halaman restoran di sini
+              //   },
+              //   child: Text(
+              //     namaRestoran,
+              //     style: const TextStyle(
+              //       fontSize: 20,
+              //       color: RPColors.biruMuda,
+              //       fontWeight: FontWeight.bold
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(height: 12.0),
+              // _buildDetailRow(Icons.location_on, 'Alamat', alamatRestoran),
+              // _buildDetailRow(Icons.phone, 'Telepon', nomorTeleponRestoran),
+              // _buildDetailRow(Icons.access_time, 'Jam Operasional', '$jamBukaRestoran - $jamTutupRestoran'),
             ],
           ),
         ),
