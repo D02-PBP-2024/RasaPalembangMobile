@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/screens/authentication/login.dart';
+import 'package:rasapalembang/screens/authentication/profile_edit.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 
@@ -35,6 +37,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarIconBrightness: Brightness.light,
+    ));
+
     final request = context.watch<UserService>();
     bool isLoggedInUser = widget.loggedInUsername == widget.username;
 
@@ -69,7 +75,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 56.0),
               child: Column(
@@ -123,31 +128,50 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   if (isLoggedInUser)
                     const SizedBox(height: 16.0),
-                  if (isLoggedInUser)
-                    RPButton(
-                      label: 'Logout',
-                      onPressed: () async {
-                        final response = await request.logout();
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(response['message']),
-                            ),
-                          );
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginPage()),
-                          );
-                        }
-                      },
-                    )
+                    Row(
+                      children: [
+                        RPButton(
+                          label: 'Edit Profile',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfileEditPage(
+                                  nama: widget.nama,
+                                  deskripsi: widget.deskripsi,
+                                  foto: widget.foto,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 8.0),
+                        RPButton(
+                          label: 'Logout',
+                          onPressed: () async {
+                            final response = await request.logout();
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(response['message']),
+                                ),
+                              );
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
+                              );
+                            }
+                          },
+                        )
+                      ],
+                    ),
                 ],
               ),
             ),
           ],
         ),
-      )
+      ),
     );
   }
 

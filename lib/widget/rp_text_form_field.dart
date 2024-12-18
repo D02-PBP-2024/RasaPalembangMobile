@@ -11,6 +11,7 @@ class RPTextFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool obscureText;
   final IconData? prefixIcon;
+  final int? maxLines;
 
   const RPTextFormField({
     super.key,
@@ -22,6 +23,7 @@ class RPTextFormField extends StatelessWidget {
     this.validator,
     this.obscureText = false,
     this.prefixIcon,
+    this.maxLines,
   });
 
   @override
@@ -44,6 +46,7 @@ class RPTextFormField extends StatelessWidget {
           ),
         const SizedBox(height: 8.0),
         TextFormField(
+          maxLines: maxLines ?? 1,
           obscureText: obscureText,
           inputFormatters: inputFormatter,
           keyboardType: keyboardType,

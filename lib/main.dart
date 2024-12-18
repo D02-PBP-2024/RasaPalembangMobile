@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         title: 'Rasa Palembang',
         theme: RPTheme.theme,
         home: const RPBottomNavbar(),
-      )
+      ),
     );
   }
 }
