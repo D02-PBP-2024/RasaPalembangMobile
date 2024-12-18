@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
-import 'package:rasapalembang/utils/pbp_django_auth.dart';
+import 'package:rasapalembang/providers/tab_provider.dart';
+import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/widget/rp_bottom_navbar.dart';
 import 'package:rasapalembang/widget/rp_theme.dart';
 
@@ -15,11 +16,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      create: (_) {
-        CookieRequest request = CookieRequest();
-        return request;
-      },
+    return MultiProvider(
+      providers: [
+        Provider(
+          create: (_) {
+            UserService request = UserService();
+            return request;
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (context) => TabProvider(),
+        ),
+      ],
       child: MaterialApp(
         title: 'Rasa Palembang',
         theme: RPTheme.theme,

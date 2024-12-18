@@ -1,10 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rasapalembang/providers/tab_provider.dart';
 import 'package:rasapalembang/screens/home.dart';
+import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
-import 'package:rasapalembang/utils/pbp_django_auth.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
@@ -22,7 +21,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<CookieRequest>();
+    final request = context.watch<UserService>();
+    final selectedTab = Provider.of<TabProvider>(context);
 
     return Scaffold(
       body: Center(
@@ -71,25 +71,23 @@ class _LoginPageState extends State<LoginPage> {
                           String password = _passwordController.text;
 
                           final response = await request.login(
-                              '${RPUrls.baseUrl}/v1/login/',
-                              jsonEncode({
-                                'username': username,
-                                'password': password,
-                              })
+                            username,
+                            password,
                           );
 
                           if (context.mounted) {
                             if (request.loggedIn) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const HomePage()),
-                              );
                               ScaffoldMessenger.of(context)
                                 ..hideCurrentSnackBar()
                                 ..showSnackBar(
                                   SnackBar(content: Text(response['message'])),
                                 );
+                              selectedTab.tab = 0;
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomePage()),
+                              );
                             } else {
                               showDialog(
                                 context: context,
