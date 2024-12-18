@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:rasapalembang/models/user.dart';
+
 List<Balasan> balasanFromJson(String str) =>
     List<Balasan>.from(json.decode(str).map((x) => Balasan.fromJson(x)));
 
@@ -33,7 +35,7 @@ class Balasan {
 class Fields {
   String pesan;
   DateTime tanggalPosting;
-  int user;
+  User user;
   String forum;
 
   Fields({
@@ -46,14 +48,14 @@ class Fields {
   factory Fields.fromJson(Map<String, dynamic> json) => Fields(
         pesan: json["pesan"],
         tanggalPosting: DateTime.parse(json["tanggal_posting"]),
-        user: json["user"],
+        user: User.fromJson(json["user"]),
         forum: json["forum"],
       );
 
   Map<String, dynamic> toJson() => {
         "pesan": pesan,
         "tanggal_posting": tanggalPosting.toIso8601String(),
-        "user": user,
+        "user": user.toJson(),
         "forum": forum,
       };
 }
