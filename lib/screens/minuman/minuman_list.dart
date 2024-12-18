@@ -8,9 +8,10 @@ class MinumanListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MinumanService minuman = MinumanService();
     return Scaffold(
       body: FutureBuilder(
-        future: MinumanService.get(),
+        future: minuman.get(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.data == null) {
             return const Text('loading');
