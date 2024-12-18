@@ -1,5 +1,6 @@
 // pbp_django_auth
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -88,11 +89,11 @@ class UserService {
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
     http.Response response =
-    await client.post(Uri.parse(url), body: data, headers: headers);
+      await client.post(Uri.parse(url), body: data, headers: headers);
 
     // Remove used additional header
     headers.remove('Content-Type');
-    await _updateCookie(response);
+    await updateCookie(response);
 
     if (response.statusCode == 201) {
       loggedIn = true;
@@ -124,7 +125,7 @@ class UserService {
 
     // Remove used additional header
     headers.remove('Content-Type');
-    await _updateCookie(response);
+    await updateCookie(response);
 
     if (response.statusCode == 200) {
       loggedIn = true;
@@ -146,7 +147,7 @@ class UserService {
     const String url = '${RPUrls.baseUrl}/v1/logout/';
 
     http.Response response =
-    await client.post(Uri.parse(url), headers: headers);
+      await client.post(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
       loggedIn = false;
@@ -160,11 +161,60 @@ class UserService {
     return json.decode(response.body);
   }
 
+  Future<dynamic> editProfile(String nama, String deskripsi, File? foto) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/profile/${user?.username}/');
+
+    var request = http.MultipartRequest('POST', uri);
+    request.headers.addAll(headers);
+
+    request.fields['nama'] = nama;
+    request.fields['deskripsi'] = deskripsi;
+
+    if (foto != null) {
+      request.files.add(
+          await http.MultipartFile.fromPath('foto', foto.path)
+      );
+    }
+
+    var streamedResponse = await request.send();
+    var body = await streamedResponse.stream.bytesToString();
+    var response = http.Response(body, streamedResponse.statusCode,
+        headers: streamedResponse.headers);
+    await updateCookie(response);
+
+    if (response.statusCode == 200) {
+      user = userFromJson(response.body);
+    }
+
+    return json.decode(response.body);
+  }
+
+  Future<User> getProfile(String username) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/profile/$username/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    return userFromJson(response.body);
+  }
+
   Future persist(String cookies) async {
     local.setString("cookies", cookies);
   }
 
-  Future _updateCookie(http.Response response) async {
+  Future updateCookie(http.Response response) async {
     await init();
 
     String? allSetCookie = response.headers['set-cookie'];

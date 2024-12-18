@@ -29,9 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final selectedTab = Provider.of<TabProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-      ),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -118,6 +116,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 32.0),
                 RPButton(
+                  width: double.infinity,
                   label: 'Daftar',
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {

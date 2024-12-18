@@ -78,6 +78,8 @@ class _MinumanFormState extends State<MinumanForm> {
                   initialGambar: widget.initialGambar,
                   buttonLabel: widget.imagePickerLabel,
                   onImagePicked: _onImagePicked,
+                  imagePreviewHeight: 200,
+                  imagePreviewWidth: 200,
                 ),
                 const SizedBox(height: 16.0),
                 RPTextFormField(
