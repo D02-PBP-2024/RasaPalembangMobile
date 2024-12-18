@@ -19,11 +19,11 @@ class MinumanDetailPage extends StatelessWidget {
       harga: minuman.fields.harga,
       ukuran: _title(minuman.fields.ukuran),
       tingkatKemanisan: minuman.fields.tingkatKemanisan,
-      namaRestoran: 'namaRestoran',
-      alamatRestoran: 'alamatRestoran',
-      nomorTeleponRestoran: 'nomorTeleponRestoran',
-      jamBukaRestoran: '10:00',
-      jamTutupRestoran: '22:00'
+      namaRestoran: minuman.fields.restoran.fields.nama,
+      alamatRestoran: minuman.fields.restoran.fields.alamat,
+      nomorTeleponRestoran: minuman.fields.restoran.fields.nomorTelepon,
+      jamBukaRestoran: minuman.fields.restoran.fields.jamBuka,
+      jamTutupRestoran: minuman.fields.restoran.fields.jamTutup,
     );
   }
 

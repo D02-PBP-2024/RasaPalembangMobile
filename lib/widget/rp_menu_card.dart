@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
 
 class RPMenuCard extends StatelessWidget {
   final String gambar;
   final String nama;
   final int harga;
-  final String restoran;
+  final String? restoran;
   final Widget menuDetailPage;
 
   const RPMenuCard({
@@ -13,7 +14,7 @@ class RPMenuCard extends StatelessWidget {
     required this.gambar,
     required this.nama,
     required this.harga,
-    required this.restoran,
+    this.restoran,
     required this.menuDetailPage,
   });
 
@@ -42,7 +43,7 @@ class RPMenuCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   child: Image.network(
-                    gambar,
+                    '${RPUrls.baseUrl}$gambar',
                     width: double.infinity,
                     height: 200,
                     fit: BoxFit.cover,
@@ -81,20 +82,21 @@ class RPMenuCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8.0),
-                  GestureDetector(
-                    onTap: () {
-                      // TODO
-                    },
-                    child: Text(
-                      restoran,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: RPColors.textSecondary,
-                        overflow: TextOverflow.ellipsis,
+                  if (restoran != null)
+                    GestureDetector(
+                      onTap: () {
+                        // TODO
+                      },
+                      child: Text(
+                        restoran!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: RPColors.textSecondary,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
