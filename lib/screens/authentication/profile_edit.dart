@@ -51,8 +51,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           child: Column(
             children: [
               RPImagePicker(
-                initialGambar: widget.foto != ""
-                  ? widget.foto
+                initialGambar: widget.foto != ''
+                  ? RPUrls.baseUrl + widget.foto
                   : RPUrls.noProfileUrl,
                 onImagePicked: _onImagePicked,
                 buttonLabel: 'Edit foto',

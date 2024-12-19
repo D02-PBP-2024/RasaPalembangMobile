@@ -4,6 +4,7 @@ import 'package:rasapalembang/models/minuman.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_dropdown_button.dart';
 import 'package:rasapalembang/widget/rp_image_picker.dart';
@@ -68,7 +69,9 @@ class _MinumanFormState extends State<MinumanForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 RPImagePicker(
-                  initialGambar: widget.minuman?.gambar,
+                  initialGambar: widget.minuman?.gambar != null
+                    ? RPUrls.baseUrl + widget.minuman!.gambar
+                    : null,
                   buttonLabel: widget.imagePickerLabel,
                   onImagePicked: _onImagePicked,
                   imagePreviewHeight: 200,

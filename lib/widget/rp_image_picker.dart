@@ -66,7 +66,7 @@ class _RPImagePickerState extends State<RPImagePicker> {
 
   Widget _withInitialImage() {
     return Image.network(
-      RPUrls.baseUrl + widget.initialGambar!,
+      widget.initialGambar!,
       height: widget.imagePreviewHeight,
       width: widget.imagePreviewWidth,
       fit: BoxFit.cover,
