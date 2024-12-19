@@ -70,7 +70,7 @@ class UserService {
     return convCookies;
   }
 
-  Future<dynamic> register(String nama, String username, String password1, String password2, String peran) async {
+  Future<User?> register(String nama, String username, String password1, String password2, String peran) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
@@ -96,17 +96,21 @@ class UserService {
     headers.remove('Content-Type');
     await updateCookie(response);
 
-    if (response.statusCode == 201) {
+    int code = response.statusCode;
+    if (code == 201) {
       loggedIn = true;
       user = userFromJson(response.body);
+      return user;
+    } else if (code == 400){
+      loggedIn = false;
+      throw Exception('Username sudah digunakan');
     } else {
       loggedIn = false;
+      throw Exception('Request gagal!');
     }
-
-    return json.decode(response.body);
   }
 
-  Future<dynamic> login(String username, String password) async {
+  Future<User?> login(String username, String password) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
@@ -128,17 +132,21 @@ class UserService {
     headers.remove('Content-Type');
     await updateCookie(response);
 
-    if (response.statusCode == 200) {
+    int code = response.statusCode;
+    if (code == 200) {
       loggedIn = true;
       user = userFromJson(response.body);
+      return user;
+    } else if (code == 401) {
+      loggedIn = false;
+      throw Exception('Login gagal');
     } else {
       loggedIn = false;
+      throw Exception('Request gagal!');
     }
-
-    return json.decode(response.body);
   }
 
-  Future<dynamic> logout() async {
+  Future<User?> logout() async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
@@ -150,19 +158,21 @@ class UserService {
     http.Response response =
       await client.post(uri, headers: headers);
 
-    if (response.statusCode == 200) {
-      loggedIn = false;
-      user = null;
-    } else {
-      loggedIn = true;
-    }
-
+    loggedIn = false;
     cookies = {};
+    user = null;
 
-    return json.decode(response.body);
+    int code = response.statusCode;
+    if (code == 200) {
+      return userFromJson(response.body);
+    } else if (code == 401) {
+      throw Exception('User tidak terautentikasi');
+    } else {
+      throw Exception('Request gagal!');
+    }
   }
 
-  Future<dynamic> editProfile(String nama, String deskripsi, File? foto) async {
+  Future<User?> editProfile(String nama, String deskripsi, File? foto) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
@@ -189,11 +199,15 @@ class UserService {
         headers: streamedResponse.headers);
     await updateCookie(response);
 
-    if (response.statusCode == 200) {
+    int code = response.statusCode;
+    if (code == 200) {
       user = userFromJson(response.body);
+      return user;
+    } else if (code == 404) {
+      throw Exception('User tidak ditemukan');
+    } else {
+      throw Exception('Request gagal!');
     }
-
-    return json.decode(response.body);
   }
 
   Future<User> getProfile(String username) async {
@@ -208,7 +222,11 @@ class UserService {
     http.Response response = await client.get(uri, headers: headers);
     await updateCookie(response);
 
-    return userFromJson(response.body);
+    if (response.statusCode == 200) {
+      return userFromJson(response.body);
+    } else {
+      throw Exception('Request gagal!');
+    }
   }
 
   Future persist(String cookies) async {

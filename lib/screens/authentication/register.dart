@@ -4,6 +4,7 @@ import 'package:rasapalembang/providers/tab_provider.dart';
 import 'package:rasapalembang/screens/home.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/services/user_service.dart';
+import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_dropdown_button.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
@@ -27,7 +28,6 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
     final selectedTab = Provider.of<TabProvider>(context);
-
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -126,19 +126,27 @@ class _RegisterPageState extends State<RegisterPage> {
                       String password2 = _confirmPasswordController.text;
                       String? peran = _peranController.value;
 
-                      final response = await request.register(
-                        nama,
-                        username,
-                        password1,
-                        password2,
-                        peran!,
-                      );
+                      String message;
+                      bool success = false;
+                      try {
+                        final response = await request.register(
+                          nama,
+                          username,
+                          password1,
+                          password2,
+                          peran!,
+                        );
+                        message = 'Selamat datang ${response?.username}!';
+                        success = true;
+                      } catch(e) {
+                        message = printException(e as Exception);
+                      }
 
                       if (context.mounted) {
-                        if (request.loggedIn) {
+                        if (success && request.loggedIn) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(response['message']),
+                              content: Text(message),
                             ),
                           );
                           selectedTab.tab = 0;
@@ -152,7 +160,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             context: context,
                             builder: (context) => AlertDialog(
                               title: const Text('Registrasi Gagal'),
-                              content: Text(response['message']),
+                              content: Text(message),
                               actions: [
                                 TextButton(
                                   child: const Text('OK'),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
 class RPImagePicker extends StatefulWidget {
