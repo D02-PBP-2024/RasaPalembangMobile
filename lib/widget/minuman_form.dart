@@ -1,5 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:rasapalembang/models/minuman.dart';
+import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/services/minuman_service.dart';
+import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_dropdown_button.dart';
 import 'package:rasapalembang/widget/rp_image_picker.dart';
@@ -7,27 +11,19 @@ import 'package:rasapalembang/widget/rp_number_picker.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class MinumanForm extends StatefulWidget {
-  final String?initialNama;
-  final String? initialHarga;
-  final String? initialDeskripsi;
-  final int? initialTingkatKemanisan;
-  final String? initialUkuran;
-  final String? initialGambar;
+  final Minuman? minuman;
   final String imagePickerLabel;
   final String saveButtonLabel;
-  final bool? requiredImage;
+  final Restoran restoran;
+  final bool edit;
 
   const MinumanForm({
     super.key,
-    this.initialNama,
-    this.initialHarga,
-    this.initialDeskripsi,
-    this.initialTingkatKemanisan,
-    this.initialUkuran,
-    this.initialGambar,
+    this.minuman,
     required this.imagePickerLabel,
     required this.saveButtonLabel,
-    this.requiredImage = true,
+    required this.restoran,
+    this.edit = false,
   });
 
   @override
@@ -50,19 +46,16 @@ class _MinumanFormState extends State<MinumanForm> {
     });
   }
 
+  final minumanService = MinumanService();
+
   @override
   Widget build(BuildContext context) {
-    if (widget.initialNama != null) {
-      _namaController.text = widget.initialNama!;
-    }
-    if (widget.initialHarga != null) {
-      _hargaController.text = widget.initialHarga!;
-    }
-    if (widget.initialDeskripsi != null) {
-      _deskripsiController.text = widget.initialDeskripsi!;
-    }
-    if (widget.initialTingkatKemanisan != null) {
-      _tingkatKemanisan = widget.initialTingkatKemanisan!;
+    if (widget.minuman != null) {
+      _namaController.text = widget.minuman!.nama;
+      _hargaController.text = '${widget.minuman!.harga}';
+      _deskripsiController.text = widget.minuman!.deskripsi;
+      _ukuranController.value = widget.minuman!.ukuran;
+      _tingkatKemanisan = widget.minuman!.tingkatKemanisan;
     }
     return Scaffold(
       appBar: AppBar(),
@@ -75,7 +68,7 @@ class _MinumanFormState extends State<MinumanForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 RPImagePicker(
-                  initialGambar: widget.initialGambar,
+                  initialGambar: widget.minuman?.gambar,
                   buttonLabel: widget.imagePickerLabel,
                   onImagePicked: _onImagePicked,
                   imagePreviewHeight: 200,
@@ -102,6 +95,9 @@ class _MinumanFormState extends State<MinumanForm> {
                     if (value == null || value.isEmpty) {
                       return 'Harga tidak boleh kosong!';
                     }
+                    if (int.tryParse(value) == null) {
+                      return "Harga harus berupa angka!";
+                    }
                     return null;
                   },
                 ),
@@ -110,6 +106,7 @@ class _MinumanFormState extends State<MinumanForm> {
                   controller: _deskripsiController,
                   labelText: 'Deskripsi',
                   hintText: 'Masukkan deskripsi minuman',
+                  maxLines: 5,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
                       return 'Deskripsi tidak boleh kosong!';
@@ -133,7 +130,9 @@ class _MinumanFormState extends State<MinumanForm> {
                   labelText: 'Ukuran',
                   hintText: 'Pilih ukuran',
                   items: const ['Kecil', 'Sedang', 'Besar'],
-                  selectedItem: widget.initialUkuran,
+                  selectedItem: widget.minuman?.ukuran != null
+                    ? _title(widget.minuman!.ukuran)
+                    : null,
                   onChanged: (String? value) {
                     if (value == 'Kecil') {
                       _ukuranController.value = 'KECIL';
@@ -155,14 +154,7 @@ class _MinumanFormState extends State<MinumanForm> {
                   width: double.infinity,
                   label: widget.saveButtonLabel,
                   onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      String nama = _namaController.text;
-                      String harga = _hargaController.text;
-                      String deskripsi = _deskripsiController.text;
-                      File? gambar = _selectedImage;
-                      String? ukuran = _ukuranController.value;
-                      int tingkatKemanisan = _tingkatKemanisan;
-                    }
+                    _onSubmit();
                   },
                 ),
               ],
@@ -171,5 +163,84 @@ class _MinumanFormState extends State<MinumanForm> {
         ),
       ),
     );
+  }
+
+  void _onSubmit() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      String nama = _namaController.text;
+      String harga = _hargaController.text;
+      String deskripsi = _deskripsiController.text;
+      File? gambar = _selectedImage;
+      String? ukuran = _ukuranController.value;
+      int tingkatKemanisan = _tingkatKemanisan;
+
+      String message;
+      if (widget.edit) {
+        widget.minuman?.nama = nama;
+        widget.minuman?.harga = int.parse(harga);
+        widget.minuman?.deskripsi = deskripsi;
+        widget.minuman?.ukuran = ukuran!;
+        widget.minuman?.tingkatKemanisan = tingkatKemanisan;
+
+        try {
+          final response = await minumanService.edit(
+            widget.minuman!,
+            gambar,
+          );
+          message = 'Minuman berhasil diubah';
+        } catch(e) {
+          message = printException(e as Exception);
+        }
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+            ),
+          );
+        }
+      } else {
+        if (gambar != null) {
+          Minuman minuman = Minuman(
+            nama: nama,
+            harga: int.parse(harga),
+            deskripsi: deskripsi,
+            gambar: '',
+            ukuran: ukuran!,
+            tingkatKemanisan: tingkatKemanisan,
+            restoran: widget.restoran,
+          );
+
+          try {
+            final response = await minumanService.add(
+              minuman,
+              gambar,
+            );
+            message = 'Minuman berhasil ditambah';
+          } catch(e) {
+            message = printException(e as Exception);
+          }
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+              ),
+            );
+            Navigator.pop(context);
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Gambar tidak boleh kosong!'),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  String _title(String string) {
+    return "${string[0].toUpperCase()}${string.substring(1).toLowerCase()}";
   }
 }
