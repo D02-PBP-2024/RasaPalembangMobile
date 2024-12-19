@@ -79,6 +79,8 @@ class _MakananFormState extends State<MakananForm> {
                   initialGambar: widget.initialGambar,
                   buttonLabel: widget.imagePickerLabel,
                   onImagePicked: _onImagePicked,
+                  imagePreviewWidth: 200,
+                  imagePreviewHeight: 200,
                 ),
                 const SizedBox(height: 16.0),
                 RPTextFormField(
@@ -135,7 +137,7 @@ class _MakananFormState extends State<MakananForm> {
                 RPDropdownButton<List<String>>(
                   labelText: 'Kategori',
                   hintText: 'Pilih kategori',
-                  items: const ['Tradisional', 'Cepat Saji', 'Vegan', 'Seafood'],
+                  items: ,
                   selectedItem: widget.initialKategori,
                   onChanged: (List<String>? value) {
                     _kategoriController.value = value ?? [];
