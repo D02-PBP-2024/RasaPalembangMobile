@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/widget/rp_restoran_detail.dart';
 import 'package:rasapalembang/screens/restoran/restoran_form.dart';
 import 'package:rasapalembang/widget/rp_restoran_card.dart';
@@ -23,6 +24,7 @@ class _RestoranListPageState extends State<RestoranListPage> {
 
   @override
   Widget build(BuildContext context) {
+    RestoranService restoran = RestoranService();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Daftar Restoran'),
@@ -53,49 +55,56 @@ class _RestoranListPageState extends State<RestoranListPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-        child: restoranList.isEmpty
-            ? const Center(
-          child: Text(
-            'Belum ada restoran yang ditambahkan',
-            style: TextStyle(fontSize: 16.0, color: Colors.grey),
-          ),
-        )
-            : GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 2 kartu per baris
-            crossAxisSpacing: 8.0,
-            mainAxisSpacing: 8.0,
-            childAspectRatio: 0.75, // Sesuaikan rasio kartu
-          ),
-          itemCount: restoranList.length,
-          itemBuilder: (context, index) {
-            final restoran = restoranList[index];
-
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RPRestoDetail(restoran: restoran),
-                  ),
-                );
-              },
-              child: RPRestoCard(
-                nama: restoran.nama,
-                gambar: restoran.gambar,
-                rating: '4.5', // placeholder
-                jamBuka: restoran.jamBuka,
-                jamTutup: restoran.jamTutup,
-                isOpen: _isCurrentlyOpen(
-                  restoran.jamBuka,
-                  restoran.jamTutup,
+      body: FutureBuilder(
+        future: restoran.get(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Belum ada restoran."));
+          } else {
+            final restoranList = snapshot.data!;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // 2 kartu per baris
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
+                  childAspectRatio: 0.75, // Sesuaikan rasio kartu
                 ),
+                itemCount: restoranList.length,
+                itemBuilder: (context, index) {
+                  final restoran = restoranList[index];
+
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RPRestoDetail(restoran: restoran),
+                        ),
+                      );
+                    },
+                    child: RPRestoCard(
+                      nama: restoran.nama,
+                      gambar: restoran.gambar,
+                      rating: '4.5', // placeholder
+                      jamBuka: restoran.jamBuka,
+                      jamTutup: restoran.jamTutup,
+                      isOpen: _isCurrentlyOpen(
+                        restoran.jamBuka,
+                        restoran.jamTutup,
+                      ),
+                    ),
+                  );
+                },
               ),
             );
-          },
-        ),
+          }
+        }
       ),
     );
   }

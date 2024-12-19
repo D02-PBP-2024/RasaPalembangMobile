@@ -4,6 +4,8 @@ import 'package:geocoding/geocoding.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'dart:io';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/widget/rp_button.dart';
 
 
 class RPRestoDetail extends StatefulWidget {
@@ -58,8 +60,8 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
           // Gambar Restoran dengan semua informasi
           Stack(
             children: [
-              Image.file(
-                File(restoran.gambar),
+              Image.network(
+                RPUrls.baseUrl + restoran.gambar,
                 width: double.infinity,
                 height: 500,
                 fit: BoxFit.cover,
@@ -204,6 +206,13 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                 ),
               ],
             ),
+          ),
+
+          RPButton(
+            label: 'Forum Diskusi',
+            onPressed: () {
+
+            },
           ),
 
           // Tambahkan judul lokasi

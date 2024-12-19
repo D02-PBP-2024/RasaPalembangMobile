@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
 
 class RPRestoCard extends StatelessWidget {
   final String nama;
@@ -35,8 +36,8 @@ class RPRestoCard extends StatelessWidget {
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
             child: gambar.isNotEmpty
-                ? Image.file(
-              File(gambar),
+                ? Image.network(
+              RPUrls.baseUrl + gambar,
               width: double.infinity,
               height: 150,
               fit: BoxFit.cover,
