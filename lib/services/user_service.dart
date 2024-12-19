@@ -77,7 +77,8 @@ class UserService {
       c.withCredentials = true;
     }
 
-    const String url = '${RPUrls.baseUrl}/v1/register/';
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/register/');
+
     String data = jsonEncode({
       'nama': nama,
       'username': username,
@@ -89,7 +90,7 @@ class UserService {
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
     http.Response response =
-      await client.post(Uri.parse(url), body: data, headers: headers);
+      await client.post(uri, body: data, headers: headers);
 
     // Remove used additional header
     headers.remove('Content-Type');
@@ -112,7 +113,7 @@ class UserService {
       c.withCredentials = true;
     }
 
-    const String url = '${RPUrls.baseUrl}/v1/login/';
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/login/');
     String data = jsonEncode({
       'username': username,
       'password': password,
@@ -120,8 +121,8 @@ class UserService {
 
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
-    http.Response response = await client.post(Uri.parse(url),
-        body: data, headers: headers);
+    http.Response response =
+      await client.post(uri, body: data, headers: headers);
 
     // Remove used additional header
     headers.remove('Content-Type');
@@ -144,10 +145,10 @@ class UserService {
       c.withCredentials = true;
     }
 
-    const String url = '${RPUrls.baseUrl}/v1/logout/';
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/logout/');
 
     http.Response response =
-      await client.post(Uri.parse(url), headers: headers);
+      await client.post(uri, headers: headers);
 
     if (response.statusCode == 200) {
       loggedIn = false;
