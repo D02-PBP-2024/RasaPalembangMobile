@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 
 class RPRestoCard extends StatelessWidget {
@@ -34,24 +32,25 @@ class RPRestoCard extends StatelessWidget {
         children: [
           // Gambar Restoran
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(16.0)),
             child: gambar.isNotEmpty
                 ? Image.network(
-              RPUrls.baseUrl + gambar,
-              width: double.infinity,
-              height: 150,
-              fit: BoxFit.cover,
-            )
+                    RPUrls.baseUrl + gambar,
+                    width: double.infinity,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  )
                 : Container(
-              width: double.infinity,
-              height: 150,
-              color: Colors.grey[300],
-              child: const Icon(
-                Icons.image_not_supported,
-                size: 50,
-                color: Colors.grey,
-              ),
-            ),
+                    width: double.infinity,
+                    height: 150,
+                    color: Colors.grey[300],
+                    child: const Icon(
+                      Icons.image_not_supported,
+                      size: 50,
+                      color: Colors.grey,
+                    ),
+                  ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

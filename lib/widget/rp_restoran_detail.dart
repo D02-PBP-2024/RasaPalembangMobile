@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rasapalembang/models/restoran.dart';
-import 'dart:io';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
-
 
 class RPRestoDetail extends StatefulWidget {
   final Restoran restoran;
@@ -32,7 +30,8 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
       List<Location> locations = await locationFromAddress(address);
       if (locations.isNotEmpty) {
         setState(() {
-          restoranLocation = LatLng(locations.first.latitude, locations.first.longitude);
+          restoranLocation =
+              LatLng(locations.first.latitude, locations.first.longitude);
           isLoading = false;
         });
       }
@@ -94,11 +93,13 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                       Row(
                         children: [
                           Text(
-                            _isCurrentlyOpen(restoran.jamBuka, restoran.jamTutup)
+                            _isCurrentlyOpen(
+                                    restoran.jamBuka, restoran.jamTutup)
                                 ? 'Buka'
                                 : 'Tutup',
                             style: TextStyle(
-                              color: _isCurrentlyOpen(restoran.jamBuka, restoran.jamTutup)
+                              color: _isCurrentlyOpen(
+                                      restoran.jamBuka, restoran.jamTutup)
                                   ? Colors.greenAccent
                                   : Colors.redAccent,
                               fontSize: 18.0,
@@ -173,7 +174,8 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                         });
                         // Update koordinat berdasarkan alamat yang baru
                         setState(() {
-                          isLoading = true; // Aktifkan loading sebelum mendapatkan koordinat baru
+                          isLoading =
+                              true; // Aktifkan loading sebelum mendapatkan koordinat baru
                         });
                         await _getCoordinatesFromAddress(updatedData['alamat']);
                       }
@@ -210,9 +212,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
 
           RPButton(
             label: 'Forum Diskusi',
-            onPressed: () {
-
-            },
+            onPressed: () {},
           ),
 
           // Tambahkan judul lokasi

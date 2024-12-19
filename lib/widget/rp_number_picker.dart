@@ -37,7 +37,7 @@ class ListWheelScrollViewX extends StatelessWidget {
     this.renderChildrenOutsideViewport = false,
     this.clipBehavior = Clip.hardEdge,
     required this.children,
-  })  : childDelegate = null;
+  }) : childDelegate = null;
 
   const ListWheelScrollViewX.useDelegate({
     super.key,
@@ -56,26 +56,26 @@ class ListWheelScrollViewX extends StatelessWidget {
     this.renderChildrenOutsideViewport = false,
     this.clipBehavior = Clip.hardEdge,
     required this.childDelegate,
-  })  : children = null;
+  }) : children = null;
 
   @override
   Widget build(BuildContext context) {
-    final _childDelegate = children != null
+    final childDelegate = children != null
         ? ListWheelChildListDelegate(
-        children: children!.map((child) {
-          return RotatedBox(
-            quarterTurns: scrollDirection == Axis.horizontal ? 1 : 0,
-            child: child,
-          );
-        }).toList())
+            children: children!.map((child) {
+            return RotatedBox(
+              quarterTurns: scrollDirection == Axis.horizontal ? 1 : 0,
+              child: child,
+            );
+          }).toList())
         : ListWheelChildBuilderDelegate(
-      builder: (context, index) {
-        return RotatedBox(
-          quarterTurns: scrollDirection == Axis.horizontal ? 1 : 0,
-          child: childDelegate!.build(context, index),
-        );
-      },
-    );
+            builder: (context, index) {
+              return RotatedBox(
+                quarterTurns: scrollDirection == Axis.horizontal ? 1 : 0,
+                child: childDelegate!.build(context, index),
+              );
+            },
+          );
 
     return RotatedBox(
       quarterTurns: scrollDirection == Axis.horizontal ? 3 : 0,
@@ -93,7 +93,7 @@ class ListWheelScrollViewX extends StatelessWidget {
         onSelectedItemChanged: onSelectedItemChanged,
         renderChildrenOutsideViewport: renderChildrenOutsideViewport,
         clipBehavior: clipBehavior,
-        childDelegate: _childDelegate,
+        childDelegate: childDelegate,
       ),
     );
   }
@@ -106,7 +106,8 @@ class RPNumberPicker extends StatefulWidget {
   final int maxValue;
   final ValueChanged<int> onChanged;
 
-  RPNumberPicker({
+  const RPNumberPicker({
+    super.key,
     this.labelText,
     required this.initialValue,
     required this.minValue,
@@ -126,7 +127,8 @@ class _RPNumberPickerState extends State<RPNumberPicker> {
   void initState() {
     super.initState();
     _selectedValue = widget.initialValue;
-    _scrollController = FixedExtentScrollController(initialItem: _selectedValue - widget.minValue);
+    _scrollController = FixedExtentScrollController(
+        initialItem: _selectedValue - widget.minValue);
   }
 
   @override
@@ -175,7 +177,7 @@ class _RPNumberPickerState extends State<RPNumberPicker> {
             },
             children: List.generate(
               widget.maxValue - widget.minValue + 1,
-                  (index) {
+              (index) {
                 int value = widget.minValue + index;
                 return Center(
                   child: Text(

@@ -7,7 +7,7 @@ import 'package:rasapalembang/widget/rp_forum_card.dart';
 class ForumListPage extends StatelessWidget {
   final String idRestoran;
 
-  ForumListPage({super.key, required this.idRestoran});
+  const ForumListPage({super.key, required this.idRestoran});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,8 @@ class ForumListPage extends StatelessWidget {
                   topik: forum.topik,
                   pesan: forum.pesan,
                   tanggalPosting: forum.tanggalPosting,
-                  user: "userDummy", // TODO: masih userDummy, nanti benerin lagi
+                  user:
+                      "userDummy", // TODO: masih userDummy, nanti benerin lagi
                   onTap: () {
                     Navigator.push(
                       context,

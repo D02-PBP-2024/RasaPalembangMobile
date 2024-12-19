@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Untuk memformat tanggal
-import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/models/balasan.dart';
+import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/services/balasan_service.dart';
 
 class ForumDetailPage extends StatelessWidget {
   final Forum forum;
 
-  ForumDetailPage({super.key, required this.forum});
+  const ForumDetailPage({super.key, required this.forum});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,8 @@ class ForumDetailPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final balasan = balasanList[index];
                       return ListTile(
-                        leading: const Icon(Icons.person), // TODO: bisa ganti gambar user juga
+                        leading: const Icon(
+                            Icons.person), // TODO: bisa ganti gambar user juga
                         title: Text(
                           "User: ${balasan.user.username}",
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -56,8 +57,8 @@ class ForumDetailPage extends StatelessWidget {
                           children: [
                             Text(balasan.pesan),
                             Text(
-                              DateFormat('dd MMM yyyy, HH:mm').format(balasan
-                                  .tanggalPosting),
+                              DateFormat('dd MMM yyyy, HH:mm')
+                                  .format(balasan.tanggalPosting),
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,

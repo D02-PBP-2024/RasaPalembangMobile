@@ -4,7 +4,7 @@ import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/widget/rp_menu_card.dart';
 
 class MinumanListPage extends StatelessWidget {
-  MinumanListPage({super.key});
+  const MinumanListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,8 @@ class MinumanListPage extends StatelessWidget {
               return const Text('belum ada minuman');
             } else {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,

@@ -3,7 +3,7 @@ import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/widget/minuman_form.dart';
 
 class MinumanTambahPage extends StatelessWidget {
-  MinumanTambahPage({super.key});
+  const MinumanTambahPage({super.key});
 
   @override
   Widget build(BuildContext context) {
