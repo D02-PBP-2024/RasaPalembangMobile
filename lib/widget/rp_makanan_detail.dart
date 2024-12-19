@@ -1,39 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rasapalembang/models/makanan.dart';
+import 'package:rasapalembang/screens/makanan/makanan_edit.dart';
+import 'package:rasapalembang/services/makanan_service.dart';
+import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/print_exception.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
-class RPMakananDetail extends StatelessWidget {
-  final String nama;
-  final String deskripsi;
-  final String gambar;
-  final int harga;
-  final int kalori;
-  final String kategori;
-  final String namaRestoran;
-  final String alamatRestoran;
-  final String nomorTeleponRestoran;
-  final String jamBukaRestoran;
-  final String jamTutupRestoran;
+class RPMakananDetail extends StatefulWidget {
+  final Makanan makanan;
 
   const RPMakananDetail({
     super.key,
-    required this.nama,
-    required this.deskripsi,
-    required this.gambar,
-    required this.harga,
-    required this.kategori,
-    required this.kalori,
-    required this.namaRestoran,
-    required this.alamatRestoran,
-    required this.nomorTeleponRestoran,
-    required this.jamBukaRestoran,
-    required this.jamTutupRestoran,
+    required this.makanan,
   });
-  
+
+  @override
+  _RPMakananDetailState createState() => _RPMakananDetailState();
+}
+
+class _RPMakananDetailState extends State<RPMakananDetail> {
+  MakananService makananService = MakananService();
+
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<UserService>();
+    Makanan makanan = widget.makanan;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        actions: [
+          if (makanan.restoran.user == request.user?.username)
+            TextButton(
+              onPressed: () => _showMakananOption(),
+              child: Icon(Icons.more_vert),
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -41,31 +45,14 @@ class RPMakananDetail extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                nama,
-                style: const TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.bold,
-                  color: RPColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12.0),
-              Text(
-                deskripsi,
-                style: const TextStyle(
-                  fontSize: 18.0,
-                  color: RPColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 20.0),
               Stack(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8.0),
                     child: Image.network(
-                      gambar,
+                      '${RPUrls.baseUrl}${makanan.gambar}',
                       width: double.infinity,
-                      height: 250,
+                      height: screenWidth - 32,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -88,43 +75,86 @@ class RPMakananDetail extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20.0),
-              const Text(
-                'Detail Minuman',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              _buildDetailRow(Icons.attach_money, 'Harga', 'Rp${harga.toStringAsFixed(0)}'),
-              _buildDetailRow(Icons.category, 'Kategori', kategori),
-              _buildDetailRow(Icons.star, 'Kalori', '$kalori%'),
-              const SizedBox(height: 20.0),
-              const Text(
-                'Informasi Restoran',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold
+              Text(
+                makanan.nama,
+                style: const TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: RPColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 12.0),
-              GestureDetector(
-                onTap: () {
-                  //TODO: navigasi ke halaman restoran di sini
-                },
-                child: Text(
-                  namaRestoran,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    color: RPColors.biruMuda,
-                    fontWeight: FontWeight.bold
+              Text(
+                makanan.deskripsi,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  color: RPColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              Text(
+                'Rp${makanan.harga.toStringAsFixed(0)}',
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  color: RPColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              Card(
+                margin: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Informasi Restoran',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      Text(
+                        makanan.restoran.nama,
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                          color: RPColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        makanan.restoran.alamat,
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          color: RPColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        'Telepon: ${makanan.restoran.nomorTelepon}',
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          color: RPColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        'Jam Operasional: ${makanan.restoran.jamBuka} - ${makanan.restoran.jamTutup}',
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          color: RPColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 12.0),
-              _buildDetailRow(Icons.location_on, 'Alamat', alamatRestoran),
-              _buildDetailRow(Icons.phone, 'Telepon', nomorTeleponRestoran),
-              _buildDetailRow(Icons.access_time, 'Jam Operasional', '$jamBukaRestoran - $jamTutupRestoran'),
             ],
           ),
         ),
@@ -132,26 +162,48 @@ class RPMakananDetail extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: RPColors.biruMuda,
-            size: 24,
-          ),
-          const SizedBox(width: 8.0),
-          Text(
-            '$label: $value',
-            style: const TextStyle(
-              fontSize: 16.0,
-              color: RPColors.textSecondary,
+  void _showMakananOption() {
+    List<BottomSheetOption> options = [
+      BottomSheetOption(
+        icon: Icons.edit,
+        title: 'Edit makanan',
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MakananEditPage(
+                makanan: widget.makanan,
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
-    );
+      BottomSheetOption(
+        icon: Icons.delete,
+        title: 'Hapus makanan',
+        textColor: RPColors.merahMuda,
+        iconColor: RPColors.merahMuda,
+        onTap: () {
+          String message;
+          try {
+            final response = makananService.delete(widget.makanan);
+            message = 'Makanan berhasil dihapus';
+          } catch (e) {
+            message = printException(e as Exception);
+          }
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+              ),
+            );
+            Navigator.pop(context);
+          }
+        },
+      ),
+    ];
+
+    RPBottomSheet(context: context, options: options).show();
   }
 }
