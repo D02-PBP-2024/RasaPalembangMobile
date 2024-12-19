@@ -8,12 +8,14 @@ import 'package:rasapalembang/widget/rp_image_picker.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class ProfileEditPage extends StatefulWidget {
+  final Function(String, String, String) onChanged;
   final String nama;
   final String deskripsi;
   final String foto;
 
   const ProfileEditPage({
     super.key,
+    required this.onChanged,
     required this.nama,
     required this.deskripsi,
     required this.foto
@@ -49,7 +51,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           child: Column(
             children: [
               RPImagePicker(
-                initialGambar: widget.foto != "" ? widget.foto : RPUrls.noProfileUrl,
+                initialGambar: widget.foto != ''
+                  ? RPUrls.baseUrl + widget.foto
+                  : RPUrls.noProfileUrl,
                 onImagePicked: _onImagePicked,
                 buttonLabel: 'Edit foto',
                 imagePreviewWidth: 100,
@@ -73,12 +77,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 labelText: 'Deskripsi',
                 hintText: 'Deskripsi',
                 maxLines: 5,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Deskripsi tidak boleh kosong!';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 32.0),
               RPButton(
@@ -92,15 +90,17 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
                     final user = request.user;
                     if (user != null) {
-                      user.nama = nama;
-                      user.deskripsi = deskripsi;
                       final response = await request.editProfile(
                         nama,
                         deskripsi,
                         foto,
                       );
-
                       if (context.mounted) {
+                        widget.onChanged(
+                          nama,
+                          deskripsi,
+                          RPUrls.baseUrl + response['fields']['foto'],
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(response['message']),

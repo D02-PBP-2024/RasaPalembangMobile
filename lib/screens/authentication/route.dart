@@ -4,7 +4,6 @@ import 'package:rasapalembang/screens/authentication/login.dart';
 import 'package:rasapalembang/screens/authentication/profile.dart';
 import 'package:rasapalembang/screens/authentication/register.dart';
 import 'package:rasapalembang/services/user_service.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 
 class AkunRoute extends StatelessWidget {
   const AkunRoute({super.key});
@@ -21,9 +20,7 @@ class AkunRoute extends StatelessWidget {
               nama: request.user!.nama,
               deskripsi: request.user!.deskripsi,
               peran: request.user!.peran,
-              foto: request.user!.foto == "" ?
-              RPUrls.noProfileUrl :
-              RPUrls.baseUrl + request.user!.foto,
+              foto: request.user!.foto,
               poin: request.user!.poin,
               dateJoined: request.user!.dateJoined,
               loggedInUsername: request.user!.username,

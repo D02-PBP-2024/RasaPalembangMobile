@@ -6,8 +6,6 @@ import 'dart:convert';
 
 User userFromJson(String str) => User.fromJson(json.decode(str));
 
-String userToJson(User data) => json.encode(data.toJson());
-
 class User {
   int pk;
   String username;
@@ -31,23 +29,12 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     pk: json["pk"],
-    username: json["username"],
-    nama: json["nama"],
-    deskripsi: json["deskripsi"],
-    peran: json["peran"],
-    foto: json["foto"],
-    poin: json["poin"],
-    dateJoined: DateTime.parse(json["date_joined"]),
+    username: json["fields"]["username"],
+    nama: json["fields"]["nama"],
+    deskripsi: json["fields"]["deskripsi"],
+    peran: json["fields"]["peran"],
+    foto: json["fields"]["foto"],
+    poin: json["fields"]["poin"],
+    dateJoined: DateTime.parse(json["fields"]["date_joined"]),
   );
-
-  Map<String, dynamic> toJson() => {
-    "pk": pk,
-    "username": username,
-    "nama": nama,
-    "deskripsi": deskripsi,
-    "peran": peran,
-    "foto": foto,
-    "poin": poin,
-    "date_joined": dateJoined.toIso8601String(),
-  };
 }

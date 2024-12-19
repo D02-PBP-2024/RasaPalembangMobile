@@ -1,41 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rasapalembang/models/minuman.dart';
+import 'package:rasapalembang/screens/minuman/minuman_edit.dart';
+import 'package:rasapalembang/services/minuman_service.dart';
+import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
-class RPMenuDetail extends StatelessWidget {
-  final String nama;
-  final String deskripsi;
-  final String gambar;
-  final int harga;
-  final String ukuran;
-  final int tingkatKemanisan;
-  final String namaRestoran;
-  final String alamatRestoran;
-  final String nomorTeleponRestoran;
-  final String jamBukaRestoran;
-  final String jamTutupRestoran;
+class RPMenuDetail extends StatefulWidget {
+  final Minuman minuman;
 
   const RPMenuDetail({
     super.key,
-    required this.nama,
-    required this.deskripsi,
-    required this.gambar,
-    required this.harga,
-    required this.ukuran,
-    required this.tingkatKemanisan,
-    required this.namaRestoran,
-    required this.alamatRestoran,
-    required this.nomorTeleponRestoran,
-    required this.jamBukaRestoran,
-    required this.jamTutupRestoran,
+    required this.minuman,
   });
 
   @override
+  _RPMenuDetailState createState() => _RPMenuDetailState();
+}
+
+class _RPMenuDetailState extends State<RPMenuDetail> {
+
+  MinumanService minumanService = MinumanService();
+
+  @override
   Widget build(BuildContext context) {
+    final request = context.watch<UserService>();
+    Minuman minuman = widget.minuman;
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        actions: [
+          if (minuman.restoran.user == request.user?.username)
+            TextButton(
+              onPressed: () => _showMinumanOption(),
+              child: Icon(Icons.more_vert)
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -48,7 +51,7 @@ class RPMenuDetail extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8.0),
                     child: Image.network(
-                      '${RPUrls.baseUrl}$gambar',
+                      '${RPUrls.baseUrl}${minuman.gambar}',
                       width: double.infinity,
                       height: screenWidth - 32,
                       fit: BoxFit.cover,
@@ -74,7 +77,7 @@ class RPMenuDetail extends StatelessWidget {
               ),
               const SizedBox(height: 20.0),
               Text(
-                nama,
+                minuman.nama,
                 style: const TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
@@ -83,7 +86,7 @@ class RPMenuDetail extends StatelessWidget {
               ),
               const SizedBox(height: 12.0),
               Text(
-                deskripsi,
+                minuman.deskripsi,
                 style: const TextStyle(
                   fontSize: 18.0,
                   color: RPColors.textSecondary,
@@ -91,7 +94,7 @@ class RPMenuDetail extends StatelessWidget {
               ),
               const SizedBox(height: 12.0),
               Text(
-                'Rp${harga.toStringAsFixed(0)}',
+                'Rp${minuman.harga.toStringAsFixed(0)}',
                 style: const TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
@@ -113,31 +116,6 @@ class RPMenuDetail extends StatelessWidget {
                   ),
                 ),
               ),
-              // const Text(
-              //   'Informasi Restoran',
-              //   style: TextStyle(
-              //     fontSize: 24,
-              //     fontWeight: FontWeight.bold
-              //   ),
-              // ),
-              // const SizedBox(height: 12.0),
-              // GestureDetector(
-              //   onTap: () {
-              //     //TODO: navigasi ke halaman restoran di sini
-              //   },
-              //   child: Text(
-              //     namaRestoran,
-              //     style: const TextStyle(
-              //       fontSize: 20,
-              //       color: RPColors.biruMuda,
-              //       fontWeight: FontWeight.bold
-              //     ),
-              //   ),
-              // ),
-              // const SizedBox(height: 12.0),
-              // _buildDetailRow(Icons.location_on, 'Alamat', alamatRestoran),
-              // _buildDetailRow(Icons.phone, 'Telepon', nomorTeleponRestoran),
-              // _buildDetailRow(Icons.access_time, 'Jam Operasional', '$jamBukaRestoran - $jamTutupRestoran'),
             ],
           ),
         ),
@@ -145,26 +123,48 @@ class RPMenuDetail extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: RPColors.biruMuda,
-            size: 24,
-          ),
-          const SizedBox(width: 8.0),
-          Text(
-            '$label: $value',
-            style: const TextStyle(
-              fontSize: 16.0,
-              color: RPColors.textSecondary,
+  void _showMinumanOption() {
+    List<BottomSheetOption> options = [
+      BottomSheetOption(
+        icon: Icons.edit,
+        title: 'Edit minuman',
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MinumanEditPage(
+                minuman: widget.minuman,
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
-    );
+      BottomSheetOption(
+        icon: Icons.delete,
+        title: 'Hapus minuman',
+        textColor: RPColors.merahMuda,
+        iconColor: RPColors.merahMuda,
+        onTap: () {
+          String message;
+          try {
+            final response = minumanService.delete(widget.minuman);
+            message = 'Minuman berhasil dihapus';
+          } catch(e) {
+            message = printException(e as Exception);
+          }
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+              ),
+            );
+            Navigator.pop(context);
+          }
+        },
+      ),
+    ];
+
+    RPBottomSheet(context: context, options: options).show();
   }
 }

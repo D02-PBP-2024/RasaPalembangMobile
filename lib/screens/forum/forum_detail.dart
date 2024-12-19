@@ -1,58 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart'; // Untuk memformat tanggal
 import 'package:rasapalembang/models/forum.dart';
-import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/models/balasan.dart';
+import 'package:rasapalembang/services/balasan_service.dart';
 
 class ForumDetailPage extends StatelessWidget {
   final Forum forum;
 
-  const ForumDetailPage({super.key, required this.forum});
+  ForumDetailPage({super.key, required this.forum});
 
   @override
   Widget build(BuildContext context) {
+    BalasanService balasanService = BalasanService();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Detail Forum"),
+        title: Text(forum.topik),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              forum.fields.topik,
-              style: const TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: FutureBuilder<List<Balasan>>(
+        future: balasanService.get(forum.pk),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Belum ada balasan."));
+          } else {
+            final balasanList = snapshot.data!;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Dikirim oleh: User ${forum.fields.user}",
-                  style: const TextStyle(
-                    fontStyle: FontStyle.italic,
-                    color: RPColors.textSecondary,
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    forum.pesan,
+                    style: const TextStyle(fontSize: 16.0),
                   ),
                 ),
-                Text(
-                  "Tanggal: ${DateFormat('dd MMMM yyyy').format(forum.fields.tanggalPosting)}",
-                  style: const TextStyle(
-                    fontStyle: FontStyle.italic,
-                    color: RPColors.textSecondary,
+                const Divider(),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: balasanList.length,
+                    itemBuilder: (context, index) {
+                      final balasan = balasanList[index];
+                      return ListTile(
+                        leading: const Icon(Icons.person), // TODO: bisa ganti gambar user juga
+                        title: Text(
+                          "User: ${balasan.user.username}",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(balasan.pesan),
+                            Text(
+                              DateFormat('dd MMM yyyy, HH:mm').format(balasan
+                                  .tanggalPosting),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 20.0),
-            Text(
-              forum.fields.pesan,
-              style: const TextStyle(fontSize: 16.0),
-            ),
-          ],
-        ),
+            );
+          }
+        },
       ),
     );
   }
