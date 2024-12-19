@@ -13,10 +13,10 @@ class MakananDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RPMenuDetail(
-      nama: makanan.fields.nama,
-      deskripsi: makanan.fields.deskripsi,
-      gambar: makanan.fields.gambar,
-      harga: makanan.fields.harga,
+      nama: makanan.nama,
+      deskripsi: makanan.deskripsi,
+      gambar: makanan.gambar,
+      harga: makanan.harga,
       ukuran: "BESAR",
       tingkatKemanisan: 1000,
       namaRestoran: 'namaRestoran',

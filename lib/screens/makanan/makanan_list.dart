@@ -6,31 +6,53 @@ import 'package:rasapalembang/widget/rp_menu_card.dart';
 class MakananListPage extends StatelessWidget {
   final List<Map<String, dynamic>> makananList = [
     {
-      "pk": "d758afc4-0162-4e1b-9490-cad603b5cf2a",
+      "pk": "d0e880e2-1a14-472a-9f51-4ef158091383",
       "fields": {
-          "nama": "Pempek Lenjer",
-          "harga": 15000,
-          "deskripsi": "Pempek panjang yang kenyal, cocok disajikan dengan cuka pempek.",
-          "gambar": "gambar_makanan/f4709b47-b2e2-431e-b18b-d67b90a4663f.jpg",
-          "kalori": 90,
-          "restoran": "0cc904b9-6003-48f1-a237-6b9a709ed6ae",
-          "kategori": [
-              "375b10ea-f735-4554-947f-a2dc7af9eb50"
-          ]
+        "nama": "Pempek Kapal Selam",
+        "harga": 20000,
+        "deskripsi": "Pempek dengan isian telur di dalamnya, disajikan dengan kuah cuka yang segar.",
+        "gambar": "/media/gambar_makanan/71b61210-b7e9-4334-b966-4a035a199a76.jpg",
+        "kalori": 80,
+        "restoran": {
+          "pk": "0cc904b9-6003-48f1-a237-6b9a709ed6ae",
+          "fields": {
+            "nama": "Sentral Kampung Pempek Palembang",
+            "alamat": "Jl. Beringin Janggut, Talang Semut, Kec. Bukit Kecil, Kota Palembang, Sumatera Selatan 30135",
+            "jam_buka": "07:30",
+            "jam_tutup": "22:00",
+            "nomor_telepon": "(0711) 353934",
+            "gambar": "/media/gambar_restoran/77ad1190-756f-4516-bb56-6d9443b62819.jpg",
+            "user": "ahmadjaya"
+          }
+        },
+        "kategori": [
+          "375b10ea-f735-4554-947f-a2dc7af9eb50"
+        ]
       }
     },
     {
-      "pk": "52aad79b-167a-487b-8056-940cc3d0c0c2",
+      "pk": "d758afc4-0162-4e1b-9490-cad603b5cf2a",
       "fields": {
-          "nama": "Tsukune Nokke Sushi",
-          "harga": 68000,
-          "deskripsi": "Tsukune Nokke Sushi adalah hidangan sushi yang unik, menggabungkan bola daging ayam (tsukune) yang dibumbui dengan nasi sushi. Disajikan dengan saus tare yang manis dan hiasan wijen atau bawang hijau, hidangan ini menawarkan perpaduan rasa gurih dan tekstur yang kenyal, cocok sebagai camilan atau hidangan utama.",
-          "gambar": "gambar_makanan/691d850c-dd91-4ee9-b7b0-0f921c9ba780.jpg",
-          "kalori": 80,
-          "restoran": "130561a8-c4d5-4b8e-ba5c-a36deeafd14d",
-          "kategori": [
-              "0de708ca-38bc-442c-9fba-4f1532487eb4"
-          ]
+        "nama": "Pempek Lenjer",
+        "harga": 15000,
+        "deskripsi": "Pempek panjang yang kenyal, cocok disajikan dengan cuka pempek.",
+        "gambar": "/media/gambar_makanan/f4709b47-b2e2-431e-b18b-d67b90a4663f.jpg",
+        "kalori": 90,
+        "restoran": {
+          "pk": "0cc904b9-6003-48f1-a237-6b9a709ed6ae",
+          "fields": {
+            "nama": "Sentral Kampung Pempek Palembang",
+            "alamat": "Jl. Beringin Janggut, Talang Semut, Kec. Bukit Kecil, Kota Palembang, Sumatera Selatan 30135",
+            "jam_buka": "07:30",
+            "jam_tutup": "22:00",
+            "nomor_telepon": "(0711) 353934",
+            "gambar": "/media/gambar_restoran/77ad1190-756f-4516-bb56-6d9443b62819.jpg",
+            "user": "ahmadjaya"
+          }
+        },
+        "kategori": [
+          "375b10ea-f735-4554-947f-a2dc7af9eb50"
+        ]
       }
     },
   ];
@@ -54,10 +76,10 @@ class MakananListPage extends StatelessWidget {
             final makanan = Makanan.fromJson(makananList[index]);
 
             return RPMenuCard(
-              gambar: makanan.fields.gambar,
-              nama: makanan.fields.nama,
-              harga: makanan.fields.harga,
-              restoran: makanan.fields.restoran,
+              gambar: makanan.gambar,
+              nama: makanan.nama,
+              harga: makanan.harga,
+              restoran: makanan.restoran.nama,
               menuDetailPage: MakananDetailPage(makanan: makanan),
             );
           },

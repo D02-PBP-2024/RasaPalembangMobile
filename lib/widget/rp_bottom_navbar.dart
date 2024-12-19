@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rasapalembang/providers/tab_provider.dart';
 import 'package:rasapalembang/screens/home.dart';
 import 'package:rasapalembang/screens/authentication/route.dart';
 import 'package:rasapalembang/screens/makanan/route.dart';
@@ -14,8 +16,6 @@ class RPBottomNavbar extends StatefulWidget {
 }
 
 class _RPBottomNavbarState extends State<RPBottomNavbar> {
-  int _selectedTab = 0;
-
   final List _pages = [
     const HomePage(),
     const MakananRoute(),
@@ -24,19 +24,14 @@ class _RPBottomNavbarState extends State<RPBottomNavbar> {
     const AkunRoute(),
   ];
 
-  _changeTab(int index) {
-    setState(() {
-      _selectedTab = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final selectedTab = Provider.of<TabProvider>(context);
     return Scaffold(
-      body: _pages[_selectedTab],
+      body: _pages[selectedTab.tab],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedTab,
-        onTap: (index) => _changeTab(index),
+        currentIndex: selectedTab.tab,
+        onTap: (index) => selectedTab.tab = index,
         selectedItemColor: RPColors.biruMuda,
         unselectedItemColor: Colors.grey,
         items: const [

@@ -13,17 +13,17 @@ class MinumanDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RPMenuDetail(
-      nama: minuman.fields.nama,
-      deskripsi: minuman.fields.deskripsi,
-      gambar: minuman.fields.gambar,
-      harga: minuman.fields.harga,
-      ukuran: _title(minuman.fields.ukuran),
-      tingkatKemanisan: minuman.fields.tingkatKemanisan,
-      namaRestoran: 'namaRestoran',
-      alamatRestoran: 'alamatRestoran',
-      nomorTeleponRestoran: 'nomorTeleponRestoran',
-      jamBukaRestoran: '10:00',
-      jamTutupRestoran: '22:00'
+      nama: minuman.nama,
+      deskripsi: minuman.deskripsi,
+      gambar: minuman.gambar,
+      harga: minuman.harga,
+      ukuran: _title(minuman.ukuran),
+      tingkatKemanisan: minuman.tingkatKemanisan,
+      namaRestoran: minuman.restoran.nama,
+      alamatRestoran: minuman.restoran.alamat,
+      nomorTeleponRestoran: minuman.restoran.nomorTelepon,
+      jamBukaRestoran: minuman.restoran.jamBuka,
+      jamTutupRestoran: minuman.restoran.jamTutup,
     );
   }
 
