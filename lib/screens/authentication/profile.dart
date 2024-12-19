@@ -37,7 +37,6 @@ class _ProfilePageState extends State<ProfilePage> {
   late String nama;
   late String deskripsi;
   late String foto;
-  late int imageKey;
 
   @override
   void initState() {
