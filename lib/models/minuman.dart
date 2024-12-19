@@ -10,7 +10,7 @@ Minuman minumanFromJson(String str) => Minuman.fromJson(json.decode(str));
 List<Minuman> minumanFromListJson(String str) => List<Minuman>.from(json.decode(str).map((x) => Minuman.fromJson(x)));
 
 class Minuman {
-  String pk;
+  String? pk;
   String nama;
   int harga;
   String deskripsi;
@@ -20,7 +20,7 @@ class Minuman {
   Restoran restoran;
 
   Minuman({
-    required this.pk,
+    this.pk,
     required this.nama,
     required this.harga,
     required this.deskripsi,

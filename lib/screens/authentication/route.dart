@@ -21,9 +21,7 @@ class AkunRoute extends StatelessWidget {
               nama: request.user!.nama,
               deskripsi: request.user!.deskripsi,
               peran: request.user!.peran,
-              foto: request.user!.foto == "" ?
-              RPUrls.noProfileUrl :
-              RPUrls.baseUrl + request.user!.foto,
+              foto: request.user!.foto,
               poin: request.user!.poin,
               dateJoined: request.user!.dateJoined,
               loggedInUsername: request.user!.username,
