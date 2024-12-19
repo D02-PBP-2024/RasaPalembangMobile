@@ -37,7 +37,7 @@ class ForumListPage extends StatelessWidget {
                   topik: forum.topik,
                   pesan: forum.pesan,
                   tanggalPosting: forum.tanggalPosting,
-                  user: "userDummy", // TODO: masih userDummy, nanti benerin lagi
+                  user: forum.user.username,
                   onTap: () {
                     Navigator.push(
                       context,

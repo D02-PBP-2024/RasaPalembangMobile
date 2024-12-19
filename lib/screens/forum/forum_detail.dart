@@ -3,6 +3,8 @@ import 'package:intl/intl.dart'; // Untuk memformat tanggal
 import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/models/balasan.dart';
 import 'package:rasapalembang/services/balasan_service.dart';
+import 'package:rasapalembang/utils/date_time_extension.dart';
+import 'package:rasapalembang/widget/rp_forum_card.dart';
 
 class ForumDetailPage extends StatelessWidget {
   final Forum forum;
@@ -48,7 +50,7 @@ class ForumDetailPage extends StatelessWidget {
                       return ListTile(
                         leading: const Icon(Icons.person), // TODO: bisa ganti gambar user juga
                         title: Text(
-                          "User: ${balasan.user.username}",
+                          balasan.user.username,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
@@ -56,8 +58,7 @@ class ForumDetailPage extends StatelessWidget {
                           children: [
                             Text(balasan.pesan),
                             Text(
-                              DateFormat('dd MMM yyyy, HH:mm').format(balasan
-                                  .tanggalPosting),
+                              balasan.tanggalPosting.timeAgo(),
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,

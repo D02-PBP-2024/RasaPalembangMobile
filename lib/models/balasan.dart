@@ -5,8 +5,7 @@
 import 'dart:convert';
 import 'package:rasapalembang/models/user.dart';
 
-List<Balasan> balasanFromListJson(String str) =>
-    List<Balasan>.from(json.decode(str).map((x) => Balasan.fromJson(x)));
+List<Balasan> balasanFromListJson(String str) => List<Balasan>.from(json.decode(str).map((x) => Balasan.fromJson(x)));
 
 class Balasan {
   String pk;

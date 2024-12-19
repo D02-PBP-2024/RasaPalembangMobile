@@ -14,8 +14,10 @@ class ForumService extends UserService {
       c.withCredentials = true;
     }
 
-    String url = '${RPUrls.baseUrl}/v1/restoran/$idRestoran/forum/';
-    http.Response response = await client.get(Uri.parse(url));
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/forum/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
 
     if (response.statusCode == 200) {
       return forumFromListJson(response.body);

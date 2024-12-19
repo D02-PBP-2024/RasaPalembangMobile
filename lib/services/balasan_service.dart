@@ -12,9 +12,10 @@ class BalasanService extends UserService {
       c.withCredentials = true;
     }
 
-    String url = '${RPUrls.baseUrl}/v1/forum/$idForum/balasan/';
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/forum/$idForum/balasan/');
 
-    http.Response response = await client.get(Uri.parse(url));
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
 
     if (response.statusCode == 200) {
       return balasanFromListJson(response.body);

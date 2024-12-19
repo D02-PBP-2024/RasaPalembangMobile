@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/date_time_extension.dart';
 
 class RPForumCard extends StatelessWidget {
   final String topik;
@@ -56,7 +57,7 @@ class RPForumCard extends StatelessWidget {
                     style: const TextStyle(fontSize: 12, color: RPColors.textSecondary),
                   ),
                   Text(
-                    "Posted: ${DateFormat('dd MMM yyyy').format(tanggalPosting)}",
+                    tanggalPosting.timeAgo(),
                     style: const TextStyle(fontSize: 12, color: RPColors.textSecondary),
                   ),
                 ],
