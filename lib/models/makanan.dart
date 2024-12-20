@@ -10,17 +10,17 @@ Makanan makananFromJson(String str) => Makanan.fromJson(json.decode(str));
 List<Makanan> makananFromListJson(String str) => List<Makanan>.from(json.decode(str).map((x) => Makanan.fromJson(x)));
 
 class Makanan {
-  String pk;
+  String? pk;
   String nama;
+  int harga;
   String deskripsi;
   String gambar;
-  List<String> kategori;
   int kalori;
-  int harga;
   Restoran restoran;
+  List<String> kategori;
 
   Makanan({
-    required this.pk,
+    this.pk,
     required this.nama,
     required this.deskripsi,
     required this.gambar,
@@ -35,7 +35,7 @@ class Makanan {
     nama: json["fields"]["nama"],
     deskripsi: json["fields"]["deskripsi"],
     gambar: json["fields"]["gambar"],
-    kategori: List<String>.from(json["fields"]["kategori"]),
+    kategori: List<String>.from(json["kategori"].map((x) => x)),
     kalori: json["fields"]["kalori"],
     harga: json["fields"]["harga"],
     restoran: Restoran.fromJson(json["fields"]["restoran"]),
