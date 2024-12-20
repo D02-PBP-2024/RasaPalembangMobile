@@ -33,7 +33,7 @@ class MinumanService extends UserService {
       c.withCredentials = true;
     }
 
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/${minuman.restoran.pk}/minuman/');;
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/${minuman.restoran.pk}/minuman/');
 
     var request = http.MultipartRequest('POST', uri);
     request.headers.addAll(headers);
