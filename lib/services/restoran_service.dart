@@ -117,4 +117,20 @@ class RestoranService extends UserService {
       throw Exception('Gagal menghapus restoran');
     }
   }
+
+  Future<dynamic> fetchUserData() async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/get_user_flutter/');
+
+    http.Response response =
+        await client.post(uri, body: {}, headers: headers);
+    await updateCookie(response);
+
+    return json.decode(response.body);
+  }
 }

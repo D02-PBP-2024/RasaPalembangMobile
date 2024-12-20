@@ -65,19 +65,13 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
           // Gambar Restoran dengan semua informasi
           Stack(
             children: [
-              restoran.gambar.isNotEmpty
-                  ? Image.network(
+              if(restoran.gambar.isNotEmpty)
+                Image.network(
                 restoran.gambar,
                 width: double.infinity,
                 height: 500,
                 fit: BoxFit.cover,
-              )
-                  : Image.asset(
-                'assets/placeholder.png',
-                width: double.infinity,
-                height: 500,
-                fit: BoxFit.cover,
-              ),
+                ),
               Positioned(
                 bottom: 0,
                 left: 0,

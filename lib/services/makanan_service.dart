@@ -127,7 +127,7 @@ class MakananService extends UserService {
   }
 
   Future<Map<String, String>> fetchCategories() async {
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/makanan/kategori/');
+    final uri = Uri.parse('http://127.0.0.1:8000/v1/makanan/kategori/');
     final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {

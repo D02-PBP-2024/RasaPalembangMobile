@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
-import 'package:rasapalembang/services/user_service.dart';
+import 'package:http/http.dart' as http;
 import 'package:rasapalembang/widget/rp_restoran_detail.dart';
 import 'package:rasapalembang/screens/restoran/restoran_form.dart';
 import 'package:rasapalembang/widget/rp_restoran_card.dart';
+import 'dart:convert';
+import 'package:rasapalembang/utils/urls_constants.dart';
 
 class RestoranListPage extends StatefulWidget {
   const RestoranListPage({super.key});
@@ -14,28 +16,25 @@ class RestoranListPage extends StatefulWidget {
 }
 
 class _RestoranListPageState extends State<RestoranListPage> {
-  late UserService userService;
+  Map<String, dynamic>? userData;
 
-@override
-void initState() {
-  super.initState();
-  userService = UserService();
-  userService.init().then((_) {
-    debugPrint("User setelah inisialisasi: ${userService.user}");
-    debugPrint("Role pengguna: ${userService.user?.peran}");
-    setState(() {});
-  });
-}
-
+  @override
+  void initState() {
+    super.initState();
+    RestoranService().fetchUserData().then((data) {
+      setState(() {
+        userData = data;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     RestoranService restoranService = RestoranService();
-    debugPrint("User role: ${userService.user?.peran}");
     return Scaffold(
       appBar: AppBar(
         actions: [
-          if (userService.user?.peran == "pemilik_restoran")
+          if (userData != null && userData?['peran'] == "pemilik_restoran")
             Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: ElevatedButton(
