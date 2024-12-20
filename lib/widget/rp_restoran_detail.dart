@@ -7,7 +7,6 @@ import 'package:rasapalembang/screens/makanan/makanan_tambah.dart';
 import 'package:rasapalembang/screens/minuman/minuman_tambah.dart';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
 import 'package:rasapalembang/services/user_service.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
 
@@ -157,14 +156,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => RestoranEditForm(
-                              restoran: {
-                                'nama': restoran.nama,
-                                'alamat': restoran.alamat,
-                                'jamBuka': restoran.jamBuka,
-                                'jamTutup': restoran.jamTutup,
-                                'nomorTelepon': restoran.nomorTelepon,
-                                'gambar': restoran.gambar,
-                              },
+                              restoran: restoran,
                             ),
                           ),
                         );

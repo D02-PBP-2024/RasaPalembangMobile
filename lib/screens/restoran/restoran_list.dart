@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
-import 'package:http/http.dart' as http;
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_restoran_card.dart';
-import 'dart:convert';
-import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/screens/restoran/restoran_form.dart';
 
 class RestoranListPage extends StatefulWidget {
   const RestoranListPage({super.key});
@@ -18,17 +16,13 @@ class RestoranListPage extends StatefulWidget {
 class _RestoranListPageState extends State<RestoranListPage> {
   RestoranService restoranService = RestoranService();
   late Future<List<Restoran>> _restoranList;
-
-  @override
-  void initState() {
-    super.initState();
-    _restoranList = restoranService.get();
   Map<String, dynamic>? userData;
 
   @override
   void initState() {
     super.initState();
-    RestoranService().fetchUserData().then((data) {
+    _restoranList = restoranService.get();
+    restoranService.fetchUserData().then((data) {
       setState(() {
         userData = data;
       });
@@ -37,7 +31,6 @@ class _RestoranListPageState extends State<RestoranListPage> {
 
   @override
   Widget build(BuildContext context) {
-    RestoranService restoran = RestoranService();
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -54,7 +47,9 @@ class _RestoranListPageState extends State<RestoranListPage> {
                   );
 
                   if (newRestoranData != null) {
-                    setState(() {});
+                    setState(() {
+                      _restoranList = restoranService.get();
+                    });
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -81,9 +76,9 @@ class _RestoranListPageState extends State<RestoranListPage> {
             return const Center(child: Text("Belum ada restoran."));
           } else {
             return _buildRestoranGrid(
-                itemCount: snapshot.data.length,
-                isLoading: false,
-                data: snapshot.data
+              itemCount: snapshot.data.length,
+              isLoading: false,
+              data: snapshot.data,
             );
           }
         },
@@ -91,7 +86,11 @@ class _RestoranListPageState extends State<RestoranListPage> {
     );
   }
 
-  Widget _buildRestoranGrid({required int itemCount, bool isLoading = false, List? data}) {
+  Widget _buildRestoranGrid({
+    required int itemCount,
+    bool isLoading = false,
+    List? data,
+  }) {
     return RPMenuGridView(
       paddingTop: 24,
       itemCount: itemCount,
@@ -104,6 +103,8 @@ class _RestoranListPageState extends State<RestoranListPage> {
         }
       },
     );
+  }
+
   bool _isCurrentlyOpen(String jamBuka, String jamTutup) {
     final now = TimeOfDay.now();
     final buka = _timeOfDayFromString(jamBuka);
