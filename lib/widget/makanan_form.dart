@@ -164,11 +164,11 @@ class _MakananFormState extends State<MakananForm> {
                 _isLoadingCategories
                     ? CircularProgressIndicator()
                     : MultiSelectWidget(
-                        items: _categories, // Ambil daftar kategori dari hasil fetch
-                        selectedItems: _kategoriController.value, // Pilihan awal
+                        items: _categories,
+                        selectedItems: _kategoriController.value,
                         onSelectionChanged: (values) {
                           setState(() {
-                            _kategoriController.value = values; // Simpan hasil pilihan
+                            _kategoriController.value = values;
                           });
                         },
                       ),

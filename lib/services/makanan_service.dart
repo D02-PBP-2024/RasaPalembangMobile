@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rasapalembang/models/makanan.dart';
@@ -34,16 +35,26 @@ class MakananService extends UserService {
     }
 
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/${makanan.restoran.pk}/makanan/');
-
     var request = http.MultipartRequest('POST', uri);
     request.headers.addAll(headers);
+
+    // Validasi dan konversi kategori ke UUID
+    List<String> kategoriUUIDs = makanan.kategori.map((kategori) {
+      try {
+        // Validasi apakah kategori adalah UUID yang valid
+        Uuid.parse(kategori);
+        return kategori;
+      } catch (e) {
+        throw Exception('Kategori $kategori bukan UUID yang valid');
+      }
+    }).toList();
 
     request.fields['nama'] = makanan.nama;
     request.fields['harga'] = '${makanan.harga}';
     request.fields['deskripsi'] = makanan.deskripsi;
     request.files.add(await http.MultipartFile.fromPath('gambar', gambar.path));
     request.fields['kalori'] = '${makanan.kalori}';
-    request.fields['kategori'] = makanan.kategori.join(',');
+    request.fields['kategori'] = kategoriUUIDs.join(',');
 
     var streamedResponse = await request.send();
     var body = await streamedResponse.stream.bytesToString();
@@ -58,7 +69,7 @@ class MakananService extends UserService {
     } else if (response.statusCode == 403) {
       throw Exception('Tindakan tidak diizinkan');
     } else {
-      throw Exception('Error lainnya');
+      throw Exception('Error lainnya: ${response.body}');
     }
   }
 

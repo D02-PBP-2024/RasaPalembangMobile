@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
 class MultiSelectWidget extends StatefulWidget {
   final List<String> items; // Daftar opsi
@@ -28,7 +29,7 @@ class _MultiSelectWidgetState extends State<MultiSelectWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _showMultiSelectModal(context),
+      onTap: () => _showMultiSelectRPBottomSheet(),
       child: InputDecorator(
         decoration: InputDecoration(
           border: OutlineInputBorder(),
@@ -43,52 +44,49 @@ class _MultiSelectWidgetState extends State<MultiSelectWidget> {
     );
   }
 
-  void _showMultiSelectModal(BuildContext context) {
-    showModalBottomSheet(
+  void _showMultiSelectRPBottomSheet() {
+    RPBottomSheet(
       context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Pilih Kategori",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  const SizedBox(height: 16),
-                  ...widget.items.map((item) {
-                    return CheckboxListTile(
-                      value: _selectedItems.contains(item),
-                      title: Text(item),
-                      onChanged: (isChecked) {
-                        setState(() {
-                          if (isChecked ?? false) {
-                            _selectedItems.add(item);
-                          } else {
-                            _selectedItems.remove(item);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      widget.onSelectionChanged(_selectedItems); // Kembalikan hasil
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Simpan"),
-                  ),
-                ],
-              ),
-            );
+      widgets: [
+        const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            "Pilih Kategori",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
+        ...widget.items.map((item) {
+          return ValueListenableBuilder<List<String>>(
+            valueListenable: ValueNotifier(_selectedItems),
+            builder: (context, selectedItems, _) {
+              return CheckboxListTile(
+                value: _selectedItems.contains(item),
+                title: Text(item),
+                onChanged: (isChecked) {
+                  setState(() {
+                    if (isChecked ?? false) {
+                      _selectedItems.add(item);
+                    } else {
+                      _selectedItems.remove(item);
+                    }
+                  });
+                },
+              );
+            },
+          );
+        }).toList(),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () {
+            widget.onSelectionChanged(_selectedItems); // Kembalikan hasil
+            Navigator.pop(context); // Tutup bottom sheet
           },
-        );
-      },
-    );
+          child: const Text("Simpan"),
+        ),
+      ],
+    ).show();
   }
 }
