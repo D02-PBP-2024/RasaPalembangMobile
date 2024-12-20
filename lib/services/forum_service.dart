@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rasapalembang/models/forum.dart';
-import 'package:rasapalembang/models/user.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 

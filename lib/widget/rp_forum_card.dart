@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/forum.dart';
+import 'package:rasapalembang/screens/authentication/profile.dart';
 import 'package:rasapalembang/screens/forum/forum_edit.dart';
 import 'package:rasapalembang/services/forum_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
@@ -32,10 +33,8 @@ class RPForumCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       onLongPress: () {
-        if (isForumUser) {
-          HapticFeedback.lightImpact();
-          _showForumOption(context);
-        }
+        HapticFeedback.lightImpact();
+        _showForumOption(context, isForumUser);
       },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -92,10 +91,33 @@ class RPForumCard extends StatelessWidget {
     );
   }
 
-  void _showForumOption(BuildContext context) {
+  void _showForumOption(BuildContext context, bool isForumUser) {
     RPBottomSheet(
       context: context,
       widgets: [
+        ListTile(
+          leading: Icon(Icons.person_search_rounded),
+          title: Text('Lihat profil'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push( // TODO: Tangani buat tanda balik ke halaman sebelumnya
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfilePage(
+                  username: forum.user.username,
+                  nama: forum.user.nama,
+                  deskripsi: forum.user.deskripsi,
+                  peran: forum.user.peran,
+                  foto: forum.user.foto,
+                  poin: forum.user.poin,
+                  dateJoined: forum.user.dateJoined,
+                  loggedInUsername: forum.user.username,
+                ),
+              ),
+            );
+          },
+        ),
+        if (isForumUser)
         ListTile(
           leading: Icon(Icons.edit),
           title: Text('Edit forum'),
@@ -112,6 +134,7 @@ class RPForumCard extends StatelessWidget {
             refreshList();
           },
         ),
+        if (isForumUser)
         ListTile(
           leading: Icon(
             Icons.delete,

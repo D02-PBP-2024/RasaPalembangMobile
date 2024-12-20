@@ -30,7 +30,10 @@ class _ForumListPageState extends State<ForumListPage> {
 
   void _loadForumList() {
     setState(() {
-      _forumFuture = forumService.get(widget.idRestoran);
+      _forumFuture = forumService.get(widget.idRestoran).then((forumList) {
+        forumList.sort((a, b) => b.tanggalPosting.compareTo(a.tanggalPosting));
+        return forumList;
+      });
     });
   }
 

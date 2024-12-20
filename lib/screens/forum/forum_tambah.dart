@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/widget/forum_form.dart';
 
 class ForumTambahPage extends StatelessWidget {

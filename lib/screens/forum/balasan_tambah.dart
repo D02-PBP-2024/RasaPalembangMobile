@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/models/restoran.dart';
-import 'package:rasapalembang/widget/forum_form.dart';
+import 'package:rasapalembang/widget/balasan_form.dart';
 
-class ForumTambahPage extends StatelessWidget {
-  final String restoran;
+class BalasanTambahPage extends StatelessWidget {
+  final String forum;
 
-  const ForumTambahPage({
+  const BalasanTambahPage({
     super.key, 
-    required this.restoran
+    required this.forum,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ForumForm(
+    return BalasanForm(
+      forum: forum,
       saveButtonLabel: 'Tambah Balasan',
-      restoran: restoran,
     );
   }
 }
