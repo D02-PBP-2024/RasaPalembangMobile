@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/models/forum.dart';
-import 'package:rasapalembang/services/forum_service.dart';
+import 'package:rasapalembang/models/balasan.dart';
+import 'package:rasapalembang/services/balasan_service.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
-class ForumForm extends StatefulWidget {
-  final Forum? forum;
+class BalasanForm extends StatefulWidget {
+  final Balasan? balasan;
   final String saveButtonLabel;
-  final String restoran;
+  final String forum;
   final bool edit;
 
-  const ForumForm({
+  const BalasanForm({
     super.key,
-    this.forum,
+    this.balasan,
     required this.saveButtonLabel,
-    required this.restoran,
+    required this.forum,
     this.edit = false,
   });
 
   @override
-  State<ForumForm> createState() => _ForumFormState();
+  State<BalasanForm> createState() => _BalasanFormState();
 }
 
-class _ForumFormState extends State<ForumForm> {
+class _BalasanFormState extends State<BalasanForm> {
   final _formKey = GlobalKey<FormState>();
-  final _topikController = TextEditingController();
   final _pesanController = TextEditingController();
 
   @override
@@ -33,18 +32,19 @@ class _ForumFormState extends State<ForumForm> {
     super.initState();
 
     if (widget.edit) {
-      _topikController.text = widget.forum!.topik;
-      _pesanController.text = widget.forum!.pesan;
+      _pesanController.text = widget.balasan!.pesan;
     }
   }
 
-  final forumService = ForumService();
+  final balasanService = BalasanService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: (widget.edit) ? const Text('Edit Forum') : const Text('Tambah Forum'),
+        title: (widget.edit)
+            ? const Text('Edit Balasan')
+            : const Text('Tambah Balasan'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -55,21 +55,9 @@ class _ForumFormState extends State<ForumForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 RPTextFormField(
-                  controller: _topikController,
-                  labelText: 'Topik',
-                  hintText: 'Masukkan topik forum',
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Topik tidak boleh kosong!';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                RPTextFormField(
                   controller: _pesanController,
-                  labelText: 'Pesan',
-                  hintText: 'Masukkan pesan forum',
+                  labelText: 'Pesan Balasan',
+                  hintText: 'Masukkan pesan balasan',
                   maxLines: 5,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -96,17 +84,15 @@ class _ForumFormState extends State<ForumForm> {
 
   void _onSubmit() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final topik = _topikController.text;
       final pesan = _pesanController.text;
 
       String message;
       if (widget.edit) {
-        widget.forum?.topik = topik;
-        widget.forum?.pesan = pesan;
+        widget.balasan?.pesan = pesan;
 
         try {
-          final response = await forumService.editForum(widget.forum!);
-          message = "Forum berhasil diubah";
+          final response = await balasanService.editBalasan(widget.balasan!);
+          message = "Balasan berhasil diubah";
         } catch (e) {
           message = printException(e as Exception);
         }
@@ -121,9 +107,8 @@ class _ForumFormState extends State<ForumForm> {
         }
       } else {
         try {
-          final response =
-              await forumService.addForum(topik, pesan, widget.restoran);
-          message = "Forum berhasil ditambah";
+          final response = await balasanService.addBalasan(pesan, widget.forum);
+          message = "Balasan berhasil ditambah";
         } catch (e) {
           message = printException(e as Exception);
         }
