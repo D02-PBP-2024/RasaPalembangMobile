@@ -26,6 +26,25 @@ class MakananService extends UserService {
     }
   }
 
+  Future<List<Makanan>> getByRestoran(String idRestoran) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/makanan/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    if (response.statusCode == 200) {
+      return makananFromListJson(response.body);
+    } else {
+      throw Exception('Gagal mengambil data makanan');
+    }
+  }
+
   Future<Makanan> add(Makanan makanan, File gambar) async {
     await init();
     if (kIsWeb) {

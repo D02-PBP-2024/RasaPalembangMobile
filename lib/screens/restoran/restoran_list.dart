@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:http/http.dart' as http;
-import 'package:rasapalembang/widget/rp_restoran_detail.dart';
-import 'package:rasapalembang/screens/restoran/restoran_form.dart';
+import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
+import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_restoran_card.dart';
 import 'dart:convert';
 import 'package:rasapalembang/utils/urls_constants.dart';
@@ -16,6 +16,13 @@ class RestoranListPage extends StatefulWidget {
 }
 
 class _RestoranListPageState extends State<RestoranListPage> {
+  RestoranService restoranService = RestoranService();
+  late Future<List<Restoran>> _restoranList;
+
+  @override
+  void initState() {
+    super.initState();
+    _restoranList = restoranService.get();
   Map<String, dynamic>? userData;
 
   @override
@@ -30,7 +37,7 @@ class _RestoranListPageState extends State<RestoranListPage> {
 
   @override
   Widget build(BuildContext context) {
-    RestoranService restoranService = RestoranService();
+    RestoranService restoran = RestoranService();
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -64,54 +71,19 @@ class _RestoranListPageState extends State<RestoranListPage> {
         ],
       ),
       body: FutureBuilder(
-        future: restoranService.get(),
+        future: _restoranList,
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return _buildRestoranGrid(itemCount: 6, isLoading: true);
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text("Belum ada restoran."));
           } else {
-            final restoranList = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 8.0,
-                  childAspectRatio: 0.75,
-                ),
-                itemCount: restoranList.length,
-                itemBuilder: (context, index) {
-                  final restoran = restoranList[index];
-
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RPRestoDetail(
-                            restoran: restoran,
-                          ),
-                        ),
-                      );
-                    },
-                    child: RPRestoCard(
-                      nama: restoran.nama,
-                      gambar: restoran.gambar,
-                      rating: '4.5',
-                      jamBuka: restoran.jamBuka,
-                      jamTutup: restoran.jamTutup,
-                      isOpen: _isCurrentlyOpen(
-                        restoran.jamBuka,
-                        restoran.jamTutup,
-                      ),
-                    ),
-                  );
-                },
-              ),
+            return _buildRestoranGrid(
+                itemCount: snapshot.data.length,
+                isLoading: false,
+                data: snapshot.data
             );
           }
         },
@@ -119,6 +91,19 @@ class _RestoranListPageState extends State<RestoranListPage> {
     );
   }
 
+  Widget _buildRestoranGrid({required int itemCount, bool isLoading = false, List? data}) {
+    return RPMenuGridView(
+      paddingTop: 24,
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (isLoading) {
+          return RPMenuCardSkeleton();
+        } else {
+          final restoran = data![index];
+          return RPRestoCard(restoran: restoran);
+        }
+      },
+    );
   bool _isCurrentlyOpen(String jamBuka, String jamTutup) {
     final now = TimeOfDay.now();
     final buka = _timeOfDayFromString(jamBuka);
