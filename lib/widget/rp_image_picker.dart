@@ -3,19 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
-import 'package:rasapalembang/widget/rp_button.dart';
-import 'package:rasapalembang/widget/rp_squared_image_button.dart';
+import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
 class RPImagePicker extends StatefulWidget {
   final Function(File?) onImagePicked;
   final String? initialGambar;
   final String buttonLabel;
+  final double imagePreviewWidth;
+  final double imagePreviewHeight;
+  final bool? rounded;
 
   const RPImagePicker({
     super.key,
     required this.onImagePicked,
     this.initialGambar,
     required this.buttonLabel,
+    required this.imagePreviewWidth,
+    required this.imagePreviewHeight,
+    this.rounded = false,
   });
 
   @override
@@ -41,87 +46,101 @@ class _RPImagePickerState extends State<RPImagePicker> {
     return Column(
       children: [
         _getImageWidget(),
-        SizedBox(height: 20),
-        RPButton(
+        TextButton(
           onPressed: () => _showPickImageDialog(),
-          label: widget.buttonLabel,
+          child: Text(widget.buttonLabel),
         ),
       ],
     );
   }
 
+  Widget _withImage() {
+    return Image.file(
+      _image!,
+      height: widget.imagePreviewHeight,
+      width: widget.imagePreviewWidth,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget _withInitialImage() {
+    return Image.network(
+      widget.initialGambar!,
+      height: widget.imagePreviewHeight,
+      width: widget.imagePreviewWidth,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget _withoutImage() {
+    return Container(
+      height: widget.imagePreviewHeight,
+      width: widget.imagePreviewWidth,
+      color: RPColors.textFieldBackground,
+      child: Center(
+        child: Icon(Icons.image_not_supported, color: RPColors.textFieldPlaceholder),
+      ),
+    );
+  }
+
   Widget _getImageWidget() {
     if (_image != null) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(RPSize.cornerRadius), // Corner radius
-        child: Image.file(
-          _image!,
-          height: 200,
-          width: 200,
-          fit: BoxFit.cover,
-        ),
-      );
+      if (widget.rounded == true) {
+        return ClipOval(
+          child: _withImage(),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(RPSize.cornerRadius), // Corner radius
+          child: _withImage(),
+        );
+      }
     } else if (widget.initialGambar != null) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(RPSize.cornerRadius), // Corner radius
-        child: Image.network(
-          widget.initialGambar!,
-          height: 200,
-          width: 200,
-          fit: BoxFit.cover,
-        ),
-      );
+      if (widget.rounded == true) {
+        return ClipOval(
+          child: _withInitialImage(),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(RPSize.cornerRadius), // Corner radius
+          child: _withInitialImage(),
+        );
+      }
     } else {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(RPSize.cornerRadius),
-        child: Container(
-          width: 200,
-          height: 200,
-          color: RPColors.textFieldBackground,
-          child: Center(
-            child: Icon(Icons.image_not_supported, color: RPColors.textFieldPlaceholder),
-          ),
-        ),
-      );
+      if (widget.rounded == true) {
+        return ClipOval(
+          child: _withoutImage(),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(RPSize.cornerRadius),
+          child: _withoutImage(),
+        );
+      }
     }
   }
 
-
   void _showPickImageDialog() {
-    showDialog(
+    RPBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            'PILIH GAMBAR',
-            style: TextStyle(
-              fontSize: 16,
-            ),
-          ),
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RpSquaredImageButton(
-                label: 'Kamera',
-                icon: Icons.camera_alt,
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _pickImage(ImageSource.camera);
-                },
-              ),
-              SizedBox(width: 16.0),
-              RpSquaredImageButton(
-                label: 'Galeri',
-                icon: Icons.image,
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _pickImage(ImageSource.gallery);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+      widgets: [
+        ListTile(
+          leading: Icon(Icons.camera_alt),
+          title: Text('Ambil dari kamera'),
+          onTap: () {
+            Navigator.pop(context);
+            _pickImage(ImageSource.camera);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.image),
+          title: Text('Pilih dari galeri'),
+          onTap: () {
+            Navigator.pop(context);
+            _pickImage(ImageSource.gallery);
+          },
+        ),
+      ],
+    ).show();
   }
 }

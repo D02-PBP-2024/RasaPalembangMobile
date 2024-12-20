@@ -1,26 +1,24 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/models/minuman.dart';
+import 'package:rasapalembang/models/makanan.dart';
 import 'package:rasapalembang/models/restoran.dart';
-import 'package:rasapalembang/services/minuman_service.dart';
+import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
-import 'package:rasapalembang/widget/rp_dropdown_button.dart';
 import 'package:rasapalembang/widget/rp_image_picker.dart';
-import 'package:rasapalembang/widget/rp_number_picker.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
-class MinumanForm extends StatefulWidget {
-  final Minuman? minuman;
+class MakananForm extends StatefulWidget {
+  final Makanan? makanan;
   final String imagePickerLabel;
   final String saveButtonLabel;
   final Restoran restoran;
   final bool edit;
 
-  const MinumanForm({
+  const MakananForm({
     super.key,
-    this.minuman,
+    this.makanan,
     required this.imagePickerLabel,
     required this.saveButtonLabel,
     required this.restoran,
@@ -28,27 +26,50 @@ class MinumanForm extends StatefulWidget {
   });
 
   @override
-  State<MinumanForm> createState() => _MinumanFormState();
+  State<MakananForm> createState() => _MakananFormState();
 }
 
-class _MinumanFormState extends State<MinumanForm> {
+class _MakananFormState extends State<MakananForm> {
   final _formKey = GlobalKey<FormState>();
   final _namaController = TextEditingController();
   final _hargaController = TextEditingController();
   final _deskripsiController = TextEditingController();
-  final ValueNotifier<String?> _ukuranController = ValueNotifier<String?>(null);
-  int _tingkatKemanisan = 0;
+  final _kaloriController = TextEditingController();
+  final ValueNotifier<List<String>> _kategoriController = ValueNotifier<List<String>>([]);
+
+  List<String> _categories = [];
+  bool _isLoadingCategories = true;
   File? _selectedImage;
+
+  final makananService = MakananService();
 
   @override
   void initState() {
     super.initState();
-    if (widget.minuman != null) {
-      _namaController.text = widget.minuman!.nama;
-      _hargaController.text = '${widget.minuman!.harga}';
-      _deskripsiController.text = widget.minuman!.deskripsi;
-      _ukuranController.value = widget.minuman!.ukuran;
-      _tingkatKemanisan = widget.minuman!.tingkatKemanisan;
+    _fetchCategories();
+    if (widget.makanan != null) {
+      _namaController.text = widget.makanan!.nama;
+      _hargaController.text = '${widget.makanan!.harga}';
+      _deskripsiController.text = widget.makanan!.deskripsi;
+      _kaloriController.text = '${widget.makanan!.kalori}';
+      _kategoriController.value = widget.makanan!.kategori;
+    }
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      final categories = await makananService.fetchCategories();
+      setState(() {
+        _categories = categories;
+        _isLoadingCategories = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingCategories = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat kategori: ${e.toString()}')),
+      );
     }
   }
 
@@ -57,8 +78,6 @@ class _MinumanFormState extends State<MinumanForm> {
       _selectedImage = image;
     });
   }
-
-  final minumanService = MinumanService();
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +92,8 @@ class _MinumanFormState extends State<MinumanForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 RPImagePicker(
-                  initialGambar: widget.minuman?.gambar != null
-                    ? RPUrls.baseUrl + widget.minuman!.gambar
+                  initialGambar: widget.makanan?.gambar != null
+                    ? RPUrls.baseUrl + widget.makanan!.gambar
                     : null,
                   buttonLabel: widget.imagePickerLabel,
                   onImagePicked: _onImagePicked,
@@ -85,7 +104,7 @@ class _MinumanFormState extends State<MinumanForm> {
                 RPTextFormField(
                   controller: _namaController,
                   labelText: 'Nama',
-                  hintText: 'Masukkan nama minuman',
+                  hintText: 'Masukkan nama makanan',
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
                       return 'Nama tidak boleh kosong!';
@@ -97,7 +116,7 @@ class _MinumanFormState extends State<MinumanForm> {
                 RPTextFormField(
                   controller: _hargaController,
                   labelText: 'Harga',
-                  hintText: 'Masukkan harga minuman',
+                  hintText: 'Masukkan harga makanan',
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
                       return 'Harga tidak boleh kosong!';
@@ -112,7 +131,7 @@ class _MinumanFormState extends State<MinumanForm> {
                 RPTextFormField(
                   controller: _deskripsiController,
                   labelText: 'Deskripsi',
-                  hintText: 'Masukkan deskripsi minuman',
+                  hintText: 'Masukkan deskripsi makanan',
                   maxLines: 5,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -120,42 +139,51 @@ class _MinumanFormState extends State<MinumanForm> {
                     }
                     return null;
                   },
-                ), const SizedBox(height: 16.0),
-                RPNumberPicker(
-                  labelText: 'Tingkat Kemanisan',
-                  initialValue: _tingkatKemanisan,
-                  minValue: 0,
-                  maxValue: 100,
-                  onChanged: (newValue) {
-                    setState(() {
-                      _tingkatKemanisan = newValue;
-                    });
-                  },
                 ),
                 const SizedBox(height: 16.0),
-                RPDropdownButton<String>(
-                  labelText: 'Ukuran',
-                  hintText: 'Pilih ukuran',
-                  items: const ['Kecil', 'Sedang', 'Besar'],
-                  selectedItem: widget.minuman?.ukuran != null
-                    ? _title(widget.minuman!.ukuran)
-                    : null,
-                  onChanged: (String? value) {
-                    if (value == 'Kecil') {
-                      _ukuranController.value = 'KECIL';
-                    } else if (value == 'Sedang') {
-                      _ukuranController.value = 'SEDANG';
-                    } else if (value == 'Besar') {
-                      _ukuranController.value = 'BESAR';
+                RPTextFormField(
+                  controller: _kaloriController,
+                  labelText: 'Kalori',
+                  hintText: 'Masukkan jumlah kalori makanan',
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Kalori tidak boleh kosong!';
                     }
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Ukuran tidak boleh kosong!';
+                    if (int.tryParse(value) == null) {
+                      return 'Kalori harus berupa angka!';
                     }
                     return null;
                   },
                 ),
+                const SizedBox(height: 16.0),
+                _isLoadingCategories
+                ? CircularProgressIndicator()
+                : DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: 'Kategori',
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _kategoriController.value.isNotEmpty ? _kategoriController.value.first : null,
+                    items: _categories.map((category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _kategoriController.value = [value];
+                        });
+                      }
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Kategori tidak boleh kosong!';
+                      }
+                      return null;
+                    },
+                  ),
                 const SizedBox(height: 32.0),
                 RPButton(
                   width: double.infinity,
@@ -164,7 +192,6 @@ class _MinumanFormState extends State<MinumanForm> {
                     _onSubmit();
                   },
                 ),
-                const SizedBox(height: 16.0),
               ],
             ),
           ),
@@ -178,25 +205,25 @@ class _MinumanFormState extends State<MinumanForm> {
       String nama = _namaController.text;
       String harga = _hargaController.text;
       String deskripsi = _deskripsiController.text;
+      int kalori = int.parse(_kaloriController.text);
       File? gambar = _selectedImage;
-      String? ukuran = _ukuranController.value;
-      int tingkatKemanisan = _tingkatKemanisan;
+      List<String> kategori = _kategoriController.value;
 
       String message;
       if (widget.edit) {
-        widget.minuman?.nama = nama;
-        widget.minuman?.harga = int.parse(harga);
-        widget.minuman?.deskripsi = deskripsi;
-        widget.minuman?.ukuran = ukuran!;
-        widget.minuman?.tingkatKemanisan = tingkatKemanisan;
+        widget.makanan?.nama = nama;
+        widget.makanan?.harga = int.parse(harga);
+        widget.makanan?.deskripsi = deskripsi;
+        widget.makanan?.kalori = kalori;
+        widget.makanan?.kategori = kategori;
 
         try {
-          final response = await minumanService.edit(
-            widget.minuman!,
+          final response = await makananService.edit(
+            widget.makanan!,
             gambar,
           );
-          message = 'Minuman berhasil diubah';
-        } catch(e) {
+          message = 'Makanan berhasil diubah';
+        } catch (e) {
           message = printException(e as Exception);
         }
 
@@ -209,23 +236,23 @@ class _MinumanFormState extends State<MinumanForm> {
         }
       } else {
         if (gambar != null) {
-          Minuman minuman = Minuman(
+          Makanan makanan = Makanan(
             nama: nama,
             harga: int.parse(harga),
             deskripsi: deskripsi,
             gambar: '',
-            ukuran: ukuran!,
-            tingkatKemanisan: tingkatKemanisan,
+            kalori: kalori,
+            kategori: kategori,
             restoran: widget.restoran,
           );
 
           try {
-            final response = await minumanService.add(
-              minuman,
+            final response = await makananService.add(
+              makanan,
               gambar,
             );
-            message = 'Minuman berhasil ditambah';
-          } catch(e) {
+            message = 'Makanan berhasil ditambah';
+          } catch (e) {
             message = printException(e as Exception);
           }
 
@@ -246,9 +273,5 @@ class _MinumanFormState extends State<MinumanForm> {
         }
       }
     }
-  }
-
-  String _title(String string) {
-    return "${string[0].toUpperCase()}${string.substring(1).toLowerCase()}";
   }
 }

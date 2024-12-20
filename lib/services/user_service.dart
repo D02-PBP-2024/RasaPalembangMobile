@@ -1,5 +1,6 @@
 // pbp_django_auth
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,14 +70,15 @@ class UserService {
     return convCookies;
   }
 
-  Future<dynamic> register(String nama, String username, String password1, String password2, String peran) async {
+  Future<User?> register(String nama, String username, String password1, String password2, String peran) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
       c.withCredentials = true;
     }
 
-    const String url = '${RPUrls.baseUrl}/v1/register/';
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/register/');
+
     String data = jsonEncode({
       'nama': nama,
       'username': username,
@@ -88,30 +90,34 @@ class UserService {
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
     http.Response response =
-    await client.post(Uri.parse(url), body: data, headers: headers);
+      await client.post(uri, body: data, headers: headers);
 
     // Remove used additional header
     headers.remove('Content-Type');
-    await _updateCookie(response);
+    await updateCookie(response);
 
-    if (response.statusCode == 201) {
+    int code = response.statusCode;
+    if (code == 201) {
       loggedIn = true;
       user = userFromJson(response.body);
+      return user;
+    } else if (code == 400){
+      loggedIn = false;
+      throw Exception('Username sudah digunakan');
     } else {
       loggedIn = false;
+      throw Exception('Request gagal!');
     }
-
-    return json.decode(response.body);
   }
 
-  Future<dynamic> login(String username, String password) async {
+  Future<User?> login(String username, String password) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
       c.withCredentials = true;
     }
 
-    const String url = '${RPUrls.baseUrl}/v1/login/';
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/login/');
     String data = jsonEncode({
       'username': username,
       'password': password,
@@ -119,52 +125,115 @@ class UserService {
 
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
-    http.Response response = await client.post(Uri.parse(url),
-        body: data, headers: headers);
+    http.Response response =
+      await client.post(uri, body: data, headers: headers);
 
     // Remove used additional header
     headers.remove('Content-Type');
-    await _updateCookie(response);
+    await updateCookie(response);
 
-    if (response.statusCode == 200) {
+    int code = response.statusCode;
+    if (code == 200) {
       loggedIn = true;
       user = userFromJson(response.body);
+      return user;
+    } else if (code == 401) {
+      loggedIn = false;
+      throw Exception('Login gagal');
     } else {
       loggedIn = false;
+      throw Exception('Request gagal!');
     }
-
-    return json.decode(response.body);
   }
 
-  Future<dynamic> logout() async {
+  Future<User?> logout() async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
       c.withCredentials = true;
     }
 
-    const String url = '${RPUrls.baseUrl}/v1/logout/';
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/logout/');
 
     http.Response response =
-    await client.post(Uri.parse(url), headers: headers);
+      await client.post(uri, headers: headers);
 
-    if (response.statusCode == 200) {
-      loggedIn = false;
-      user = null;
+    loggedIn = false;
+    cookies = {};
+    user = null;
+
+    int code = response.statusCode;
+    if (code == 200) {
+      return userFromJson(response.body);
+    } else if (code == 401) {
+      throw Exception('User tidak terautentikasi');
     } else {
-      loggedIn = true;
+      throw Exception('Request gagal!');
+    }
+  }
+
+  Future<User?> editProfile(String nama, String deskripsi, File? foto) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
     }
 
-    cookies = {};
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/profile/${user?.username}/');
 
-    return json.decode(response.body);
+    var request = http.MultipartRequest('POST', uri);
+    request.headers.addAll(headers);
+
+    request.fields['nama'] = nama;
+    request.fields['deskripsi'] = deskripsi;
+
+    if (foto != null) {
+      request.files.add(
+          await http.MultipartFile.fromPath('foto', foto.path)
+      );
+    }
+
+    var streamedResponse = await request.send();
+    var body = await streamedResponse.stream.bytesToString();
+    var response = http.Response(body, streamedResponse.statusCode,
+        headers: streamedResponse.headers);
+    await updateCookie(response);
+
+    int code = response.statusCode;
+    if (code == 200) {
+      user = userFromJson(response.body);
+      return user;
+    } else if (code == 404) {
+      throw Exception('User tidak ditemukan');
+    } else {
+      throw Exception('Request gagal!');
+    }
+  }
+
+  Future<User> getProfile(String username) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/profile/$username/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    if (response.statusCode == 200) {
+      return userFromJson(response.body);
+    } else {
+      throw Exception('Request gagal!');
+    }
   }
 
   Future persist(String cookies) async {
     local.setString("cookies", cookies);
   }
 
-  Future _updateCookie(http.Response response) async {
+  Future updateCookie(http.Response response) async {
     await init();
 
     String? allSetCookie = response.headers['set-cookie'];

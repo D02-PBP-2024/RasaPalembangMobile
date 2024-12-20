@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
-import 'package:rasapalembang/services/minuman_service.dart';
-import 'package:rasapalembang/widget/minuman_form.dart';
+import 'package:rasapalembang/services/makanan_service.dart';
+import 'package:rasapalembang/widget/makanan_form.dart';
 
-class MinumanTambahPage extends StatelessWidget {
+class MakananTambahPage extends StatelessWidget {
   final Restoran restoran;
 
-  MinumanTambahPage({
+  MakananTambahPage({
     super.key,
     required this.restoran
   });
 
   @override
   Widget build(BuildContext context) {
-    MinumanService minuman = MinumanService();
-    return MinumanForm(
+    MakananService makanan = MakananService();
+    return MakananForm(
       imagePickerLabel: 'Tambah gambar',
       saveButtonLabel: 'Simpan',
       restoran: restoran,
