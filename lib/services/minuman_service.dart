@@ -18,10 +18,11 @@ class MinumanService extends UserService {
     http.Response response = await client.get(uri, headers: headers);
     await updateCookie(response);
 
-    if (response.statusCode == 200) {
-      return minumanFromListJson(response.body);
-    } else {
-      throw Exception('Gagal mengambil data');
+    switch (response.statusCode) {
+      case 200:
+        return minumanFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
     }
   }
 
@@ -50,15 +51,15 @@ class MinumanService extends UserService {
         headers: streamedResponse.headers);
     await updateCookie(response);
 
-    int code = response.statusCode;
-    if (code == 201) {
-      return minumanFromJson(response.body);
-    } else if (response.statusCode == 401) {
-      throw Exception('User tidak terautentikasi');
-    } else if (response.statusCode == 403) {
-      throw Exception('Tindakan tidak diizinkan');
-    } else {
-      throw Exception('Error lainnya');
+    switch (response.statusCode) {
+      case 200:
+        return minumanFromJson(response.body);
+      case 401:
+        throw Exception('User tidak terautentikasi');
+      case 403:
+        throw Exception('Tindakan tidak diizinkan');
+      default:
+        throw Exception('Error lainnya');
     }
   }
 
@@ -91,15 +92,15 @@ class MinumanService extends UserService {
         headers: streamedResponse.headers);
     await updateCookie(response);
 
-    int code = response.statusCode;
-    if (code == 200) {
-      return minumanFromJson(response.body);
-    } else if (response.statusCode == 401) {
-      throw Exception('User tidak terautentikasi');
-    } else if (response.statusCode == 403) {
-      throw Exception('Tindakan tidak diizinkan');
-    } else {
-      throw Exception('Error lainnya');
+    switch (response.statusCode) {
+      case 200:
+        return minumanFromJson(response.body);
+      case 401:
+        throw Exception('User tidak terautentikasi');
+      case 403:
+        throw Exception('Tindakan tidak diizinkan');
+      default:
+        throw Exception('Error lainnya');
     }
   }
 
@@ -116,15 +117,15 @@ class MinumanService extends UserService {
       await client.delete(uri, headers: headers);
     await updateCookie(response);
 
-    int code = response.statusCode;
-    if (code == 200) {
-      return minumanFromJson(response.body);
-    } else if (response.statusCode == 401) {
-      throw Exception('User tidak terautentikasi');
-    } else if (response.statusCode == 403) {
-      throw Exception('Tindakan tidak diizinkan');
-    } else {
-      throw Exception('Error lainnya');
+    switch (response.statusCode) {
+      case 200:
+        return minumanFromJson(response.body);
+      case 401:
+        throw Exception('User tidak terautentikasi');
+      case 403:
+        throw Exception('Tindakan tidak diizinkan');
+      default:
+        throw Exception('Error lainnya');
     }
   }
 }
