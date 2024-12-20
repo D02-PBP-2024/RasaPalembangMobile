@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/widget/rp_makanan_card.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_minuman_card.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
@@ -20,8 +22,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
-    final MinumanService minumanService = MinumanService();
     final RestoranService restoranService = RestoranService();
+    final MakananService makananService = MakananService();
+    final MinumanService minumanService = MinumanService();
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -113,6 +116,29 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 16.0),
             FutureBuilder(
+              future: makananService.get(),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return _buildRecomendationList(
+                    title: 'Top Makanan',
+                    itemCount: 3,
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text("Belum ada minuman"));
+                } else {
+                  return _buildRecomendationList(
+                      title: 'Top Makanan',
+                      type: 'makanan',
+                      itemCount: 6,
+                      data: snapshot.data
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 16.0),
+            FutureBuilder(
               future: minumanService.get(),
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -175,8 +201,10 @@ class _HomePageState extends State<HomePage> {
                 final minuman = data![index];
                 item = RPMinumanCard(minuman: minuman);
               } else if (type == 'makanan') {
-                item = RPMenuCardSkeleton();
+                final makanan = data![index];
+                item = RPMakananCard(makanan: makanan);
               } else if (type == 'restoran') {
+                final restoran = data![index];
                 item = RPMenuCardSkeleton();
               } else {
                 item = RPMenuCardSkeleton();

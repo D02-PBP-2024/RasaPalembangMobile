@@ -35,7 +35,7 @@ class Makanan {
     nama: json["fields"]["nama"],
     deskripsi: json["fields"]["deskripsi"],
     gambar: json["fields"]["gambar"],
-    kategori: List<String>.from(json["kategori"].map((x) => x)),
+    kategori: List<String>.from(json["fields"]["kategori"].map((x) => x)),
     kalori: json["fields"]["kalori"],
     harga: json["fields"]["harga"],
     restoran: Restoran.fromJson(json["fields"]["restoran"]),
