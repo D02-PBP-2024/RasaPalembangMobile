@@ -1,19 +1,23 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rasapalembang/models/user.dart';
 import 'package:rasapalembang/services/user_service.dart';
+import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_image_picker.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class ProfileEditPage extends StatefulWidget {
+  final Function(String, String, String) onChanged;
   final String nama;
   final String deskripsi;
   final String foto;
 
   const ProfileEditPage({
     super.key,
+    required this.onChanged,
     required this.nama,
     required this.deskripsi,
     required this.foto
@@ -29,6 +33,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   final _deskripsiController = TextEditingController();
   File? _selectedImage;
 
+  @override
+  void initState() {
+    super.initState();
+    _namaController.text = widget.nama;
+    _deskripsiController.text = widget.deskripsi;
+  }
+
   void _onImagePicked(File? image) {
     setState(() {
       _selectedImage = image;
@@ -38,8 +49,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
-    _namaController.text = widget.nama;
-    _deskripsiController.text = widget.deskripsi;
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -49,7 +58,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           child: Column(
             children: [
               RPImagePicker(
-                initialGambar: widget.foto != "" ? widget.foto : RPUrls.noProfileUrl,
+                initialGambar: widget.foto != ''
+                  ? RPUrls.baseUrl + widget.foto
+                  : RPUrls.noProfileUrl,
                 onImagePicked: _onImagePicked,
                 buttonLabel: 'Edit foto',
                 imagePreviewWidth: 100,
@@ -73,12 +84,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 labelText: 'Deskripsi',
                 hintText: 'Deskripsi',
                 maxLines: 5,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Deskripsi tidak boleh kosong!';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 32.0),
               RPButton(
@@ -92,18 +97,27 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
                     final user = request.user;
                     if (user != null) {
-                      user.nama = nama;
-                      user.deskripsi = deskripsi;
-                      final response = await request.editProfile(
-                        nama,
-                        deskripsi,
-                        foto,
-                      );
-
+                      String message;
+                      User? response;
+                      try {
+                        response = await request.editProfile(
+                          nama,
+                          deskripsi,
+                          foto,
+                        );
+                        message = 'Berhasil mengubah profile!';
+                      } catch(e) {
+                        message = printException(e as Exception);
+                      }
                       if (context.mounted) {
+                        widget.onChanged(
+                          nama,
+                          deskripsi,
+                          response!.foto,
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(response['message']),
+                            content: Text(message),
                           ),
                         );
                       }

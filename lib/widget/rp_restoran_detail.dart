@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/screens/minuman/minuman_tambah.dart';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
+import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_ulasan_card.dart';
@@ -47,6 +51,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
   @override
   Widget build(BuildContext context) {
     final restoran = widget.restoran;
+    final request = context.watch<UserService>();
 
     return Scaffold(
       appBar: AppBar(
@@ -217,6 +222,35 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
               label: 'Forum Diskusi',
               onPressed: () {},
             ),
+
+            if (request.user?.username == restoran.user)
+              Column(
+                children: [
+                  const SizedBox(height: 8.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      RPButton(
+                        label: 'Tambah Makanan',
+                        onPressed: () {},
+                      ),
+                      const SizedBox(width: 8.0),
+                      RPButton(
+                        label: 'Tambah Minuman',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  MinumanTambahPage(restoran: restoran),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
 
             // Tambahkan judul lokasi
             const Padding(

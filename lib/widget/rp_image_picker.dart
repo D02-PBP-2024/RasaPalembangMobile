@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
+import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
 class RPImagePicker extends StatefulWidget {
   final Function(File?) onImagePicked;
@@ -120,51 +121,26 @@ class _RPImagePickerState extends State<RPImagePicker> {
   }
 
   void _showPickImageDialog() {
-    showModalBottomSheet(
+    RPBottomSheet(
       context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return ClipRRect(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(RPSize.cornerRadius),
-          ),
-          child: SingleChildScrollView(
-            child: Container(
-              color: Colors.white,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    height: 5,
-                    width: 50,
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2.5),
-                    ),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.camera_alt),
-                    title: Text('Ambil dari kamera'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImage(ImageSource.camera);
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.image),
-                    title: Text('Pilih dari galeri'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImage(ImageSource.gallery);
-                    },
-                  ),
-                  const SizedBox(height: 16.0)
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
+      widgets: [
+        ListTile(
+          leading: Icon(Icons.camera_alt),
+          title: Text('Ambil dari kamera'),
+          onTap: () {
+            Navigator.pop(context);
+            _pickImage(ImageSource.camera);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.image),
+          title: Text('Pilih dari galeri'),
+          onTap: () {
+            Navigator.pop(context);
+            _pickImage(ImageSource.gallery);
+          },
+        ),
+      ],
+    ).show();
   }
 }
