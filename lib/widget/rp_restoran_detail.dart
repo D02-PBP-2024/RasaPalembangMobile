@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/screens/makanan/makanan_tambah.dart';
 import 'package:rasapalembang/screens/minuman/minuman_tambah.dart';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
 import 'package:rasapalembang/services/user_service.dart';
@@ -228,7 +229,12 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                     RPButton(
                       label: 'Tambah Makanan',
                       onPressed: () {
-
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MakananTambahPage(restoran: restoran),
+                          ),
+                        );
                       },
                     ),
                     const SizedBox(width: 8.0),
