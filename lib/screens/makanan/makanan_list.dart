@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/screens/makanan/makanan_detail.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
-import 'package:rasapalembang/widget/rp_menu_card.dart';
+import 'package:rasapalembang/widget/rp_makanan_card.dart';
+import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 
 class MakananListPage extends StatelessWidget {
   MakananListPage({super.key});
@@ -13,37 +13,52 @@ class MakananListPage extends StatelessWidget {
       body: FutureBuilder(
         future: makanan.get(),
         builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.data == null) {
-            return const Text('loading');
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildMakananGrid(itemCount: 6, isLoading: true);
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Belum ada makanan"));
           } else {
-            if (!snapshot.hasData) {
-              return const Text('belum ada makanan');
-            } else {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8.0,
-                    mainAxisSpacing: 8.0,
-                    childAspectRatio: 0.60,
-                  ),
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    final makanan = snapshot.data[index];
-                    return RPMenuCard(
-                      id: makanan.pk,
-                      gambar: makanan.gambar,
-                      nama: makanan.nama,
-                      harga: makanan.harga,
-                      restoran: makanan.restoran.nama,
-                    );
-                  },
-                ),
-              );
-            }
+            return _buildMakananGrid(
+                itemCount: snapshot.data.length,
+                isLoading: false,
+                data: snapshot.data
+            );
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildMakananGrid({required int itemCount, bool isLoading = false, List? data}) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 0.65,
+              ),
+              itemCount: itemCount,
+              itemBuilder: (context, index) {
+                if (isLoading) {
+                  return RPMenuCardSkeleton();
+                } else {
+                  final makanan = data![index];
+                  return RPMakananCard(makanan: makanan);
+                }
+              },
+            ),
+          ),
+          const SizedBox(height: 8.0),
+        ],
       ),
     );
   }
