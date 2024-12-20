@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ForumTambahPage() // coba random id resto from fixture
+      body: Text('')
     );
   }
 }

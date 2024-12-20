@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Untuk memformat tanggal
+import 'package:intl/intl.dart';
 import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/models/balasan.dart';
+import 'package:rasapalembang/screens/forum/forum_tambah.dart';
 import 'package:rasapalembang/services/balasan_service.dart';
 import 'package:rasapalembang/utils/date_time_extension.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
@@ -23,7 +24,6 @@ class ForumDetailPage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Pemilik Forum
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -47,7 +47,6 @@ class ForumDetailPage extends StatelessWidget {
                         forum.user.username,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      // Tanggal Forum
                       Padding(
                         padding: const EdgeInsets.only(top: 4.0),
                         child: Text(
@@ -63,7 +62,6 @@ class ForumDetailPage extends StatelessWidget {
             ),
           ),
 
-          // Pesan Forum
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
@@ -76,7 +74,6 @@ class ForumDetailPage extends StatelessWidget {
             child: const Divider(),
           ),
 
-          // Total Balasan (Icon Pesan Tetap Ada)
           Padding(
             padding: const EdgeInsets.only(left: 16.0, bottom: 4.0),
             child: Row(
@@ -104,7 +101,6 @@ class ForumDetailPage extends StatelessWidget {
             ),
           ),
 
-          // Daftar Balasan
           Expanded(
             child: FutureBuilder<List<Balasan>>(
               future: balasanService.get(forum.pk),
@@ -128,7 +124,6 @@ class ForumDetailPage extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                // Foto User
                                 Align(
                                   alignment: Alignment.center,
                                   child: ClipOval(
@@ -144,19 +139,16 @@ class ForumDetailPage extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 8),
 
-                                // Box untuk Nama dan Tanggal
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // Nama User
                                       Text(
                                         balasan.user.username,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      // Tanggal Balasan
                                       Padding(
                                         padding:
                                             const EdgeInsets.only(top: 4.0),
@@ -173,7 +165,6 @@ class ForumDetailPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            // Pesan Balasan
                             Padding(
                               padding: const EdgeInsets.only(
                                   left: 58.0, right: 16.0),
