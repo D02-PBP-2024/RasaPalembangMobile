@@ -4,6 +4,7 @@ import 'package:rasapalembang/providers/tab_provider.dart';
 import 'package:rasapalembang/screens/home.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
@@ -71,17 +72,25 @@ class _LoginPageState extends State<LoginPage> {
                         String username = _usernameController.text;
                         String password = _passwordController.text;
 
-                        final response = await request.login(
-                          username,
-                          password,
-                        );
+                        String message;
+                        bool success = false;
+                        try {
+                          final response = await request.login(
+                            username,
+                            password,
+                          );
+                          message = 'Selamat datang ${response?.username}!';
+                          success = true;
+                        } catch (e) {
+                          message = printException(e as Exception);
+                        }
 
                         if (context.mounted) {
-                          if (request.loggedIn) {
+                          if (success && request.loggedIn) {
                             ScaffoldMessenger.of(context)
                               ..hideCurrentSnackBar()
                               ..showSnackBar(
-                                SnackBar(content: Text(response['message'])),
+                                SnackBar(content: Text(message)),
                               );
                             selectedTab.tab = 0;
                             Navigator.pushReplacement(
@@ -94,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                               context: context,
                               builder: (context) => AlertDialog(
                                 title: const Text('Login Gagal'),
-                                content: Text(response['message']),
+                                content: Text(message),
                                 actions: [
                                   TextButton(
                                     child: const Text('OK'),

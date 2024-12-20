@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:rasapalembang/screens/authentication/login.dart';
 import 'package:rasapalembang/screens/authentication/profile_edit.dart';
 import 'package:rasapalembang/services/user_service.dart';
+import 'package:rasapalembang/utils/print_exception.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -84,7 +86,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     left: 16,
                     child: ClipOval(
                       child: Image.network(
-                        foto,
+                        foto != ''
+                          ? RPUrls.baseUrl + foto
+                          : RPUrls.noProfileUrl,
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
@@ -109,7 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    deskripsi == "" ? 'Belum ada bio.' : deskripsi,
+                    deskripsi == '' ? 'Belum ada bio.' : deskripsi,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 8.0),
@@ -169,11 +173,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         RPButton(
                           label: 'Logout',
                           onPressed: () async {
-                            final response = await request.logout();
+                            String message;
+                            try {
+                              final response = await request.logout();
+                              message = 'Sampai jumpa ${response?.username}!';
+                            } catch(e) {
+                              message = printException(e as Exception);
+                            }
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(response['message']),
+                                  content: Text(message),
                                 ),
                               );
                               Navigator.pushReplacement(

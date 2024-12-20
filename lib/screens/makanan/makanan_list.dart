@@ -76,11 +76,11 @@ class MakananListPage extends StatelessWidget {
             final makanan = Makanan.fromJson(makananList[index]);
 
             return RPMenuCard(
+              id: makanan.pk,
               gambar: makanan.gambar,
               nama: makanan.nama,
               harga: makanan.harga,
               restoran: makanan.restoran.nama,
-              menuDetailPage: MakananDetailPage(makanan: makanan),
             );
           },
         ),

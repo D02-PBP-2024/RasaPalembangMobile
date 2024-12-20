@@ -4,7 +4,6 @@ import 'package:rasapalembang/screens/authentication/login.dart';
 import 'package:rasapalembang/screens/authentication/profile.dart';
 import 'package:rasapalembang/screens/authentication/register.dart';
 import 'package:rasapalembang/services/user_service.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 
 class AkunRoute extends StatelessWidget {
   const AkunRoute({super.key});
