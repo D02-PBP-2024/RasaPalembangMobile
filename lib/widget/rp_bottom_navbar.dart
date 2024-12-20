@@ -33,14 +33,16 @@ class _RPBottomNavbarState extends State<RPBottomNavbar> {
         currentIndex: selectedTab.tab,
         onTap: (index) => selectedTab.tab = index,
         selectedItemColor: RPColors.biruMuda,
+        selectedFontSize: 12,
         unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Beranda',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fastfood),
+            icon: Icon(Icons.rice_bowl),
             label: 'Makanan',
           ),
           BottomNavigationBarItem(
@@ -48,11 +50,11 @@ class _RPBottomNavbarState extends State<RPBottomNavbar> {
             label: 'Minuman',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant),
+            icon: Icon(Icons.storefront),
             label: 'Restoran',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.account_circle),
             label: 'Akun',
           ),
         ],

@@ -38,8 +38,19 @@ class _MinumanFormState extends State<MinumanForm> {
   final _deskripsiController = TextEditingController();
   final ValueNotifier<String?> _ukuranController = ValueNotifier<String?>(null);
   int _tingkatKemanisan = 0;
-
   File? _selectedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.minuman != null) {
+      _namaController.text = widget.minuman!.nama;
+      _hargaController.text = '${widget.minuman!.harga}';
+      _deskripsiController.text = widget.minuman!.deskripsi;
+      _ukuranController.value = widget.minuman!.ukuran;
+      _tingkatKemanisan = widget.minuman!.tingkatKemanisan;
+    }
+  }
 
   void _onImagePicked(File? image) {
     setState(() {
@@ -51,13 +62,6 @@ class _MinumanFormState extends State<MinumanForm> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.minuman != null) {
-      _namaController.text = widget.minuman!.nama;
-      _hargaController.text = '${widget.minuman!.harga}';
-      _deskripsiController.text = widget.minuman!.deskripsi;
-      _ukuranController.value = widget.minuman!.ukuran;
-      _tingkatKemanisan = widget.minuman!.tingkatKemanisan;
-    }
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -160,6 +164,7 @@ class _MinumanFormState extends State<MinumanForm> {
                     _onSubmit();
                   },
                 ),
+                const SizedBox(height: 16.0),
               ],
             ),
           ),
