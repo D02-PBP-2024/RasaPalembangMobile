@@ -35,7 +35,6 @@ class RPMenuCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Stack(
             children: [
@@ -66,7 +65,7 @@ class RPMenuCard extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -78,7 +77,7 @@ class RPMenuCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 4.0),
                 Text(
                   restoran,
                   style: const TextStyle(
@@ -88,18 +87,16 @@ class RPMenuCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(height: 4.0),
+                Text(
+                  FormatHarga.format(harga),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: RPColors.textSecondary,
+                  ),
+                ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              FormatHarga.format(harga),
-              style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: RPColors.textSecondary,
-              ),
             ),
           ),
         ],

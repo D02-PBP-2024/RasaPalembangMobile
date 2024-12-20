@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/makanan.dart';
-import 'package:rasapalembang/screens/makanan/makanan_edit.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
-import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
-import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
-import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
 class RPMakananDetail extends StatefulWidget {
   final Makanan makanan;
@@ -26,7 +21,6 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<UserService>();
     Makanan makanan = widget.makanan;
     double screenWidth = MediaQuery.of(context).size.width;
     return Padding(

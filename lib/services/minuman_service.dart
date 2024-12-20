@@ -26,6 +26,25 @@ class MinumanService extends UserService {
     }
   }
 
+  Future<List<Minuman>> getByRestoran(String idRestoran) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/minuman/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    if (response.statusCode == 200) {
+      return minumanFromListJson(response.body);
+    } else {
+      throw Exception('Gagal mengambil data');
+    }
+  }
+
   Future<Minuman> add(Minuman minuman, File gambar) async {
     await init();
     if (kIsWeb) {
