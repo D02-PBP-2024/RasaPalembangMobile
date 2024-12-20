@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rasapalembang/models/user.dart';
 import 'package:rasapalembang/services/user_service.dart';
+import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_image_picker.dart';
@@ -31,6 +33,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   final _deskripsiController = TextEditingController();
   File? _selectedImage;
 
+  @override
+  void initState() {
+    super.initState();
+    _namaController.text = widget.nama;
+    _deskripsiController.text = widget.deskripsi;
+  }
+
   void _onImagePicked(File? image) {
     setState(() {
       _selectedImage = image;
@@ -40,8 +49,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
-    _namaController.text = widget.nama;
-    _deskripsiController.text = widget.deskripsi;
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -90,20 +97,27 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
                     final user = request.user;
                     if (user != null) {
-                      final response = await request.editProfile(
-                        nama,
-                        deskripsi,
-                        foto,
-                      );
+                      String message;
+                      User? response;
+                      try {
+                        response = await request.editProfile(
+                          nama,
+                          deskripsi,
+                          foto,
+                        );
+                        message = 'Berhasil mengubah profile!';
+                      } catch(e) {
+                        message = printException(e as Exception);
+                      }
                       if (context.mounted) {
                         widget.onChanged(
                           nama,
                           deskripsi,
-                          RPUrls.baseUrl + response['fields']['foto'],
+                          response!.foto,
                         );
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(response['message']),
+                            content: Text(message),
                           ),
                         );
                       }

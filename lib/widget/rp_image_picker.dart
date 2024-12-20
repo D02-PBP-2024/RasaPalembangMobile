@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
 class RPImagePicker extends StatefulWidget {
@@ -122,23 +121,26 @@ class _RPImagePickerState extends State<RPImagePicker> {
   }
 
   void _showPickImageDialog() {
-    List<BottomSheetOption> options = [
-      BottomSheetOption(
-        icon: Icons.camera_alt,
-        title: 'Ambil dari kamera',
-        onTap: () {
-          _pickImage(ImageSource.camera);
-        },
-      ),
-      BottomSheetOption(
-        icon: Icons.image,
-        title: 'Pilih dari galeri',
-        onTap: () {
-          _pickImage(ImageSource.gallery);
-        },
-      ),
-    ];
-
-    RPBottomSheet(context: context, options: options).show();
+    RPBottomSheet(
+      context: context,
+      widgets: [
+        ListTile(
+          leading: Icon(Icons.camera_alt),
+          title: Text('Ambil dari kamera'),
+          onTap: () {
+            Navigator.pop(context);
+            _pickImage(ImageSource.camera);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.image),
+          title: Text('Pilih dari galeri'),
+          onTap: () {
+            Navigator.pop(context);
+            _pickImage(ImageSource.gallery);
+          },
+        ),
+      ],
+    ).show();
   }
 }

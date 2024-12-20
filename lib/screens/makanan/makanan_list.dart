@@ -31,13 +31,12 @@ class MakananListPage extends StatelessWidget {
                   itemCount: snapshot.data.length,
                   itemBuilder: (context, index) {
                     final makanan = snapshot.data[index];
-
                     return RPMenuCard(
-                      gambar: makanan.fields.gambar,
-                      nama: makanan.fields.nama,
-                      harga: makanan.fields.harga,
-                      restoran: makanan.fields.restoran.fields.nama,
-                      menuDetailPage: MakananDetailPage(makanan: makanan),
+                      id: makanan.pk,
+                      gambar: makanan.gambar,
+                      nama: makanan.nama,
+                      harga: makanan.harga,
+                      restoran: makanan.restoran.nama,
                     );
                   },
                 ),
