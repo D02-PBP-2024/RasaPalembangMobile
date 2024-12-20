@@ -26,6 +26,25 @@ class MakananService extends UserService {
     }
   }
 
+  Future<List<Makanan>> getByRestoran(String idRestoran) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/makanan/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    if (response.statusCode == 200) {
+      return makananFromListJson(response.body);
+    } else {
+      throw Exception('Gagal mengambil data makanan');
+    }
+  }
+
   Future<Makanan> add(Makanan makanan, File gambar) async {
     await init();
     if (kIsWeb) {
@@ -126,28 +145,22 @@ class MakananService extends UserService {
     }
   }
 
-  Future<List<String>> fetchCategories() async {
-    await init();
-    if (kIsWeb) {
-      dynamic c = client;
-      c.withCredentials = true;
-    }
-
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/makanan/');
-    http.Response response = await client.get(uri, headers: headers);
-    await updateCookie(response);
+  Future<Map<String, String>> fetchCategories() async {
+    final uri = Uri.parse('http://127.0.0.1:8000/v1/makanan/kategori/');
+    final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
+      final List<dynamic> kategoriList = json.decode(response.body);
 
-      // Periksa apakah `kategori` tersedia dalam respons
-      if (data.containsKey('kategori') && data['kategori'] is List) {
-        return List<String>.from(data['kategori']);
-      } else {
-        throw Exception('Data kategori tidak ditemukan di respons.');
-      }
+      // Konversi ke Map UUID -> Nama
+      final Map<String, String> kategoriMap = {
+        for (var kategori in kategoriList)
+          kategori['id']: kategori['nama']
+      };
+
+      return kategoriMap;
     } else {
-      throw Exception('Gagal mengambil data kategori');
+      throw Exception('Gagal mengambil kategori');
     }
   }
 }

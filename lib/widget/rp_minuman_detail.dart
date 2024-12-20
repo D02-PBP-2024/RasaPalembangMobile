@@ -4,8 +4,8 @@ import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/format_harga.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/widget/restoran_detail.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
-import 'package:rasapalembang/widget/rp_restoran_detail.dart';
 
 class RPMenuDetail extends StatefulWidget {
   final Minuman minuman;
@@ -109,7 +109,7 @@ class _RPMenuDetailState extends State<RPMenuDetail> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RPRestoDetail(
+                    builder: (context) => RestoranDetail(
                       restoran: widget.minuman.restoran
                     ),
                   ),

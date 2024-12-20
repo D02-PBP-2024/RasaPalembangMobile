@@ -20,7 +20,6 @@ class RPMenuCardSkeleton extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Shimmer.fromColors(
             baseColor: Colors.grey[300]!,
@@ -32,10 +31,11 @@ class RPMenuCardSkeleton extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 4.0),
                 Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[200]!,
@@ -45,7 +45,7 @@ class RPMenuCardSkeleton extends StatelessWidget {
                     color: Colors.grey[300],
                   ),
                 ),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 10.0),
                 Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[200]!,
@@ -55,19 +55,17 @@ class RPMenuCardSkeleton extends StatelessWidget {
                     color: Colors.grey[300],
                   ),
                 ),
+                const SizedBox(height: 10.0),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[200]!,
+                  child: Container(
+                    width: 80,
+                    height: 14.0,
+                    color: Colors.grey[300],
+                  ),
+                ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[200]!,
-              child: Container(
-                width: 80,
-                height: 14.0,
-                color: Colors.grey[300],
-              ),
             ),
           ),
         ],
