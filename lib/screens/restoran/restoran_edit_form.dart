@@ -77,7 +77,7 @@ class _RestoranEditFormState extends State<RestoranEditForm> {
         ),
       ),
     );
-  }
+  } 
 
   Widget _buildTextField(TextEditingController controller, String label,
       [TextInputType keyboardType = TextInputType.text]) {

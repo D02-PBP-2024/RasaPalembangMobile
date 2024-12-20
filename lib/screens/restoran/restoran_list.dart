@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
+import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/widget/rp_restoran_detail.dart';
 import 'package:rasapalembang/screens/restoran/restoran_form.dart';
 import 'package:rasapalembang/widget/rp_restoran_card.dart';
@@ -13,50 +14,58 @@ class RestoranListPage extends StatefulWidget {
 }
 
 class _RestoranListPageState extends State<RestoranListPage> {
-  final List<Restoran> restoranList = []; // Menggunakan model Restoran secara langsung
+  late UserService userService;
 
-  // Menambahkan restoran baru ke dalam list
-  void _addNewRestoran(Map<String, dynamic> newRestoranData) {
-    setState(() {
-      restoranList.add(Restoran.fromJson(newRestoranData));
-    });
-  }
+@override
+void initState() {
+  super.initState();
+  userService = UserService();
+  userService.init().then((_) {
+    debugPrint("User setelah inisialisasi: ${userService.user}");
+    debugPrint("Role pengguna: ${userService.user?.peran}");
+    setState(() {});
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
-    RestoranService restoran = RestoranService();
+    RestoranService restoranService = RestoranService();
+    debugPrint("User role: ${userService.user?.peran}");
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Daftar Restoran'),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: ElevatedButton(
-              onPressed: () async {
-                final newRestoranData = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RestoranFormPage(),
-                  ),
-                );
+          if (userService.user?.peran == "pemilik_restoran")
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  final newRestoranData = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RestoranFormPage(),
+                    ),
+                  );
 
-                if (newRestoranData != null) {
-                  _addNewRestoran(newRestoranData);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF54BAB9), // Warna tombol
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  if (newRestoranData != null) {
+                    setState(() {});
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF54BAB9),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
+                child: const Text('Tambah Restoran'),
               ),
-              child: const Text('Tambah Restoran'),
-            ),
-          ),
+            )
+          else
+            const SizedBox.shrink(),
         ],
       ),
       body: FutureBuilder(
-        future: restoran.get(),
+        future: restoranService.get(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -70,10 +79,10 @@ class _RestoranListPageState extends State<RestoranListPage> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // 2 kartu per baris
+                  crossAxisCount: 2,
                   crossAxisSpacing: 8.0,
                   mainAxisSpacing: 8.0,
-                  childAspectRatio: 0.75, // Sesuaikan rasio kartu
+                  childAspectRatio: 0.75,
                 ),
                 itemCount: restoranList.length,
                 itemBuilder: (context, index) {
@@ -84,14 +93,16 @@ class _RestoranListPageState extends State<RestoranListPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RPRestoDetail(restoran: restoran),
+                          builder: (context) => RPRestoDetail(
+                            restoran: restoran,
+                          ),
                         ),
                       );
                     },
                     child: RPRestoCard(
                       nama: restoran.nama,
                       gambar: restoran.gambar,
-                      rating: '4.5', // placeholder
+                      rating: '4.5',
                       jamBuka: restoran.jamBuka,
                       jamTutup: restoran.jamTutup,
                       isOpen: _isCurrentlyOpen(
@@ -104,45 +115,32 @@ class _RestoranListPageState extends State<RestoranListPage> {
               ),
             );
           }
-        }
+        },
       ),
     );
   }
 
-  // Fungsi untuk menentukan apakah restoran buka berdasarkan jam operasional (termasuk yang melewati tengah malam)
   bool _isCurrentlyOpen(String jamBuka, String jamTutup) {
-    try {
-      final now = TimeOfDay.now();
-      final buka = _timeOfDayFromString(jamBuka);
-      final tutup = _timeOfDayFromString(jamTutup);
+    final now = TimeOfDay.now();
+    final buka = _timeOfDayFromString(jamBuka);
+    final tutup = _timeOfDayFromString(jamTutup);
 
-      if (buka == null || tutup == null) return false;
+    if (buka == null || tutup == null) return false;
 
-      // Konversi TimeOfDay ke menit sejak tengah malam
-      final nowMinutes = now.hour * 60 + now.minute;
-      final bukaMinutes = buka.hour * 60 + buka.minute;
-      final tutupMinutes = tutup.hour * 60 + tutup.minute;
+    final nowMinutes = now.hour * 60 + now.minute;
+    final bukaMinutes = buka.hour * 60 + buka.minute;
+    final tutupMinutes = tutup.hour * 60 + tutup.minute;
 
-      if (bukaMinutes < tutupMinutes) {
-        // Restoran buka dan tutup di hari yang sama
-        return bukaMinutes <= nowMinutes && nowMinutes <= tutupMinutes;
-      } else {
-        // Restoran buka melewati tengah malam
-        return nowMinutes >= bukaMinutes || nowMinutes <= tutupMinutes;
-      }
-    } catch (e) {
-      return false;
+    if (bukaMinutes <= tutupMinutes) {
+      return nowMinutes >= bukaMinutes && nowMinutes <= tutupMinutes;
+    } else {
+      return nowMinutes >= bukaMinutes || nowMinutes <= tutupMinutes;
     }
   }
 
-  // Fungsi untuk mengonversi string jam ke TimeOfDay
   TimeOfDay? _timeOfDayFromString(String time) {
-    try {
-      final parts = time.split(':');
-      if (parts.length != 2) return null;
-      return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
-    } catch (e) {
-      return null;
-    }
+    final parts = time.split(':');
+    if (parts.length != 2) return null;
+    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
 }

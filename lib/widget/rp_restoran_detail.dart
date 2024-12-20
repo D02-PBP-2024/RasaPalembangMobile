@@ -8,6 +8,7 @@ import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
+import 'package:rasapalembang/services/restoran_service.dart';
 
 
 class RPRestoDetail extends StatefulWidget {
@@ -63,8 +64,15 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
           // Gambar Restoran dengan semua informasi
           Stack(
             children: [
-              Image.network(
-                RPUrls.baseUrl + restoran.gambar,
+              restoran.gambar.isNotEmpty
+                  ? Image.network(
+                restoran.gambar,
+                width: double.infinity,
+                height: 500,
+                fit: BoxFit.cover,
+              )
+                  : Image.asset(
+                'assets/placeholder.png',
                 width: double.infinity,
                 height: 500,
                 fit: BoxFit.cover,
@@ -146,67 +154,79 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final updatedData = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RestoranEditForm(
-                            restoran: {
-                              'nama': restoran.nama,
-                              'alamat': restoran.alamat,
-                              'jamBuka': restoran.jamBuka,
-                              'jamTutup': restoran.jamTutup,
-                              'nomorTelepon': restoran.nomorTelepon,
-                              'gambar': restoran.gambar,
-                            },
+                if (request.user?.username == restoran.user) ...[
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final updatedData = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RestoranEditForm(
+                              restoran: {
+                                'nama': restoran.nama,
+                                'alamat': restoran.alamat,
+                                'jamBuka': restoran.jamBuka,
+                                'jamTutup': restoran.jamTutup,
+                                'nomorTelepon': restoran.nomorTelepon,
+                                'gambar': restoran.gambar,
+                              },
+                            ),
                           ),
-                        ),
-                      );
+                        );
 
-                      if (updatedData != null) {
-                        setState(() {
-                          restoran.nama = updatedData['nama'];
-                          restoran.alamat = updatedData['alamat'];
-                          restoran.jamBuka = updatedData['jamBuka'];
-                          restoran.jamTutup = updatedData['jamTutup'];
-                          restoran.nomorTelepon = updatedData['nomorTelepon'];
-                          restoran.gambar = updatedData['gambar'];
-                        });
-                        // Update koordinat berdasarkan alamat yang baru
-                        setState(() {
-                          isLoading = true; // Aktifkan loading sebelum mendapatkan koordinat baru
-                        });
-                        await _getCoordinatesFromAddress(updatedData['alamat']);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.cyan[400],
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    ),
-                    child: const Text(
-                      'Ubah Restoran',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16.0),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Aksi hapus restoran
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    ),
-                    child: const Text(
-                      'Hapus Restoran',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                        if (updatedData != null) {
+                          setState(() {
+                            restoran.nama = updatedData['nama'];
+                            restoran.alamat = updatedData['alamat'];
+                            restoran.jamBuka = updatedData['jamBuka'];
+                            restoran.jamTutup = updatedData['jamTutup'];
+                            restoran.nomorTelepon = updatedData['nomorTelepon'];
+                            restoran.gambar = updatedData['gambar'];
+                          });
+                          // Update koordinat berdasarkan alamat yang baru
+                          setState(() {
+                            isLoading = true; // Aktifkan loading sebelum mendapatkan koordinat baru
+                          });
+                          await _getCoordinatesFromAddress(updatedData['alamat']);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.cyan[400],
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      ),
+                      child: const Text(
+                        'Ubah Restoran',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          await RestoranService().delete(restoran);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Restoran berhasil dihapus')),
+                          );
+                          Navigator.pop(context);
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Gagal menghapus restoran: $e')),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      ),
+                      child: const Text(
+                        'Hapus Restoran',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
