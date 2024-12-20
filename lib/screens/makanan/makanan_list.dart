@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:rasapalembang/models/makanan.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
+import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_makanan_card.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 
-class MakananListPage extends StatelessWidget {
+class MakananListPage extends StatefulWidget {
   MakananListPage({super.key});
 
   @override
+  _MakananListPageState createState() => _MakananListPageState();
+}
+
+class _MakananListPageState extends State<MakananListPage> {
+  MakananService makananService = MakananService();
+  late Future<List<Makanan>> _makananList;
+
+  @override
+  void initState() {
+    super.initState();
+    _makananList = makananService.get();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    MakananService makanan = MakananService();
     return Scaffold(
       body: FutureBuilder(
-        future: makanan.get(),
+        future: _makananList,
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return _buildMakananGrid(itemCount: 6, isLoading: true);
@@ -32,34 +47,17 @@ class MakananListPage extends StatelessWidget {
   }
 
   Widget _buildMakananGrid({required int itemCount, bool isLoading = false, List? data}) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                childAspectRatio: 0.65,
-              ),
-              itemCount: itemCount,
-              itemBuilder: (context, index) {
-                if (isLoading) {
-                  return RPMenuCardSkeleton();
-                } else {
-                  final makanan = data![index];
-                  return RPMakananCard(makanan: makanan);
-                }
-              },
-            ),
-          ),
-          const SizedBox(height: 8.0),
-        ],
-      ),
+    return RPMenuGridView(
+      paddingTop: 24,
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (isLoading) {
+          return RPMenuCardSkeleton();
+        } else {
+          final makanan = data![index];
+          return RPMakananCard(makanan: makanan);
+        }
+      },
     );
   }
 }
