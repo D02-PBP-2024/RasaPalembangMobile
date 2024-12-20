@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/screens/forum/forum_list.dart';
 import 'package:rasapalembang/screens/minuman/minuman_tambah.dart';
-import 'dart:io';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
@@ -221,7 +220,10 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ForumListPage(idRestoran: restoran.pk,)),
+                MaterialPageRoute(
+                    builder: (context) => ForumListPage(
+                          idRestoran: restoran.pk,
+                        )),
               );
             },
           ),
@@ -235,9 +237,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                   children: [
                     RPButton(
                       label: 'Tambah Makanan',
-                      onPressed: () {
-
-                      },
+                      onPressed: () {},
                     ),
                     const SizedBox(width: 8.0),
                     RPButton(
@@ -246,7 +246,8 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MinumanTambahPage(restoran: restoran),
+                            builder: (context) =>
+                                MinumanTambahPage(restoran: restoran),
                           ),
                         );
                       },
@@ -255,7 +256,6 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                 ),
               ],
             ),
-
 
           // Tambahkan judul lokasi
           const Padding(

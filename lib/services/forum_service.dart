@@ -61,6 +61,40 @@ class ForumService extends UserService {
     }
   }
 
+  Future<Forum> editForum(Forum forum) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/forum/${forum.pk}/');
+
+    final body = jsonEncode({
+      'topik': forum.topik,
+      'pesan': forum.pesan,
+    });
+
+    // Add additional header
+    headers['Content-Type'] = 'application/json; charset=UTF-8';
+    http.Response response =
+        await client.put(uri, body: body, headers: headers);
+
+    // Remove used additional header
+    headers.remove('Content-Type');
+    await updateCookie(response);
+
+    if (response.statusCode == 200) {
+      return forumFromJson(response.body);
+    } else if (response.statusCode == 401) {
+      throw Exception('User tidak terautentikasi');
+    } else if (response.statusCode == 403) {
+      throw Exception('Tindakan tidak diizinkan');
+    } else {
+      throw Exception('Error lainnya');
+    }
+  }
+
   Future<Forum> deleteForum(Forum forum) async {
     await init();
     if (kIsWeb) {

@@ -3,24 +3,19 @@ import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/widget/forum_form.dart';
 
 class ForumEditPage extends StatelessWidget {
-  final String topik;
-  final String pesan;
-  final String restoran;
+  final Forum forum;
 
   ForumEditPage({
     super.key,
-    required this.topik,
-    required this.pesan,
-    required this.restoran,
+    required this.forum,
   });
 
   @override
   Widget build(BuildContext context) {
     return ForumForm(
-      initialTopik: topik,
-      initialPesan: pesan,
+      forum: forum,
       saveButtonLabel: 'Simpan',
-      restoran: restoran,
+      restoran: forum.restoran,
       edit: true,
     );
   }

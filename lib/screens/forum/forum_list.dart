@@ -6,14 +6,15 @@ import 'package:rasapalembang/screens/forum/forum_tambah.dart';
 import 'package:rasapalembang/services/forum_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/widget/rp_forum_card.dart';
+import 'package:rasapalembang/widget/rp_floatingbutton.dart';
 
 class ForumListPage extends StatefulWidget {
   final String idRestoran;
 
-  ForumListPage({super.key, required this.idRestoran});
+  const ForumListPage({super.key, required this.idRestoran});
 
   @override
-  _ForumListPageState createState() => _ForumListPageState();
+  State<ForumListPage> createState() => _ForumListPageState();
 }
 
 class _ForumListPageState extends State<ForumListPage> {
@@ -58,11 +59,6 @@ class _ForumListPageState extends State<ForumListPage> {
               itemBuilder: (context, index) {
                 final forum = forumList[index];
                 return RPForumCard(
-                  topik: forum.topik,
-                  pesan: forum.pesan,
-                  tanggalPosting: forum.tanggalPosting,
-                  user: forum.user.username,
-                  restoran: forum.restoran,
                   forum: forum,
                   onTap: () {
                     Navigator.push(
@@ -72,6 +68,7 @@ class _ForumListPageState extends State<ForumListPage> {
                       ),
                     );
                   },
+                  refreshList: _loadForumList,
                 );
               },
             );
@@ -79,7 +76,7 @@ class _ForumListPageState extends State<ForumListPage> {
         },
       ),
       floatingActionButton: (request.loggedIn)
-          ? FloatingActionButton(
+          ? RPFloatingButton(
               onPressed: () async {
                 await Navigator.push(
                   context,
@@ -91,7 +88,7 @@ class _ForumListPageState extends State<ForumListPage> {
                 );
                 _loadForumList();
               },
-              child: const Icon(Icons.add),
+              icon: const Icon(Icons.add_comment, color: Colors.white),
               tooltip: 'Tambah Forum',
             )
           : null,

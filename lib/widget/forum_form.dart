@@ -1,21 +1,12 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/forum.dart';
-import 'package:rasapalembang/models/restoran.dart';
-import 'package:rasapalembang/screens/forum/forum_list.dart';
 import 'package:rasapalembang/services/forum_service.dart';
-import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class ForumForm extends StatefulWidget {
   final Forum? forum;
-  final String? initialTopik;
-  final String? initialPesan;
   final String saveButtonLabel;
   final String restoran;
   final bool edit;
@@ -23,8 +14,6 @@ class ForumForm extends StatefulWidget {
   const ForumForm({
     super.key,
     this.forum,
-    this.initialTopik,
-    this.initialPesan,
     required this.saveButtonLabel,
     required this.restoran,
     this.edit = false,
@@ -44,8 +33,8 @@ class _ForumFormState extends State<ForumForm> {
     super.initState();
 
     if (widget.edit) {
-      _topikController.text = widget.initialPesan!;
-      _pesanController.text = widget.initialTopik!;
+      _topikController.text = widget.forum!.topik;
+      _pesanController.text = widget.forum!.pesan;
     }
   }
 
@@ -111,21 +100,42 @@ class _ForumFormState extends State<ForumForm> {
       final pesan = _pesanController.text;
 
       String message;
-      try {
-        final response =
-            await forumService.addForum(topik, pesan, widget.restoran);
-        message = "Berhasil menambahkan forum";
-      } catch (e) {
-        message = printException(e as Exception);
-      }
+      if (widget.edit) {
+        widget.forum?.topik = topik;
+        widget.forum?.pesan = pesan;
 
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-          ),
-        );
-        Navigator.pop(context, true);
+        try {
+          final response = await forumService.editForum(widget.forum!);
+          message = "Forum berhasil diubah";
+        } catch (e) {
+          message = printException(e as Exception);
+        }
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+            ),
+          );
+          Navigator.pop(context, true);
+        }
+      } else {
+        try {
+          final response =
+              await forumService.addForum(topik, pesan, widget.restoran);
+          message = "Forum berhasil ditambah";
+        } catch (e) {
+          message = printException(e as Exception);
+        }
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+            ),
+          );
+          Navigator.pop(context, true);
+        }
       }
     }
   }

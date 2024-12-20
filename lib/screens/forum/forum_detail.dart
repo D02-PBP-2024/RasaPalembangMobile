@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/models/balasan.dart';
-import 'package:rasapalembang/screens/forum/forum_tambah.dart';
 import 'package:rasapalembang/services/balasan_service.dart';
+import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/date_time_extension.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
-import 'package:rasapalembang/widget/rp_forum_card.dart';
 
 class ForumDetailPage extends StatelessWidget {
   final Forum forum;
@@ -16,171 +15,137 @@ class ForumDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BalasanService balasanService = BalasanService();
+    final request = context.watch<UserService>();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(forum.topik),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
+      body: FutureBuilder<List<Balasan>>(
+        future: balasanService.get(forum.pk),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else {
+            final balasanList = snapshot.data ?? [];
+            return ListView(
+              padding: const EdgeInsets.all(16.0),
               children: [
-                ClipOval(
-                  child: Image.network(
-                    forum.user.foto != ""
-                        ? RPUrls.baseUrl + forum.user.foto
-                        : RPUrls.noProfileUrl,
-                    height: 50,
-                    width: 50,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        forum.user.username,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    ClipOval(
+                      child: Image.network(
+                        forum.user.foto != ""
+                            ? RPUrls.baseUrl + forum.user.foto
+                            : RPUrls.noProfileUrl,
+                        height: 50,
+                        width: 50,
+                        fit: BoxFit.cover,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          forum.tanggalPosting.timeAgo(),
-                          style: const TextStyle(
-                              color: Colors.grey, fontSize: 12.0),
-                        ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            forum.user.username,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Text(
+                              forum.tanggalPosting.timeAgo(),
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 12.0),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              forum.pesan,
-              style: const TextStyle(fontSize: 16.0),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: const Divider(),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0, bottom: 4.0),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 2.0),
-                  child: const Icon(Icons.message),
+                const SizedBox(height: 16),
+                Text(
+                  forum.pesan,
+                  style: const TextStyle(fontSize: 16.0),
                 ),
-                const SizedBox(width: 6),
-                FutureBuilder<List<Balasan>>(
-                  future: balasanService.get(forum.pk),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Text("Memuat...");
-                    } else if (snapshot.hasError) {
-                      return Text("Error: ${snapshot.error}");
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text("0");
-                    } else {
-                      return Text("${snapshot.data!.length}");
-                    }
-                  },
+                const Divider(),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0, top: 2.0),
+                      child: const Icon(Icons.message),
+                    ),
+                    Text(
+                      "${balasanList.length}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-
-          Expanded(
-            child: FutureBuilder<List<Balasan>>(
-              future: balasanService.get(forum.pk),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("Belum ada balasan."));
-                } else {
-                  final balasanList = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: balasanList.length,
-                    itemBuilder: (context, index) {
-                      final balasan = balasanList[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: ClipOval(
+                const SizedBox(height: 8),
+                if (balasanList.isEmpty)
+                  const Center(child: Text("Belum ada balasan."))
+                else
+                  Column(
+                    children: balasanList.map((balasan) {
+                      return Card(
+                        elevation: 2.0,
+                        margin: const EdgeInsets.only(bottom: 8.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  ClipOval(
                                     child: Image.network(
-                                      forum.user.foto != ""
+                                      balasan.user.foto != ""
                                           ? RPUrls.baseUrl + balasan.user.foto
                                           : RPUrls.noProfileUrl,
-                                      height: 50,
-                                      width: 50,
+                                      height: 40,
+                                      width: 40,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        balasan.user.username,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 4.0),
-                                        child: Text(
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          balasan.user.username,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
                                           balasan.tanggalPosting.timeAgo(),
                                           style: const TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 58.0, right: 16.0),
-                              child: Text(balasan.pesan),
-                            ),
-                            const Divider(),
-                          ],
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(balasan.pesan),
+                            ],
+                          ),
                         ),
                       );
-                    },
-                  );
-                }
-              },
-            ),
-          ),
-        ],
+                    }).toList(),
+                  ),
+              ],
+            );
+          }
+        },
       ),
     );
   }
