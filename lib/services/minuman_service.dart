@@ -71,7 +71,7 @@ class MinumanService extends UserService {
     await updateCookie(response);
 
     switch (response.statusCode) {
-      case 200:
+      case 201:
         return minumanFromJson(response.body);
       case 401:
         throw Exception('User tidak terautentikasi');
@@ -118,6 +118,8 @@ class MinumanService extends UserService {
         throw Exception('User tidak terautentikasi');
       case 403:
         throw Exception('Tindakan tidak diizinkan');
+      case 404:
+        throw Exception('Minuman tidak ditemukan');
       default:
         throw Exception('Error lainnya');
     }
@@ -143,6 +145,8 @@ class MinumanService extends UserService {
         throw Exception('User tidak terautentikasi');
       case 403:
         throw Exception('Tindakan tidak diizinkan');
+      case 404:
+        throw Exception('Minuman tidak ditemukan');
       default:
         throw Exception('Error lainnya');
     }
