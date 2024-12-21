@@ -155,7 +155,6 @@ class MakananService extends UserService {
     final response = await http.get(Uri.parse('${RPUrls.baseUrl}/v1/makanan/kategori/'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body); // Decode respons JSON
-      print("Data asli dari backend: $data"); // Debug data asli
 
       // Pastikan format JSON benar
       if (data is List) {

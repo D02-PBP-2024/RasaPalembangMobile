@@ -4,6 +4,7 @@ import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/format_harga.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/widget/restoran_detail.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_restoran_detail.dart';
 
@@ -20,13 +21,39 @@ class RPMakananDetail extends StatefulWidget {
 }
 
 class _RPMakananDetailState extends State<RPMakananDetail> {
-  MakananService makananService = MakananService();
+  final MakananService makananService = MakananService();
   Map<String, String> kategoriMap = {};
+  bool isLoadingKategori = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchKategori();
+  }
+
+  Future<void> _fetchKategori() async {
+    try {
+      final result = await makananService.fetchCategories();
+      setState(() {
+        kategoriMap = result; // Simpan map UUID -> Nama
+        isLoadingKategori = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoadingKategori = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal memuat kategori: $e")),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     Makanan makanan = widget.makanan;
     double screenWidth = MediaQuery.of(context).size.width;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SingleChildScrollView(
@@ -79,7 +106,7 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
                 color: RPColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 12.0),
+            const SizedBox(height: 20.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -93,13 +120,13 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
                 ),
                 Row(
                   children: [
-                    SizedBox(width: 8.0),
+                    const SizedBox(width: 8.0),
                     _infoCard('${makanan.kalori} kkal', Icons.dining_outlined),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 12.0),
             Text(
               'Kategori',
               style: const TextStyle(
@@ -108,8 +135,9 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
                 color: RPColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12.0),
-            _buildCategoryChips(makanan.kategori),
+            const SizedBox(height: 8.0),
+            // Ganti _buildCategoryChips dengan _buildCategoryCards
+            _buildCategoryCards(widget.makanan.kategori),
             const SizedBox(height: 20.0),
             RPButton(
               label: 'Lihat Restoran',
@@ -118,8 +146,9 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RPRestoDetail(
-                        restoran: widget.makanan.restoran),
+                    builder: (context) => RestoranDetail(
+                      restoran: widget.makanan.restoran,
+                    ),
                   ),
                 );
               },
@@ -143,17 +172,17 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Row(
           children: [
             Icon(
               icon,
               size: 18.0,
             ),
-            SizedBox(width: 4.0),
+            const SizedBox(width: 4.0),
             Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -163,26 +192,14 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
     );
   }
 
-  Widget _buildCategoryChips(List<String> kategori) {
+  Widget _buildCategoryCards(List<String> kategori) {
     return Wrap(
       spacing: 8.0,
       runSpacing: 4.0,
       children: kategori.map((kategoriId) {
-        // Ambil nama kategori berdasarkan UUID dari kategoriMap
         final kategoriNama = kategoriMap[kategoriId] ?? 'Tidak Diketahui';
-
-        return Chip(
-          label: Text(
-            kategoriNama,
-            style: const TextStyle(
-              fontSize: 14.0,
-              color: RPColors.textPrimary,
-            ),
-          ),
-          backgroundColor: Colors.grey[200],
-        );
+        return _infoCard(kategoriNama, Icons.label_important_outline_rounded); // Gunakan _infoCard
       }).toList(),
     );
   }
-
 }
