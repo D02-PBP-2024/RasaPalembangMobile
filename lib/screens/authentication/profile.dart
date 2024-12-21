@@ -23,7 +23,7 @@ class ProfilePage extends StatefulWidget {
   final String foto;
   final int poin;
   final DateTime dateJoined;
-  final String loggedInUsername;
+  final String? loggedInUsername;
 
   const ProfilePage({
     super.key,
@@ -38,7 +38,7 @@ class ProfilePage extends StatefulWidget {
   });
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
@@ -74,17 +74,23 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Colors.transparent,
         actions: [
           if (isLoggedInUser)
-            IconButton(
-              icon: Icon(
-                Icons.more_vert,
-                color: Colors.white,
+            Tooltip(
+              message: 'More',
+              child: IconButton(
+                icon: Icon(
+                  Icons.more_vert,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  _showProfileOption(request);
+                },
               ),
-              onPressed: () {
-                _showProfileOption(request);
-              },
             ),
         ],
       ),
@@ -293,19 +299,19 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch(e) {
       message = printException(e as Exception);
     }
-    if (context.mounted) {
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
         ),
       );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const RPBottomNavbar()
+        ),
+      );
     }
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-          builder: (context) => const RPBottomNavbar()
-      ),
-    );
   }
 
   String _formatDate(DateTime date) {
