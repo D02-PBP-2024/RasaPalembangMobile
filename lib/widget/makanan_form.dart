@@ -43,6 +43,7 @@ class _MakananFormState extends State<MakananForm> {
   File? _selectedImage;
 
   final makananService = MakananService();
+  Map<String, String> kategoriMap = {};
 
   @override
   void initState() {
@@ -59,12 +60,16 @@ class _MakananFormState extends State<MakananForm> {
 
   Future<void> _fetchCategories() async {
     try {
-      final kategoriMap = await makananService.fetchCategories();
-      if (kategoriMap.isNotEmpty) {
+      final kategoriMapFromBackend = await makananService.fetchCategories();
+      print("Kategori Map dari backend: $kategoriMapFromBackend"); // Debug isi kategoriMap
+
+      if (kategoriMapFromBackend.isNotEmpty) {
         setState(() {
-          _categories = kategoriMap.values.toList(); // Simpan nama kategori
+          kategoriMap = kategoriMapFromBackend; // Simpan UUID -> Nama
+          _categories = kategoriMapFromBackend.keys.toList(); // Simpan hanya UUID
           _isLoadingCategories = false;
         });
+        print("_categories setelah fetch: $_categories"); // Debug UUID
       } else {
         throw Exception("Tidak ada kategori ditemukan.");
       }
@@ -162,16 +167,25 @@ class _MakananFormState extends State<MakananForm> {
                 ),
                 const SizedBox(height: 16.0),
                 _isLoadingCategories
-                    ? CircularProgressIndicator()
-                    : MultiSelectWidget(
-                        items: _categories,
-                        selectedItems: _kategoriController.value,
-                        onSelectionChanged: (values) {
-                          setState(() {
-                            _kategoriController.value = values;
-                          });
-                        },
-                      ),
+                  ? CircularProgressIndicator()
+                  : MultiSelectWidget(
+                      items: _categories.map((id) {
+                        print("ID: $id, Nama: ${kategoriMap[id]}"); // Debug ID dan nama
+                        return kategoriMap[id] ?? ''; // Tampilkan nama kategori
+                      }).toList(),
+                      selectedItems: _kategoriController.value.map((id) => kategoriMap[id] ?? '').toList(),
+                      onSelectionChanged: (selectedNames) {
+                        setState(() {
+                          // Konversi nama kategori kembali ke UUID
+                          _kategoriController.value = selectedNames
+                              .map((name) => kategoriMap.entries
+                              .firstWhere((entry) => entry.value == name, orElse: () => MapEntry('', ''))
+                              .key)
+                              .where((key) => key.isNotEmpty)
+                              .toList();
+                        });
+                      },
+                    ),
                 const SizedBox(height: 32.0),
                 RPButton(
                   width: double.infinity,

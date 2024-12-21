@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
 class MultiSelectWidget extends StatefulWidget {
-  final List<String> items; // Daftar opsi
-  final List<String> selectedItems; // Pilihan awal
-  final ValueChanged<List<String>> onSelectionChanged; // Callback untuk pilihan baru
+  final List<String> items;
+  final List<String> selectedItems;
+  final ValueChanged<List<String>> onSelectionChanged;
 
   const MultiSelectWidget({
     Key? key,
@@ -23,7 +23,7 @@ class _MultiSelectWidgetState extends State<MultiSelectWidget> {
   @override
   void initState() {
     super.initState();
-    _selectedItems = List<String>.from(widget.selectedItems); // Salin pilihan awal
+    _selectedItems = List<String>.from(widget.selectedItems);
   }
 
   @override
@@ -37,8 +37,8 @@ class _MultiSelectWidgetState extends State<MultiSelectWidget> {
         ),
         child: Text(
           _selectedItems.isEmpty
-              ? "Pilih kategori"
-              : _selectedItems.join(", "), // Tampilkan kategori yang dipilih
+              ? ""
+              : _selectedItems.join(", "),
         ),
       ),
     );
@@ -58,31 +58,33 @@ class _MultiSelectWidgetState extends State<MultiSelectWidget> {
             ),
           ),
         ),
-        ...widget.items.map((item) {
-          return ValueListenableBuilder<List<String>>(
-            valueListenable: ValueNotifier(_selectedItems),
-            builder: (context, selectedItems, _) {
-              return CheckboxListTile(
-                value: _selectedItems.contains(item),
-                title: Text(item),
-                onChanged: (isChecked) {
-                  setState(() {
-                    if (isChecked ?? false) {
-                      _selectedItems.add(item);
-                    } else {
-                      _selectedItems.remove(item);
-                    }
-                  });
-                },
-              );
-            },
-          );
-        }).toList(),
+        StatefulBuilder(
+          builder: (context, setStateInBottomSheet) {
+            return Column(
+              children: widget.items.map((item) {
+                return CheckboxListTile(
+                  value: _selectedItems.contains(item),
+                  title: Text(item),
+                  onChanged: (isChecked) {
+                    setState(() {
+                      if (isChecked ?? false) {
+                        _selectedItems.add(item);
+                      } else {
+                        _selectedItems.remove(item);
+                      }
+                    });
+                    setStateInBottomSheet(() {});
+                  },
+                );
+              }).toList(),
+            );
+          },
+        ),
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
-            widget.onSelectionChanged(_selectedItems); // Kembalikan hasil
-            Navigator.pop(context); // Tutup bottom sheet
+            widget.onSelectionChanged(_selectedItems);
+            Navigator.pop(context);
           },
           child: const Text("Simpan"),
         ),

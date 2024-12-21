@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rasapalembang/models/makanan.dart';
@@ -35,26 +34,16 @@ class MakananService extends UserService {
     }
 
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/${makanan.restoran.pk}/makanan/');
+
     var request = http.MultipartRequest('POST', uri);
     request.headers.addAll(headers);
-
-    // Validasi dan konversi kategori ke UUID
-    List<String> kategoriUUIDs = makanan.kategori.map((kategori) {
-      try {
-        // Validasi apakah kategori adalah UUID yang valid
-        Uuid.parse(kategori);
-        return kategori;
-      } catch (e) {
-        throw Exception('Kategori $kategori bukan UUID yang valid');
-      }
-    }).toList();
 
     request.fields['nama'] = makanan.nama;
     request.fields['harga'] = '${makanan.harga}';
     request.fields['deskripsi'] = makanan.deskripsi;
     request.files.add(await http.MultipartFile.fromPath('gambar', gambar.path));
     request.fields['kalori'] = '${makanan.kalori}';
-    request.fields['kategori'] = kategoriUUIDs.join(',');
+    request.fields['kategori'] = makanan.kategori.join(',');
 
     var streamedResponse = await request.send();
     var body = await streamedResponse.stream.bytesToString();
@@ -62,14 +51,14 @@ class MakananService extends UserService {
     await updateCookie(response);
 
     int code = response.statusCode;
-    if (code == 200) {
+    if (code == 201) {
       return makananFromJson(response.body);
     } else if (response.statusCode == 401) {
       throw Exception('User tidak terautentikasi');
     } else if (response.statusCode == 403) {
       throw Exception('Tindakan tidak diizinkan');
     } else {
-      throw Exception('Error lainnya: ${response.body}');
+      throw Exception('Error lainnya');
     }
   }
 
@@ -138,21 +127,23 @@ class MakananService extends UserService {
   }
 
   Future<Map<String, String>> fetchCategories() async {
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/makanan/kategori/');
-    final response = await http.get(uri, headers: headers);
-
+    final response = await http.get(Uri.parse('${RPUrls.baseUrl}/v1/makanan/kategori/'));
     if (response.statusCode == 200) {
-      final List<dynamic> kategoriList = json.decode(response.body);
+      final data = json.decode(response.body); // Decode respons JSON
+      print("Data asli dari backend: $data"); // Debug data asli
 
-      // Konversi ke Map UUID -> Nama
-      final Map<String, String> kategoriMap = {
-        for (var kategori in kategoriList)
-          kategori['id']: kategori['nama']
-      };
-
-      return kategoriMap;
+      // Pastikan format JSON benar
+      if (data is List) {
+        // Jika respons berupa daftar
+        return {for (var item in data) item['id']: item['nama']};
+      } else if (data is Map) {
+        // Jika respons berupa peta
+        return Map<String, String>.from(data);
+      } else {
+        throw Exception("Format data tidak valid");
+      }
     } else {
-      throw Exception('Gagal mengambil kategori');
+      throw Exception("Gagal memuat kategori, status: ${response.statusCode}");
     }
   }
 }
