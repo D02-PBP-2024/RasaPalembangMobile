@@ -68,7 +68,9 @@ class MakananService extends UserService {
 
     var streamedResponse = await request.send();
     var body = await streamedResponse.stream.bytesToString();
-    var response = http.Response(body, streamedResponse.statusCode, headers: streamedResponse.headers);
+    var response = http.Response(body, streamedResponse.statusCode,
+        headers: streamedResponse.headers
+    );
     await updateCookie(response);
 
     switch (response.statusCode) {
@@ -92,7 +94,7 @@ class MakananService extends UserService {
 
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/makanan/${makanan.pk}/');
 
-    var request = http.MultipartRequest('PUT', uri);
+    var request = http.MultipartRequest('POST', uri);
     request.headers.addAll(headers);
 
     request.fields['nama'] = makanan.nama;
@@ -108,7 +110,9 @@ class MakananService extends UserService {
 
     var streamedResponse = await request.send();
     var body = await streamedResponse.stream.bytesToString();
-    var response = http.Response(body, streamedResponse.statusCode, headers: streamedResponse.headers);
+    var response = http.Response(body, streamedResponse.statusCode,
+        headers: streamedResponse.headers
+    );
     await updateCookie(response);
 
     switch (response.statusCode) {

@@ -219,14 +219,17 @@ class _MakananFormState extends State<MakananForm> {
         widget.makanan?.kalori = kalori;
         widget.makanan?.kategori = kategori;
 
+        bool success;
         try {
           final response = await makananService.edit(
             widget.makanan!,
             gambar
           );
           message = 'Makanan berhasil diubah';
+          success = true;
         } catch (e) {
           message = printException(e as Exception);
+          success = false;
         }
 
         if (context.mounted) {
@@ -235,8 +238,11 @@ class _MakananFormState extends State<MakananForm> {
               content: Text(message),
             ),
           );
+          if (success) {
+            Navigator.pop(context);
+          }
         }
-      } else {
+      }else {
         if (gambar != null) {
           Makanan makanan = Makanan(
             nama: nama,
@@ -268,10 +274,7 @@ class _MakananFormState extends State<MakananForm> {
               ),
             );
             if (success) {
-              print("Navigasi keluar dari halaman form");
               Navigator.pop(context);
-            }else {
-              print("Navigasi gagal karena success == false");
             }
           }
         } else {
