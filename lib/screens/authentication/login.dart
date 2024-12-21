@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/providers/tab_provider.dart';
-import 'package:rasapalembang/screens/home.dart';
+import 'package:rasapalembang/screens/authentication/register.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
@@ -93,11 +93,6 @@ class _LoginPageState extends State<LoginPage> {
                                 SnackBar(content: Text(message)),
                               );
                             selectedTab.tab = 0;
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const HomePage()),
-                            );
                           } else {
                             showDialog(
                               context: context,
@@ -129,7 +124,12 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/register');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RegisterPage(),
+                              ),
+                            );
                           },
                           child: const Text(
                             'Daftar sekarang',

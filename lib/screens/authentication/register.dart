@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/providers/tab_provider.dart';
-import 'package:rasapalembang/screens/home.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
@@ -150,11 +149,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           );
                           selectedTab.tab = 0;
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomePage()),
-                          );
                         } else {
                           showDialog(
                             context: context,
