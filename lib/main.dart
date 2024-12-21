@@ -27,6 +27,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => TabProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => UserService(),
+          child: MyApp(),
+        ),
       ],
       child: MaterialApp(
         title: 'Rasa Palembang',
