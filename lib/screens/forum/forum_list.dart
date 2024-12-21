@@ -42,9 +42,6 @@ class _ForumListPageState extends State<ForumListPage> {
     final request = context.watch<UserService>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Forum Diskusi"),
-      ),
       body: FutureBuilder<List<Forum>>(
         future: _forumFuture,
         builder: (context, snapshot) {
