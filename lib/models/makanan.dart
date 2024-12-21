@@ -35,9 +35,27 @@ class Makanan {
     nama: json["fields"]["nama"],
     deskripsi: json["fields"]["deskripsi"],
     gambar: json["fields"]["gambar"],
-    kategori: List<String>.from(json["fields"]["kategori"].map((x) => x)),
+    kategori: List<String>.from(json["fields"]["kategori"]),
     kalori: json["fields"]["kalori"],
     harga: json["fields"]["harga"],
     restoran: Restoran.fromJson(json["fields"]["restoran"]),
   );
+}
+
+class Kategori {
+  final String id;
+  final String nama;
+
+  Kategori({
+    required this.id,
+    required this.nama,
+  });
+
+  // Untuk konversi dari JSON (jika data berasal dari API)
+  factory Kategori.fromJson(Map<String, dynamic> json) {
+    return Kategori(
+      id: json['id'], // Pastikan `id` adalah UUID
+      nama: json['nama'],
+    );
+  }
 }
