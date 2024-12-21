@@ -66,7 +66,6 @@ class _MakananFormState extends State<MakananForm> {
           kategoriMap = kategoriMapFromBackend; // Simpan UUID -> Nama
           _categories = kategoriMapFromBackend.keys.toList(); // Simpan hanya UUID
           _isLoadingCategories = false;
-
         });
 
         setState(() {

@@ -21,6 +21,7 @@ class RPMakananDetail extends StatefulWidget {
 
 class _RPMakananDetailState extends State<RPMakananDetail> {
   MakananService makananService = MakananService();
+  Map<String, String> kategoriMap = {};
 
   @override
   Widget build(BuildContext context) {
@@ -90,16 +91,25 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
                     color: RPColors.textPrimary,
                   ),
                 ),
-                // kasih spasi di sini
                 Row(
                   children: [
-                    
                     SizedBox(width: 8.0),
                     _infoCard('${makanan.kalori} kkal', Icons.dining_outlined),
                   ],
                 ),
               ],
             ),
+            const SizedBox(height: 20.0),
+            Text(
+              'Kategori',
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: RPColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12.0),
+            _buildCategoryChips(makanan.kategori),
             const SizedBox(height: 20.0),
             RPButton(
               label: 'Lihat Restoran',
@@ -109,8 +119,7 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => RPRestoDetail(
-                        restoran: widget.makanan.restoran
-                    ),
+                        restoran: widget.makanan.restoran),
                   ),
                 );
               },
@@ -153,4 +162,27 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
       ),
     );
   }
+
+  Widget _buildCategoryChips(List<String> kategori) {
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 4.0,
+      children: kategori.map((kategoriId) {
+        // Ambil nama kategori berdasarkan UUID dari kategoriMap
+        final kategoriNama = kategoriMap[kategoriId] ?? 'Tidak Diketahui';
+
+        return Chip(
+          label: Text(
+            kategoriNama,
+            style: const TextStyle(
+              fontSize: 14.0,
+              color: RPColors.textPrimary,
+            ),
+          ),
+          backgroundColor: Colors.grey[200],
+        );
+      }).toList(),
+    );
+  }
+
 }
