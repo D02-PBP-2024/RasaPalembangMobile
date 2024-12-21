@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:rasapalembang/models/restoran.dart';
 
 class RestoranEditForm extends StatefulWidget {
-  final Map<String, dynamic> restoran;
+  final Restoran restoran;
 
   const RestoranEditForm({super.key, required this.restoran});
 
@@ -22,11 +23,11 @@ class _RestoranEditFormState extends State<RestoranEditForm> {
   @override
   void initState() {
     super.initState();
-    namaController = TextEditingController(text: widget.restoran['nama']);
-    alamatController = TextEditingController(text: widget.restoran['alamat']);
-    jamBukaController = TextEditingController(text: widget.restoran['jamBuka']);
-    jamTutupController = TextEditingController(text: widget.restoran['jamTutup']);
-    nomorTeleponController = TextEditingController(text: widget.restoran['nomorTelepon']);
+    namaController = TextEditingController(text: widget.restoran.nama);
+    alamatController = TextEditingController(text: widget.restoran.alamat);
+    jamBukaController = TextEditingController(text: widget.restoran.jamBuka);
+    jamTutupController = TextEditingController(text: widget.restoran.jamTutup);
+    nomorTeleponController = TextEditingController(text: widget.restoran.nomorTelepon);
   }
 
   @override
@@ -60,7 +61,7 @@ class _RestoranEditFormState extends State<RestoranEditForm> {
                     'jamBuka': jamBukaController.text,
                     'jamTutup': jamTutupController.text,
                     'nomorTelepon': nomorTeleponController.text,
-                    'gambar': selectedImage?.path ?? widget.restoran['gambar'],
+                    'gambar': selectedImage?.path ?? widget.restoran.gambar,
                   });
                 },
                 style: ElevatedButton.styleFrom(
@@ -77,7 +78,7 @@ class _RestoranEditFormState extends State<RestoranEditForm> {
         ),
       ),
     );
-  }
+  } 
 
   Widget _buildTextField(TextEditingController controller, String label,
       [TextInputType keyboardType = TextInputType.text]) {

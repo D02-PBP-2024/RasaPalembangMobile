@@ -3,12 +3,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/screens/forum/forum_list.dart';
 import 'package:rasapalembang/screens/minuman/minuman_tambah.dart';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
 import 'package:rasapalembang/services/user_service.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
-
 
 class RPRestoDetail extends StatefulWidget {
   final Restoran restoran;
@@ -34,7 +33,8 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
       List<Location> locations = await locationFromAddress(address);
       if (locations.isNotEmpty) {
         setState(() {
-          restoranLocation = LatLng(locations.first.latitude, locations.first.longitude);
+          restoranLocation =
+              LatLng(locations.first.latitude, locations.first.longitude);
           isLoading = false;
         });
       }
@@ -63,12 +63,13 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
           // Gambar Restoran dengan semua informasi
           Stack(
             children: [
-              Image.network(
-                RPUrls.baseUrl + restoran.gambar,
-                width: double.infinity,
-                height: 500,
-                fit: BoxFit.cover,
-              ),
+              if (restoran.gambar.isNotEmpty)
+                Image.network(
+                  restoran.gambar,
+                  width: double.infinity,
+                  height: 500,
+                  fit: BoxFit.cover,
+                ),
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -97,11 +98,13 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                       Row(
                         children: [
                           Text(
-                            _isCurrentlyOpen(restoran.jamBuka, restoran.jamTutup)
+                            _isCurrentlyOpen(
+                                    restoran.jamBuka, restoran.jamTutup)
                                 ? 'Buka'
                                 : 'Tutup',
                             style: TextStyle(
-                              color: _isCurrentlyOpen(restoran.jamBuka, restoran.jamTutup)
+                              color: _isCurrentlyOpen(
+                                      restoran.jamBuka, restoran.jamTutup)
                                   ? Colors.greenAccent
                                   : Colors.redAccent,
                               fontSize: 18.0,
@@ -146,51 +149,47 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final updatedData = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RestoranEditForm(
-                            restoran: {
-                              'nama': restoran.nama,
-                              'alamat': restoran.alamat,
-                              'jamBuka': restoran.jamBuka,
-                              'jamTutup': restoran.jamTutup,
-                              'nomorTelepon': restoran.nomorTelepon,
-                              'gambar': restoran.gambar,
-                            },
+                if (request.user?.username == restoran.user)
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final updatedData = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RestoranEditForm(
+                              restoran: restoran,
+                            ),
                           ),
-                        ),
-                      );
+                        );
 
-                      if (updatedData != null) {
-                        setState(() {
-                          restoran.nama = updatedData['nama'];
-                          restoran.alamat = updatedData['alamat'];
-                          restoran.jamBuka = updatedData['jamBuka'];
-                          restoran.jamTutup = updatedData['jamTutup'];
-                          restoran.nomorTelepon = updatedData['nomorTelepon'];
-                          restoran.gambar = updatedData['gambar'];
-                        });
-                        // Update koordinat berdasarkan alamat yang baru
-                        setState(() {
-                          isLoading = true; // Aktifkan loading sebelum mendapatkan koordinat baru
-                        });
-                        await _getCoordinatesFromAddress(updatedData['alamat']);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.cyan[400],
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    ),
-                    child: const Text(
-                      'Ubah Restoran',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                        if (updatedData != null) {
+                          setState(() {
+                            restoran.nama = updatedData['nama'];
+                            restoran.alamat = updatedData['alamat'];
+                            restoran.jamBuka = updatedData['jamBuka'];
+                            restoran.jamTutup = updatedData['jamTutup'];
+                            restoran.nomorTelepon = updatedData['nomorTelepon'];
+                            restoran.gambar = updatedData['gambar'];
+                          });
+                          // Update koordinat berdasarkan alamat yang baru
+                          setState(() {
+                            isLoading =
+                                true; // Aktifkan loading sebelum mendapatkan koordinat baru
+                          });
+                          await _getCoordinatesFromAddress(
+                              updatedData['alamat']);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.cyan[400],
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      ),
+                      child: const Text(
+                        'Ubah Restoran',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
                     ),
                   ),
-                ),
                 const SizedBox(width: 16.0),
                 Expanded(
                   child: ElevatedButton(
@@ -214,7 +213,13 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
           RPButton(
             label: 'Forum Diskusi',
             onPressed: () {
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ForumListPage(
+                          idRestoran: restoran.pk,
+                        )),
+              );
             },
           ),
 
@@ -227,9 +232,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                   children: [
                     RPButton(
                       label: 'Tambah Makanan',
-                      onPressed: () {
-
-                      },
+                      onPressed: () {},
                     ),
                     const SizedBox(width: 8.0),
                     RPButton(
@@ -238,7 +241,8 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MinumanTambahPage(restoran: restoran),
+                            builder: (context) =>
+                                MinumanTambahPage(restoran: restoran),
                           ),
                         );
                       },
@@ -247,7 +251,6 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                 ),
               ],
             ),
-
 
           // Tambahkan judul lokasi
           const Padding(

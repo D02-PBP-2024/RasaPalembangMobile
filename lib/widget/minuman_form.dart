@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/minuman.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
+import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_dropdown_button.dart';
 import 'package:rasapalembang/widget/rp_image_picker.dart';
-import 'package:rasapalembang/widget/rp_number_picker.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class MinumanForm extends StatefulWidget {
@@ -36,8 +36,8 @@ class _MinumanFormState extends State<MinumanForm> {
   final _namaController = TextEditingController();
   final _hargaController = TextEditingController();
   final _deskripsiController = TextEditingController();
+  final _tingkatKemanisan = TextEditingController();
   final ValueNotifier<String?> _ukuranController = ValueNotifier<String?>(null);
-  int _tingkatKemanisan = 0;
   File? _selectedImage;
 
   @override
@@ -48,7 +48,7 @@ class _MinumanFormState extends State<MinumanForm> {
       _hargaController.text = '${widget.minuman!.harga}';
       _deskripsiController.text = widget.minuman!.deskripsi;
       _ukuranController.value = widget.minuman!.ukuran;
-      _tingkatKemanisan = widget.minuman!.tingkatKemanisan;
+      _tingkatKemanisan.text = '${widget.minuman!.tingkatKemanisan}';
     }
   }
 
@@ -98,12 +98,14 @@ class _MinumanFormState extends State<MinumanForm> {
                   controller: _hargaController,
                   labelText: 'Harga',
                   hintText: 'Masukkan harga minuman',
+                  keyboardType: TextInputType.number,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
                       return 'Harga tidak boleh kosong!';
                     }
-                    if (int.tryParse(value) == null) {
-                      return "Harga harus berupa angka!";
+                    RegExp formatHarga = RegExp(r'^[1-9]\d*$');
+                    if (!formatHarga.hasMatch(value)) {
+                      return "Harga tidak valid!";
                     }
                     return null;
                   },
@@ -120,17 +122,38 @@ class _MinumanFormState extends State<MinumanForm> {
                     }
                     return null;
                   },
-                ), const SizedBox(height: 16.0),
-                RPNumberPicker(
+                ),
+                const SizedBox(height: 16.0),
+                RPTextFormField(
+                  controller: _tingkatKemanisan,
                   labelText: 'Tingkat Kemanisan',
-                  initialValue: _tingkatKemanisan,
-                  minValue: 0,
-                  maxValue: 100,
-                  onChanged: (newValue) {
-                    setState(() {
-                      _tingkatKemanisan = newValue;
-                    });
+                  hintText: 'Masukkan tingkat kemanisan minuman',
+                  keyboardType: TextInputType.number,
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Tingkat Kemanisan tidak boleh kosong!';
+                    }
+                    RegExp formatTingkatKemanisan = RegExp(r'^(100|[1-9]?\d)$');
+                    if (!formatTingkatKemanisan.hasMatch(value)) {
+                      return "Tingkat Kemanisan tidak valid!";
+                    }
+                    return null;
                   },
+                ),
+                const SizedBox(height: 4.0),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 8.0),
+                      const Text(
+                        'Persentase gula dalam rentang 0 hingga 100',
+                        style: TextStyle(
+                          color: RPColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16.0),
                 RPDropdownButton<String>(
@@ -176,16 +199,16 @@ class _MinumanFormState extends State<MinumanForm> {
   void _onSubmit() async {
     if (_formKey.currentState?.validate() ?? false) {
       String nama = _namaController.text;
-      String harga = _hargaController.text;
+      int harga = int.parse(_hargaController.text);
       String deskripsi = _deskripsiController.text;
       File? gambar = _selectedImage;
       String? ukuran = _ukuranController.value;
-      int tingkatKemanisan = _tingkatKemanisan;
+      int tingkatKemanisan = int.parse(_tingkatKemanisan.text);
 
       String message;
       if (widget.edit) {
         widget.minuman?.nama = nama;
-        widget.minuman?.harga = int.parse(harga);
+        widget.minuman?.harga = harga;
         widget.minuman?.deskripsi = deskripsi;
         widget.minuman?.ukuran = ukuran!;
         widget.minuman?.tingkatKemanisan = tingkatKemanisan;
@@ -211,7 +234,7 @@ class _MinumanFormState extends State<MinumanForm> {
         if (gambar != null) {
           Minuman minuman = Minuman(
             nama: nama,
-            harga: int.parse(harga),
+            harga: harga,
             deskripsi: deskripsi,
             gambar: '',
             ukuran: ukuran!,
@@ -219,14 +242,17 @@ class _MinumanFormState extends State<MinumanForm> {
             restoran: widget.restoran,
           );
 
+          bool success;
           try {
             final response = await minumanService.add(
               minuman,
               gambar,
             );
             message = 'Minuman berhasil ditambah';
+            success = true;
           } catch(e) {
             message = printException(e as Exception);
+            success = false;
           }
 
           if (context.mounted) {
@@ -235,7 +261,9 @@ class _MinumanFormState extends State<MinumanForm> {
                 content: Text(message),
               ),
             );
-            Navigator.pop(context);
+            if (success) {
+              Navigator.pop(context);
+            }
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

@@ -1,102 +1,146 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/utils/is_open.dart';
+import 'package:rasapalembang/utils/size_constants.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/widget/restoran_detail.dart';
 
-class RPRestoCard extends StatelessWidget {
-  final String nama;
-  final String gambar;
-  final String rating;
-  final String jamBuka;
-  final String jamTutup;
-  final bool isOpen;
+class RPRestoCard extends StatefulWidget {
+  final Restoran restoran;
 
   const RPRestoCard({
     super.key,
-    required this.nama,
-    required this.gambar,
-    required this.rating,
-    required this.jamBuka,
-    required this.jamTutup,
-    required this.isOpen,
+    required this.restoran,
   });
 
   @override
+  _RPRestoCardState createState() => _RPRestoCardState();
+}
+
+class _RPRestoCardState extends State<RPRestoCard> {
+  final double _rating = 3.5;
+
+  @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      margin: const EdgeInsets.all(8.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Gambar Restoran
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
-            child: gambar.isNotEmpty
-                ? Image.network(
-              RPUrls.baseUrl + gambar,
-              width: double.infinity,
-              height: 150,
-              fit: BoxFit.cover,
-            )
-                : Container(
-              width: double.infinity,
-              height: 150,
-              color: Colors.grey[300],
-              child: const Icon(
-                Icons.image_not_supported,
-                size: 50,
-                color: Colors.grey,
-              ),
-            ),
+    Restoran restoran = widget.restoran;
+    bool isOpen = isCurrentlyOpen(restoran.jamBuka, restoran.jamTutup);
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RestoranDetail(restoran: restoran),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        );
+      },
+      child: Card(
+        margin: EdgeInsets.zero,
+        color: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(RPSize.cornerRadius),
+          side: BorderSide(
+            color: Colors.grey[300]!,
+            width: 1.0,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Gambar Restoran
+            Stack(
               children: [
-                // Nama Restoran
-                Text(
-                  nama,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(8.0)
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  child: restoran.gambar.isNotEmpty
+                    ? Image.network(
+                      RPUrls.baseUrl + restoran.gambar,
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      )
+                    : Container(
+                      width: double.infinity,
+                      height: 200,
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    ),
                 ),
-                const SizedBox(height: 4.0),
-                // Rating
-                Text(
-                  '($rating/5.0)',
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.grey,
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: GestureDetector(
+                    onTap: () {
+                      // TODO: menambah ke favorit
+                    },
+                    child: const CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      child: Icon(
+                        Icons.favorite_border,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4.0),
-                // Jam Operasional
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '$jamBuka - $jamTutup',
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Nama Restoran
+                  Text(
+                    restoran.nama,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4.0),
+                  // Rating
+                  RatingBar.builder(
+                    initialRating: _rating,
+                    itemSize: 20,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    unratedColor: Colors.grey,
+                    itemBuilder: (context, index) => Icon(
+                      Icons.star_rounded,
+                      color: index < _rating ? Colors.amber : Colors.grey,
+                    ),
+                    onRatingUpdate: (rating) {
+                      setState(() {
+                        rating = rating;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 4.0),
+                  // Jam Operasional
+                  Row(
+                    children: [
+                      Text(
+                        '${restoran.jamBuka} - ${restoran.jamTutup}',
                         style: const TextStyle(
                           fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
                           color: Colors.grey,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    Flexible(
-                      child: Text(
+                      const SizedBox(width: 8.0),
+                      Text(
                         isOpen ? 'Buka' : 'Tutup',
                         style: TextStyle(
                           fontSize: 14.0,
@@ -106,13 +150,13 @@ class RPRestoCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

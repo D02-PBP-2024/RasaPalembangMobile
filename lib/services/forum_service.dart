@@ -14,13 +14,107 @@ class ForumService extends UserService {
       c.withCredentials = true;
     }
 
-    String url = '${RPUrls.baseUrl}/v1/restoran/$idRestoran/forum/';
-    http.Response response = await client.get(Uri.parse(url));
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/forum/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
 
     if (response.statusCode == 200) {
       return forumFromListJson(response.body);
     } else {
-      throw Exception('Failed to load data');
+      throw Exception('Gagal mengambil data');
+    }
+  }
+
+  Future<Forum> addForum(String topik, String pesan, String idRestoran) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/forum/');
+
+    final body = jsonEncode({
+      'topik': topik,
+      'pesan': pesan,
+    });
+
+    // Add additional header
+    headers['Content-Type'] = 'application/json; charset=UTF-8';
+    http.Response response =
+        await client.post(uri, body: body, headers: headers);
+
+    // Remove used additional header
+    headers.remove('Content-Type');
+    await updateCookie(response);
+
+    if (response.statusCode == 201) {
+      return forumFromJson(response.body);
+    } else if (response.statusCode == 401) {
+      throw Exception('User tidak terautentikasi');
+    } else if (response.statusCode == 403) {
+      throw Exception('Tindakan tidak diizinkan');
+    } else {
+      throw Exception('Error lainnya');
+    }
+  }
+
+  Future<Forum> editForum(Forum forum) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/forum/${forum.pk}/');
+
+    final body = jsonEncode({
+      'topik': forum.topik,
+      'pesan': forum.pesan,
+    });
+
+    // Add additional header
+    headers['Content-Type'] = 'application/json; charset=UTF-8';
+    http.Response response =
+        await client.put(uri, body: body, headers: headers);
+
+    // Remove used additional header
+    headers.remove('Content-Type');
+    await updateCookie(response);
+
+    if (response.statusCode == 200) {
+      return forumFromJson(response.body);
+    } else if (response.statusCode == 401) {
+      throw Exception('User tidak terautentikasi');
+    } else if (response.statusCode == 403) {
+      throw Exception('Tindakan tidak diizinkan');
+    } else {
+      throw Exception('Error lainnya');
+    }
+  }
+
+  Future<Forum> deleteForum(Forum forum) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/forum/${forum.pk}/');
+
+    http.Response response = await client.delete(uri, headers: headers);
+    await updateCookie(response);
+
+    int code = response.statusCode;
+    if (code == 200) {
+      return forumFromJson(response.body);
+    } else if (response.statusCode == 401) {
+      throw Exception('User tidak terautentikasi');
+    } else if (response.statusCode == 403) {
+      throw Exception('Tindakan tidak diizinkan');
+    } else {
+      throw Exception('Error lainnya');
     }
   }
 }

@@ -7,6 +7,7 @@ import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_image_picker.dart';
+import 'package:rasapalembang/widget/rp_multi_select_widget.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class MakananForm extends StatefulWidget {
@@ -58,11 +59,15 @@ class _MakananFormState extends State<MakananForm> {
 
   Future<void> _fetchCategories() async {
     try {
-      final categories = await makananService.fetchCategories();
-      setState(() {
-        _categories = categories;
-        _isLoadingCategories = false;
-      });
+      final kategoriMap = await makananService.fetchCategories();
+      if (kategoriMap.isNotEmpty) {
+        setState(() {
+          _categories = kategoriMap.values.toList(); // Simpan nama kategori
+          _isLoadingCategories = false;
+        });
+      } else {
+        throw Exception("Tidak ada kategori ditemukan.");
+      }
     } catch (e) {
       setState(() {
         _isLoadingCategories = false;
@@ -93,8 +98,8 @@ class _MakananFormState extends State<MakananForm> {
               children: [
                 RPImagePicker(
                   initialGambar: widget.makanan?.gambar != null
-                    ? RPUrls.baseUrl + widget.makanan!.gambar
-                    : null,
+                      ? RPUrls.baseUrl + widget.makanan!.gambar
+                      : null,
                   buttonLabel: widget.imagePickerLabel,
                   onImagePicked: _onImagePicked,
                   imagePreviewHeight: 200,
@@ -157,33 +162,16 @@ class _MakananFormState extends State<MakananForm> {
                 ),
                 const SizedBox(height: 16.0),
                 _isLoadingCategories
-                ? CircularProgressIndicator()
-                : DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: 'Kategori',
-                      border: OutlineInputBorder(),
-                    ),
-                    value: _kategoriController.value.isNotEmpty ? _kategoriController.value.first : null,
-                    items: _categories.map((category) {
-                      return DropdownMenuItem(
-                        value: category,
-                        child: Text(category),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _kategoriController.value = [value];
-                        });
-                      }
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Kategori tidak boleh kosong!';
-                      }
-                      return null;
-                    },
-                  ),
+                    ? CircularProgressIndicator()
+                    : MultiSelectWidget(
+                        items: _categories, // Ambil daftar kategori dari hasil fetch
+                        selectedItems: _kategoriController.value, // Pilihan awal
+                        onSelectionChanged: (values) {
+                          setState(() {
+                            _kategoriController.value = values; // Simpan hasil pilihan
+                          });
+                        },
+                      ),
                 const SizedBox(height: 32.0),
                 RPButton(
                   width: double.infinity,
@@ -218,10 +206,7 @@ class _MakananFormState extends State<MakananForm> {
         widget.makanan?.kategori = kategori;
 
         try {
-          final response = await makananService.edit(
-            widget.makanan!,
-            gambar,
-          );
+          await makananService.edit(widget.makanan!, gambar);
           message = 'Makanan berhasil diubah';
         } catch (e) {
           message = printException(e as Exception);
@@ -247,10 +232,7 @@ class _MakananFormState extends State<MakananForm> {
           );
 
           try {
-            final response = await makananService.add(
-              makanan,
-              gambar,
-            );
+            await makananService.add(makanan, gambar);
             message = 'Makanan berhasil ditambah';
           } catch (e) {
             message = printException(e as Exception);
@@ -266,7 +248,7 @@ class _MakananFormState extends State<MakananForm> {
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Gambar tidak boleh kosong!'),
             ),
           );
