@@ -22,6 +22,21 @@ class RestoranService extends UserService {
     }
   }
 
+  Future<List<Restoran>> getByUsername(String username) async {
+    await init();
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/profile/$username/restoran/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return restoranFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
   Future<Restoran> add(Restoran restoran, File gambar) async {
     await init();
     if (kIsWeb) {
@@ -48,8 +63,10 @@ class RestoranService extends UserService {
     await updateCookie(response);
 
     switch (response.statusCode) {
-      case 200:
+      case 201:
         return restoranFromJson(response.body);
+      case 400:
+        throw Exception('Input tidak valid');
       case 401:
         throw Exception('User tidak terautentikasi');
       case 403:
@@ -91,16 +108,20 @@ class RestoranService extends UserService {
     switch (response.statusCode) {
       case 200:
         return restoranFromJson(response.body);
+      case 400:
+        throw Exception('Input tidak valid');
       case 401:
         throw Exception('User tidak terautentikasi');
       case 403:
         throw Exception('Tindakan tidak diizinkan');
+      case 404:
+        throw Exception('Restoran tidak ditemukan');
       default:
         throw Exception('Error lainnya');
     }
   }
 
-  Future<void> delete(Restoran restoran) async {
+  Future<Restoran> delete(Restoran restoran) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
@@ -113,8 +134,17 @@ class RestoranService extends UserService {
       await client.delete(uri, headers: headers);
     await updateCookie(response);
 
-    if (response.statusCode != 204) {
-      throw Exception('Gagal menghapus restoran');
+    switch (response.statusCode) {
+      case 200:
+        return restoranFromJson(response.body);
+      case 401:
+        throw Exception('User tidak terautentikasi');
+      case 403:
+        throw Exception('Tindakan tidak diizinkan');
+      case 404:
+        throw Exception('Restoran tidak ditemukan');
+      default:
+        throw Exception('Error lainnya');
     }
   }
 

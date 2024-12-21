@@ -19,7 +19,7 @@ class RPRestoCard extends StatefulWidget {
 }
 
 class _RPRestoCardState extends State<RPRestoCard> {
-  final double _rating = 3.9;
+  final double _rating = 3.5;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +114,7 @@ class _RPRestoCardState extends State<RPRestoCard> {
                     direction: Axis.horizontal,
                     allowHalfRating: true,
                     itemCount: 5,
+                    unratedColor: Colors.grey,
                     itemBuilder: (context, index) => Icon(
                       Icons.star_rounded,
                       color: index < _rating ? Colors.amber : Colors.grey,

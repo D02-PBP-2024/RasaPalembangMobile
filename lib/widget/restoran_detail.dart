@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +45,7 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
   double _scrollOffset = 0.0;
   final double _scrollThreshold = 340.0;
   late Widget _forumPage;
+  final double _rating = 3.5;
 
   @override
   void initState() {
@@ -80,7 +82,7 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
 
   @override
   void dispose() {
-    // _scrollController.dispose();
+    _scrollController.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -131,6 +133,24 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                                 fontSize: 28.0,
                                 fontWeight: FontWeight.bold,
                               ),
+                            ),
+                            const SizedBox(height: 8.0),
+                            RatingBar.builder(
+                              initialRating: _rating,
+                              itemSize: 24,
+                              direction: Axis.horizontal,
+                              allowHalfRating: true,
+                              unratedColor: Colors.grey,
+                              itemCount: 5,
+                              itemBuilder: (context, index) => Icon(
+                                Icons.star_rounded,
+                                color: index < _rating ? Colors.amber : Colors.grey,
+                              ),
+                              onRatingUpdate: (rating) {
+                                setState(() {
+                                  rating = rating;
+                                });
+                              },
                             ),
                             const SizedBox(height: 8.0),
                             Row(
