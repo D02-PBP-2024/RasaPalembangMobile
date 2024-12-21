@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
-class MultiSelectWidget extends StatefulWidget {
+class RPMultiSelectWidget extends StatefulWidget {
   final List<String> items;
   final List<String> selectedItems;
   final ValueChanged<List<String>> onSelectionChanged;
 
-  const MultiSelectWidget({
+  const RPMultiSelectWidget({
     Key? key,
     required this.items,
     required this.selectedItems,
@@ -17,7 +17,7 @@ class MultiSelectWidget extends StatefulWidget {
   _MultiSelectWidgetState createState() => _MultiSelectWidgetState();
 }
 
-class _MultiSelectWidgetState extends State<MultiSelectWidget> {
+class _MultiSelectWidgetState extends State<RPMultiSelectWidget> {
   late List<String> _selectedItems;
 
   @override

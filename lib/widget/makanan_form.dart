@@ -38,8 +38,8 @@ class _MakananFormState extends State<MakananForm> {
   final _kaloriController = TextEditingController();
   final ValueNotifier<List<String>> _kategoriController = ValueNotifier<List<String>>([]);
 
-  List<String> _categories = [];
   bool _isLoadingCategories = true;
+  List<String> _categories = [];
   File? _selectedImage;
 
   final makananService = MakananService();
@@ -61,22 +61,22 @@ class _MakananFormState extends State<MakananForm> {
   Future<void> _fetchCategories() async {
     try {
       final kategoriMapFromBackend = await makananService.fetchCategories();
-      print("Kategori Map dari backend: $kategoriMapFromBackend"); // Debug isi kategoriMap
-
       if (kategoriMapFromBackend.isNotEmpty) {
         setState(() {
           kategoriMap = kategoriMapFromBackend; // Simpan UUID -> Nama
           _categories = kategoriMapFromBackend.keys.toList(); // Simpan hanya UUID
           _isLoadingCategories = false;
+
         });
-        print("_categories setelah fetch: $_categories"); // Debug UUID
+
+        setState(() {
+          _isLoadingCategories = false;
+        });
+
       } else {
         throw Exception("Tidak ada kategori ditemukan.");
       }
     } catch (e) {
-      setState(() {
-        _isLoadingCategories = false;
-      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal memuat kategori: ${e.toString()}')),
       );
@@ -167,25 +167,24 @@ class _MakananFormState extends State<MakananForm> {
                 ),
                 const SizedBox(height: 16.0),
                 _isLoadingCategories
-                  ? CircularProgressIndicator()
-                  : MultiSelectWidget(
-                      items: _categories.map((id) {
-                        print("ID: $id, Nama: ${kategoriMap[id]}"); // Debug ID dan nama
-                        return kategoriMap[id] ?? ''; // Tampilkan nama kategori
-                      }).toList(),
-                      selectedItems: _kategoriController.value.map((id) => kategoriMap[id] ?? '').toList(),
-                      onSelectionChanged: (selectedNames) {
-                        setState(() {
-                          // Konversi nama kategori kembali ke UUID
-                          _kategoriController.value = selectedNames
-                              .map((name) => kategoriMap.entries
-                              .firstWhere((entry) => entry.value == name, orElse: () => MapEntry('', ''))
-                              .key)
-                              .where((key) => key.isNotEmpty)
-                              .toList();
-                        });
-                      },
-                    ),
+                    ? CircularProgressIndicator()
+                    : RPMultiSelectWidget(
+                  items: _categories.map((id) {
+                    return kategoriMap[id] ?? ''; // Tampilkan nama kategori
+                  }).toList(),
+                  selectedItems: _kategoriController.value.map((id) => kategoriMap[id] ?? '').toList(),
+                  onSelectionChanged: (selectedNames) {
+                    setState(() {
+                      // Konversi nama kategori kembali ke UUID
+                      _kategoriController.value = selectedNames
+                          .map((name) => kategoriMap.entries
+                          .firstWhere((entry) => entry.value == name, orElse: () => MapEntry('', ''))
+                          .key)
+                          .where((key) => key.isNotEmpty)
+                          .toList();
+                    });
+                  },
+                ),
                 const SizedBox(height: 32.0),
                 RPButton(
                   width: double.infinity,
@@ -194,6 +193,7 @@ class _MakananFormState extends State<MakananForm> {
                     _onSubmit();
                   },
                 ),
+                const SizedBox(height: 16.0),
               ],
             ),
           ),
@@ -205,7 +205,7 @@ class _MakananFormState extends State<MakananForm> {
   void _onSubmit() async {
     if (_formKey.currentState?.validate() ?? false) {
       String nama = _namaController.text;
-      String harga = _hargaController.text;
+      int harga = int.parse(_hargaController.text);
       String deskripsi = _deskripsiController.text;
       int kalori = int.parse(_kaloriController.text);
       File? gambar = _selectedImage;
@@ -214,13 +214,16 @@ class _MakananFormState extends State<MakananForm> {
       String message;
       if (widget.edit) {
         widget.makanan?.nama = nama;
-        widget.makanan?.harga = int.parse(harga);
+        widget.makanan?.harga = harga;
         widget.makanan?.deskripsi = deskripsi;
         widget.makanan?.kalori = kalori;
         widget.makanan?.kategori = kategori;
 
         try {
-          await makananService.edit(widget.makanan!, gambar);
+          final response = await makananService.edit(
+            widget.makanan!,
+            gambar
+          );
           message = 'Makanan berhasil diubah';
         } catch (e) {
           message = printException(e as Exception);
@@ -237,7 +240,7 @@ class _MakananFormState extends State<MakananForm> {
         if (gambar != null) {
           Makanan makanan = Makanan(
             nama: nama,
-            harga: int.parse(harga),
+            harga: harga,
             deskripsi: deskripsi,
             gambar: '',
             kalori: kalori,
@@ -245,11 +248,17 @@ class _MakananFormState extends State<MakananForm> {
             restoran: widget.restoran,
           );
 
+          bool success;
           try {
-            await makananService.add(makanan, gambar);
+            final response = await makananService.add(
+              makanan,
+              gambar
+            );
             message = 'Makanan berhasil ditambah';
+            success = true;
           } catch (e) {
             message = printException(e as Exception);
+            success = false;
           }
 
           if (context.mounted) {
@@ -258,7 +267,12 @@ class _MakananFormState extends State<MakananForm> {
                 content: Text(message),
               ),
             );
-            Navigator.pop(context);
+            if (success) {
+              print("Navigasi keluar dari halaman form");
+              Navigator.pop(context);
+            }else {
+              print("Navigasi gagal karena success == false");
+            }
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

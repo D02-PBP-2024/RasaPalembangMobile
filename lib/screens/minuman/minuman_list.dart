@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rasapalembang/models/minuman.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
+import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_minuman_card.dart';
 
@@ -11,13 +13,20 @@ class MinumanListPage extends StatefulWidget {
 }
 
 class _MinumanListPageState extends State<MinumanListPage> {
-  
+  MinumanService minumanService = MinumanService();
+  late Future<List<Minuman>> _minumanList;
+
+  @override
+  void initState() {
+    super.initState();
+    _minumanList = minumanService.get();
+  }
+
   @override
   Widget build(BuildContext context) {
-    MinumanService minuman = MinumanService();
     return Scaffold(
       body: FutureBuilder(
-        future: minuman.get(),
+        future: _minumanList,
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return _buildMinumanGrid(itemCount: 6, isLoading: true);
@@ -38,34 +47,17 @@ class _MinumanListPageState extends State<MinumanListPage> {
   }
 
   Widget _buildMinumanGrid({required int itemCount, bool isLoading = false, List? data}) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                childAspectRatio: 0.65,
-              ),
-              itemCount: itemCount,
-              itemBuilder: (context, index) {
-                if (isLoading) {
-                  return RPMenuCardSkeleton();
-                } else {
-                  final minuman = data![index];
-                  return RPMinumanCard(minuman: minuman);
-                }
-              },
-            ),
-          ),
-          const SizedBox(height: 8.0),
-        ],
-      ),
+    return RPMenuGridView(
+      paddingTop: 24,
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (isLoading) {
+          return RPMenuCardSkeleton();
+        } else {
+          final minuman = data![index];
+          return RPMinumanCard(minuman: minuman);
+        }
+      },
     );
   }
 }
