@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/forum.dart';
+import 'package:rasapalembang/screens/authentication/show_login_bottom.dart';
 import 'package:rasapalembang/screens/forum/forum_detail.dart';
 import 'package:rasapalembang/screens/forum/forum_tambah.dart';
 import 'package:rasapalembang/services/forum_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/widget/rp_forum_card.dart';
 import 'package:rasapalembang/widget/rp_floatingbutton.dart';
+import 'package:rasapalembang/widget/rp_forum_card_skeleton.dart';
+import 'package:rasapalembang/widget/rp_list_view.dart';
 
 class ForumListPage extends StatefulWidget {
   final String idRestoran;
@@ -42,56 +45,83 @@ class _ForumListPageState extends State<ForumListPage> {
     final request = context.watch<UserService>();
 
     return Scaffold(
-      body: FutureBuilder<List<Forum>>(
-        future: _forumFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("Belum ada diskusi."));
-          } else {
-            final forumList = snapshot.data!;
-
-            return ListView.builder(
-              itemCount: forumList.length,
-              itemBuilder: (context, index) {
-                final forum = forumList[index];
-                return RPForumCard(
-                  forum: forum,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ForumDetailPage(forum: forum),
-                      ),
-                    );
-                  },
-                  refreshList: _loadForumList,
-                );
-              },
-            );
-          }
-        },
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
+        child: FutureBuilder<List<Forum>>(
+          future: _forumFuture,
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return _buildForumList(itemCount: 4, isLoading: true);
+            } else if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text("Belum ada diskusi."));
+            } else {
+              return _buildForumList(
+                  itemCount: snapshot.data.length,
+                  isLoading: false,
+                  data: snapshot.data
+              );
+            }
+          },
+        ),
       ),
-      floatingActionButton: (request.loggedIn)
+      floatingActionButton: request.user?.peran != 'pemilik_restoran'
           ? RPFloatingButton(
               onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ForumTambahPage(
-                      restoran: widget.idRestoran,
+                if (request.loggedIn) {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ForumTambahPage(
+                        restoran: widget.idRestoran,
+                      ),
                     ),
-                  ),
-                );
-                _loadForumList();
+                  );
+                  _loadForumList();
+                } else {
+                  showLoginBottom(context);
+                }
               },
               icon: const Icon(Icons.add_comment, color: Colors.white),
               tooltip: 'Tambah Forum',
             )
           : null,
+    );
+  }
+
+  Widget _buildForumList({required int itemCount, bool isLoading = false, List? data}) {
+    return RPListView(
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (isLoading) {
+          return Column(
+            children: [
+              RPForumCardSkeleton(),
+              if (index < itemCount - 1) SizedBox(height: 8.0),
+            ],
+          );
+        } else {
+          final forum = data![index];
+          return Column(
+            children: [
+              RPForumCard(
+                forum: forum,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ForumDetailPage(forum: forum),
+                    ),
+                  );
+                },
+                refreshList: _loadForumList,
+              ),
+              if (index < itemCount - 1) SizedBox(height: 8.0),
+            ],
+          );
+        }
+      }
     );
   }
 }
