@@ -1,7 +1,7 @@
 // pbp_django_auth
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show ChangeNotifier, kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rasapalembang/models/user.dart';
@@ -26,7 +26,7 @@ class Cookie {
   };
 }
 
-class UserService {
+class UserService with ChangeNotifier {
   Map<String, String> headers = {};
   Map<String, Cookie> cookies = {};
   User? user;
@@ -95,6 +95,7 @@ class UserService {
     // Remove used additional header
     headers.remove('Content-Type');
     await updateCookie(response);
+    notifyListeners();
 
     int code = response.statusCode;
     if (code == 201) {
@@ -131,6 +132,7 @@ class UserService {
     // Remove used additional header
     headers.remove('Content-Type');
     await updateCookie(response);
+    notifyListeners();
 
     int code = response.statusCode;
     if (code == 200) {
