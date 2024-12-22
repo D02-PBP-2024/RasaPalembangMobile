@@ -52,8 +52,6 @@ class _UlasanListPageState extends State<UlasanListPage> {
       return false;
     }
 
-    // ...existing code...
-
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0),
