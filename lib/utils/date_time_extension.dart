@@ -12,18 +12,12 @@ extension DateTimeExtension on DateTime {
     } else if ((difference.inDays / 7).floor() >= 1) {
       final weeks = (difference.inDays / 7).floor();
       return '$weeks minggu yang lalu';
-    } else if (difference.inDays >= 2) {
-      return '${difference.inDays} hari yang lalu';
     } else if (difference.inDays >= 1) {
-      return (numericDates) ? 'Kemarin' : 'Sehari yang lalu';
-    } else if (difference.inHours >= 2) {
-      return '${difference.inHours} jam yang lalu';
+      return '${difference.inDays} hari yang lalu';
     } else if (difference.inHours >= 1) {
-      return (numericDates) ? 'Satu jam yang lalu' : 'Sekitar sejam yang lalu';
-    } else if (difference.inMinutes >= 2) {
-      return '${difference.inMinutes} menit yang lalu';
+      return '${difference.inHours} jam yang lalu';
     } else if (difference.inMinutes >= 1) {
-      return (numericDates) ? 'Satu menit yang lalu' : 'Baru saja';
+      return '${difference.inMinutes} menit yang lalu';
     } else if (difference.inSeconds >= 3) {
       return '${difference.inSeconds} detik yang lalu';
     } else {
