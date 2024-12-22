@@ -1,26 +1,31 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/minuman.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/format_harga.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 
-class RPMenuDetail extends StatefulWidget {
+class RPMinumanDetail extends StatefulWidget {
   final Minuman minuman;
+  final bool lihatRestoran;
 
-  const RPMenuDetail({
+  const RPMinumanDetail({
     super.key,
     required this.minuman,
+    this.lihatRestoran = true,
   });
 
   @override
-  _RPMenuDetailState createState() => _RPMenuDetailState();
+  State<RPMinumanDetail> createState() => _RPMinumanDetailState();
 }
 
-class _RPMenuDetailState extends State<RPMenuDetail> {
-
+class _RPMinumanDetailState extends State<RPMinumanDetail> {
   MinumanService minumanService = MinumanService();
 
   @override
@@ -37,11 +42,14 @@ class _RPMenuDetailState extends State<RPMenuDetail> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
-                  child: Image.network(
-                    '${RPUrls.baseUrl}${minuman.gambar}',
+                  child: CachedNetworkImage(
+                    imageUrl: '${RPUrls.baseUrl}${minuman.gambar}',
                     width: double.infinity,
                     height: screenWidth - 32,
                     fit: BoxFit.cover,
+                    placeholder: (context, url) => RPImageLoading(),
+                    errorWidget: (context, url, error) => RPImageError(),
+                    cacheManager: RPCache.rpCacheManager,
                   ),
                 ),
                 Positioned(
@@ -101,21 +109,25 @@ class _RPMenuDetailState extends State<RPMenuDetail> {
                 ),
               ],
             ),
-            const SizedBox(height: 20.0),
-            RPButton(
-              label: 'Lihat Restoran',
-              width: double.infinity,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RestoranDetail(
-                      restoran: widget.minuman.restoran
-                    ),
+            if (widget.lihatRestoran)
+              Column(
+                children: [
+                  const SizedBox(height: 20.0),
+                  RPButton(
+                    label: 'Lihat Restoran',
+                    width: double.infinity,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              RestoranDetail(restoran: widget.minuman.restoran),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
+                ],
+              ),
           ],
         ),
       ),

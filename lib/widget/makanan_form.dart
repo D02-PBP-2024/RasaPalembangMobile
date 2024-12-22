@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/makanan.dart';
 import 'package:rasapalembang/models/restoran.dart';
@@ -36,13 +37,15 @@ class _MakananFormState extends State<MakananForm> {
   final _hargaController = TextEditingController();
   final _deskripsiController = TextEditingController();
   final _kaloriController = TextEditingController();
-  final ValueNotifier<List<String>> _kategoriController = ValueNotifier<List<String>>([]);
+  final ValueNotifier<List<String>> _kategoriController =
+      ValueNotifier<List<String>>([]);
 
-  List<String> _categories = [];
   bool _isLoadingCategories = true;
+  List<String> _categories = [];
   File? _selectedImage;
 
   final makananService = MakananService();
+  Map<String, String> kategoriMap = {};
 
   @override
   void initState() {
@@ -59,22 +62,27 @@ class _MakananFormState extends State<MakananForm> {
 
   Future<void> _fetchCategories() async {
     try {
-      final kategoriMap = await makananService.fetchCategories();
-      if (kategoriMap.isNotEmpty) {
+      final kategoriMapFromBackend = await makananService.fetchCategories();
+      if (kategoriMapFromBackend.isNotEmpty) {
         setState(() {
-          _categories = kategoriMap.values.toList(); // Simpan nama kategori
+          kategoriMap = kategoriMapFromBackend; // Simpan UUID -> Nama
+          _categories =
+              kategoriMapFromBackend.keys.toList(); // Simpan hanya UUID
+          _isLoadingCategories = false;
+        });
+
+        setState(() {
           _isLoadingCategories = false;
         });
       } else {
         throw Exception("Tidak ada kategori ditemukan.");
       }
     } catch (e) {
-      setState(() {
-        _isLoadingCategories = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memuat kategori: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memuat kategori: ${e.toString()}')),
+        );
+      }
     }
   }
 
@@ -163,12 +171,24 @@ class _MakananFormState extends State<MakananForm> {
                 const SizedBox(height: 16.0),
                 _isLoadingCategories
                     ? CircularProgressIndicator()
-                    : MultiSelectWidget(
-                        items: _categories, // Ambil daftar kategori dari hasil fetch
-                        selectedItems: _kategoriController.value, // Pilihan awal
-                        onSelectionChanged: (values) {
+                    : RPMultiSelectWidget(
+                        items: _categories.map((id) {
+                          return kategoriMap[id] ??
+                              ''; // Tampilkan nama kategori
+                        }).toList(),
+                        selectedItems: _kategoriController.value
+                            .map((id) => kategoriMap[id] ?? '')
+                            .toList(),
+                        onSelectionChanged: (selectedNames) {
                           setState(() {
-                            _kategoriController.value = values; // Simpan hasil pilihan
+                            // Konversi nama kategori kembali ke UUID
+                            _kategoriController.value = selectedNames
+                                .map((name) => kategoriMap.entries
+                                    .firstWhere((entry) => entry.value == name,
+                                        orElse: () => MapEntry('', ''))
+                                    .key)
+                                .where((key) => key.isNotEmpty)
+                                .toList();
                           });
                         },
                       ),
@@ -180,6 +200,7 @@ class _MakananFormState extends State<MakananForm> {
                     _onSubmit();
                   },
                 ),
+                const SizedBox(height: 16.0),
               ],
             ),
           ),
@@ -191,7 +212,7 @@ class _MakananFormState extends State<MakananForm> {
   void _onSubmit() async {
     if (_formKey.currentState?.validate() ?? false) {
       String nama = _namaController.text;
-      String harga = _hargaController.text;
+      int harga = int.parse(_hargaController.text);
       String deskripsi = _deskripsiController.text;
       int kalori = int.parse(_kaloriController.text);
       File? gambar = _selectedImage;
@@ -200,30 +221,36 @@ class _MakananFormState extends State<MakananForm> {
       String message;
       if (widget.edit) {
         widget.makanan?.nama = nama;
-        widget.makanan?.harga = int.parse(harga);
+        widget.makanan?.harga = harga;
         widget.makanan?.deskripsi = deskripsi;
         widget.makanan?.kalori = kalori;
         widget.makanan?.kategori = kategori;
 
+        bool success;
         try {
-          await makananService.edit(widget.makanan!, gambar);
+          final response = await makananService.edit(widget.makanan!, gambar);
           message = 'Makanan berhasil diubah';
+          success = true;
         } catch (e) {
           message = printException(e as Exception);
+          success = false;
         }
 
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message),
             ),
           );
+          if (success) {
+            Navigator.pop(context);
+          }
         }
       } else {
         if (gambar != null) {
           Makanan makanan = Makanan(
             nama: nama,
-            harga: int.parse(harga),
+            harga: harga,
             deskripsi: deskripsi,
             gambar: '',
             kalori: kalori,
@@ -231,20 +258,25 @@ class _MakananFormState extends State<MakananForm> {
             restoran: widget.restoran,
           );
 
+          bool success;
           try {
-            await makananService.add(makanan, gambar);
+            final response = await makananService.add(makanan, gambar);
             message = 'Makanan berhasil ditambah';
+            success = true;
           } catch (e) {
             message = printException(e as Exception);
+            success = false;
           }
 
-          if (context.mounted) {
+          if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(message),
               ),
             );
-            Navigator.pop(context);
+            if (success) {
+              Navigator.pop(context);
+            }
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

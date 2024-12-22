@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -7,8 +8,11 @@ import 'package:rasapalembang/services/balasan_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/date_time_extension.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 
 class RPBalasanCard extends StatefulWidget {
   final Balasan balasan;
@@ -42,8 +46,7 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
     return GestureDetector(
       onLongPress: () {
         HapticFeedback.lightImpact();
-        _showBalasanOption(
-            context, widget.balasan, isBalasanUser, request);
+        _showBalasanOption(context, widget.balasan, isBalasanUser, request);
       },
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,14 +55,16 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
             children: [
               SizedBox(height: 2.0),
               ClipOval(
-                child: Image.network(
-                  widget.balasan.user.foto != ''
-                      ? RPUrls.baseUrl +
-                      widget.balasan.user.foto
+                child: CachedNetworkImage(
+                  imageUrl: widget.balasan.user.foto != ''
+                      ? RPUrls.baseUrl + widget.balasan.user.foto
                       : RPUrls.noProfileUrl,
                   height: 40,
                   width: 40,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) => RPImageLoading(),
+                  errorWidget: (context, url, error) => RPImageError(),
+                  cacheManager: RPCache.rpCacheManager,
                 ),
               ),
             ],
@@ -100,8 +105,7 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
                         ),
                       ),
                     ],
-                  )
-              ),
+                  )),
             ),
           ),
         ],
@@ -109,8 +113,8 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
     );
   }
 
-  void _showBalasanOption(
-      BuildContext context, Balasan balasan, bool isBalasanUser, UserService request) {
+  void _showBalasanOption(BuildContext context, Balasan balasan,
+      bool isBalasanUser, UserService request) {
     RPBottomSheet(
       context: context,
       widgets: [
@@ -176,4 +180,3 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
     ).show();
   }
 }
-

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/user.dart';
@@ -15,13 +16,12 @@ class ProfileEditPage extends StatefulWidget {
   final String deskripsi;
   final String foto;
 
-  const ProfileEditPage({
-    super.key,
-    required this.onChanged,
-    required this.nama,
-    required this.deskripsi,
-    required this.foto
-  });
+  const ProfileEditPage(
+      {super.key,
+      required this.onChanged,
+      required this.nama,
+      required this.deskripsi,
+      required this.foto});
 
   @override
   State<ProfileEditPage> createState() => _ProfileEditPageState();
@@ -107,7 +107,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                             foto,
                           );
                           message = 'Berhasil mengubah profile!';
-                        } catch(e) {
+                        } catch (e) {
                           message = printException(e as Exception);
                         }
                         if (context.mounted) {

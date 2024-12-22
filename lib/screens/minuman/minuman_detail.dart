@@ -12,7 +12,7 @@ class MinumanDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RPMenuDetail(
+    return RPMinumanDetail(
       minuman: minuman,
     );
   }

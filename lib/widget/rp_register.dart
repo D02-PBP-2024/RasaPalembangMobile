@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rasapalembang/providers/tab_provider.dart';
-import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/services/user_service.dart';
+import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 import 'package:rasapalembang/widget/rp_dropdown_button.dart';
@@ -12,11 +11,8 @@ class RPRegister extends StatefulWidget {
   final VoidCallback redirect;
   final VoidCallback loginPage;
 
-  const RPRegister({
-    super.key,
-    required this.redirect,
-    required this.loginPage
-  });
+  const RPRegister(
+      {super.key, required this.redirect, required this.loginPage});
 
   @override
   State<RPRegister> createState() => _RPRegisterState();
@@ -33,7 +29,6 @@ class _RPRegisterState extends State<RPRegister> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
-    final selectedTab = Provider.of<TabProvider>(context);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -142,7 +137,7 @@ class _RPRegisterState extends State<RPRegister> {
                         );
                         message = 'Selamat datang ${response?.username}!';
                         success = true;
-                      } catch(e) {
+                      } catch (e) {
                         message = printException(e as Exception);
                       }
 
@@ -173,8 +168,7 @@ class _RPRegisterState extends State<RPRegister> {
                         }
                       }
                     }
-                  }
-              ),
+                  }),
               const SizedBox(height: 16.0),
               Center(
                 child: Row(

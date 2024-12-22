@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rasapalembang/models/makanan.dart';
@@ -19,10 +20,31 @@ class MakananService extends UserService {
     http.Response response = await client.get(uri, headers: headers);
     await updateCookie(response);
 
-    if (response.statusCode == 200) {
-      return makananFromListJson(response.body);
-    } else {
-      throw Exception('Gagal mengambil data makanan');
+    switch (response.statusCode) {
+      case 200:
+        return makananFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
+  Future<List<Makanan>> getKeyword(String keyword) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/makanan/?keyword=$keyword');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return makananFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
     }
   }
 
@@ -38,10 +60,11 @@ class MakananService extends UserService {
     http.Response response = await client.get(uri, headers: headers);
     await updateCookie(response);
 
-    if (response.statusCode == 200) {
-      return makananFromListJson(response.body);
-    } else {
-      throw Exception('Gagal mengambil data makanan');
+    switch (response.statusCode) {
+      case 200:
+        return makananFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
     }
   }
 
@@ -52,7 +75,8 @@ class MakananService extends UserService {
       c.withCredentials = true;
     }
 
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/${makanan.restoran.pk}/makanan/');
+    final uri = Uri.parse(
+        '${RPUrls.baseUrl}/v1/restoran/${makanan.restoran.pk}/makanan/');
 
     var request = http.MultipartRequest('POST', uri);
     request.headers.addAll(headers);
@@ -66,18 +90,19 @@ class MakananService extends UserService {
 
     var streamedResponse = await request.send();
     var body = await streamedResponse.stream.bytesToString();
-    var response = http.Response(body, streamedResponse.statusCode, headers: streamedResponse.headers);
+    var response = http.Response(body, streamedResponse.statusCode,
+        headers: streamedResponse.headers);
     await updateCookie(response);
 
-    int code = response.statusCode;
-    if (code == 200) {
-      return makananFromJson(response.body);
-    } else if (response.statusCode == 401) {
-      throw Exception('User tidak terautentikasi');
-    } else if (response.statusCode == 403) {
-      throw Exception('Tindakan tidak diizinkan');
-    } else {
-      throw Exception('Error lainnya');
+    switch (response.statusCode) {
+      case 201:
+        return makananFromJson(response.body);
+      case 401:
+        throw Exception('User tidak terautentikasi');
+      case 403:
+        throw Exception('Tindakan tidak diizinkan');
+      default:
+        throw Exception('Error lainnya');
     }
   }
 
@@ -90,34 +115,36 @@ class MakananService extends UserService {
 
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/makanan/${makanan.pk}/');
 
-    var request = http.MultipartRequest('PUT', uri);
+    var request = http.MultipartRequest('POST', uri);
     request.headers.addAll(headers);
 
     request.fields['nama'] = makanan.nama;
     request.fields['harga'] = '${makanan.harga}';
     request.fields['deskripsi'] = makanan.deskripsi;
     if (gambar != null) {
-      request.files.add(
-        await http.MultipartFile.fromPath('gambar', gambar.path)
-      );
+      request.files
+          .add(await http.MultipartFile.fromPath('gambar', gambar.path));
     }
     request.fields['kalori'] = '${makanan.kalori}';
     request.fields['kategori'] = makanan.kategori.join(',');
 
     var streamedResponse = await request.send();
     var body = await streamedResponse.stream.bytesToString();
-    var response = http.Response(body, streamedResponse.statusCode, headers: streamedResponse.headers);
+    var response = http.Response(body, streamedResponse.statusCode,
+        headers: streamedResponse.headers);
     await updateCookie(response);
 
-    int code = response.statusCode;
-    if (code == 200) {
-      return makananFromJson(response.body);
-    } else if (response.statusCode == 401) {
-      throw Exception('User tidak terautentikasi');
-    } else if (response.statusCode == 403) {
-      throw Exception('Tindakan tidak diizinkan');
-    } else {
-      throw Exception('Error lainnya');
+    switch (response.statusCode) {
+      case 200:
+        return makananFromJson(response.body);
+      case 401:
+        throw Exception('User tidak terautentikasi');
+      case 403:
+        throw Exception('Tindakan tidak diizinkan');
+      case 404:
+        throw Exception('Makanan tidak ditemukan');
+      default:
+        throw Exception('Error lainnya');
     }
   }
 
@@ -133,34 +160,38 @@ class MakananService extends UserService {
     http.Response response = await client.delete(uri, headers: headers);
     await updateCookie(response);
 
-    int code = response.statusCode;
-    if (code == 200) {
-      return makananFromJson(response.body);
-    } else if (response.statusCode == 401) {
-      throw Exception('User tidak terautentikasi');
-    } else if (response.statusCode == 403) {
-      throw Exception('Tindakan tidak diizinkan');
-    } else {
-      throw Exception('Error lainnya');
+    switch (response.statusCode) {
+      case 200:
+        return makananFromJson(response.body);
+      case 401:
+        throw Exception('User tidak terautentikasi');
+      case 403:
+        throw Exception('Tindakan tidak diizinkan');
+      case 404:
+        throw Exception('Makanan tidak ditemukan');
+      default:
+        throw Exception('Error lainnya');
     }
   }
 
   Future<Map<String, String>> fetchCategories() async {
-    final uri = Uri.parse('http://127.0.0.1:8000/v1/makanan/kategori/');
-    final response = await http.get(uri, headers: headers);
-
+    final response =
+        await http.get(Uri.parse('${RPUrls.baseUrl}/v1/makanan/kategori/'));
     if (response.statusCode == 200) {
-      final List<dynamic> kategoriList = json.decode(response.body);
+      final data = json.decode(response.body); // Decode respons JSON
 
-      // Konversi ke Map UUID -> Nama
-      final Map<String, String> kategoriMap = {
-        for (var kategori in kategoriList)
-          kategori['id']: kategori['nama']
-      };
-
-      return kategoriMap;
+      // Pastikan format JSON benar
+      if (data is List) {
+        // Jika respons berupa daftar
+        return {for (var item in data) item['id']: item['nama']};
+      } else if (data is Map) {
+        // Jika respons berupa peta
+        return Map<String, String>.from(data);
+      } else {
+        throw Exception("Format data tidak valid");
+      }
     } else {
-      throw Exception('Gagal mengambil kategori');
+      throw Exception("Gagal memuat kategori, status: ${response.statusCode}");
     }
   }
 }

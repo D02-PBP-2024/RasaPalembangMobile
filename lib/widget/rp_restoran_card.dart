@@ -1,10 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/utils/is_open.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 
 class RPRestoCard extends StatefulWidget {
   final Restoran restoran;
@@ -19,8 +23,6 @@ class RPRestoCard extends StatefulWidget {
 }
 
 class _RPRestoCardState extends State<RPRestoCard> {
-  final double _rating = 3.5;
-
   @override
   Widget build(BuildContext context) {
     Restoran restoran = widget.restoran;
@@ -52,26 +54,28 @@ class _RPRestoCardState extends State<RPRestoCard> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(8.0)
-                  ),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(8.0)),
                   child: restoran.gambar.isNotEmpty
-                    ? Image.network(
-                      RPUrls.baseUrl + restoran.gambar,
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      )
-                    : Container(
-                      width: double.infinity,
-                      height: 200,
-                      color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
-                    ),
+                      ? CachedNetworkImage(
+                          imageUrl: RPUrls.baseUrl + restoran.gambar,
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => RPImageLoading(),
+                          errorWidget: (context, url, error) => RPImageError(),
+                          cacheManager: RPCache.rpCacheManager,
+                        )
+                      : Container(
+                          width: double.infinity,
+                          height: 200,
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                        ),
                 ),
                 Positioned(
                   top: 4,
@@ -109,7 +113,7 @@ class _RPRestoCardState extends State<RPRestoCard> {
                   const SizedBox(height: 4.0),
                   // Rating
                   RatingBar.builder(
-                    initialRating: _rating,
+                    initialRating: widget.restoran.rating ?? 0.0,
                     itemSize: 20,
                     direction: Axis.horizontal,
                     allowHalfRating: true,
@@ -117,7 +121,9 @@ class _RPRestoCardState extends State<RPRestoCard> {
                     unratedColor: Colors.grey,
                     itemBuilder: (context, index) => Icon(
                       Icons.star_rounded,
-                      color: index < _rating ? Colors.amber : Colors.grey,
+                      color: index < (widget.restoran.rating ?? 0)
+                          ? Colors.amber
+                          : Colors.grey,
                     ),
                     onRatingUpdate: (rating) {
                       setState(() {

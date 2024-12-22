@@ -1,28 +1,33 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/makanan.dart';
 import 'package:rasapalembang/models/minuman.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/screens/forum/forum_list.dart';
-import 'package:rasapalembang/services/makanan_service.dart';
-import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/screens/makanan/makanan_tambah.dart';
 import 'package:rasapalembang/screens/minuman/minuman_tambah.dart';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
+import 'package:rasapalembang/screens/ulasan/ulasan_list.dart';
+import 'package:rasapalembang/services/makanan_service.dart';
+import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/is_open.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 import 'package:rasapalembang/widget/rp_makanan_card.dart';
-import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
+import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_minuman_card.dart';
 
 class RestoranDetail extends StatefulWidget {
@@ -34,7 +39,8 @@ class RestoranDetail extends StatefulWidget {
   _RestoranDetailState createState() => _RestoranDetailState();
 }
 
-class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProviderStateMixin {
+class _RestoranDetailState extends State<RestoranDetail>
+    with SingleTickerProviderStateMixin {
   MakananService makananService = MakananService();
   MinumanService minumanService = MinumanService();
   late Future<List<Makanan>> _makananList;
@@ -45,8 +51,8 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
   late ScrollController _scrollController;
   double _scrollOffset = 0.0;
   final double _scrollThreshold = 340.0;
+  late Widget _ulasanPage;
   late Widget _forumPage;
-  final double _rating = 3.5;
 
   @override
   void initState() {
@@ -61,6 +67,7 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
         _scrollOffset = _scrollController.offset;
       });
     });
+    _ulasanPage = UlasanListPage(idRestoran: widget.restoran.pk);
     _forumPage = ForumListPage(idRestoran: widget.restoran.pk);
   }
 
@@ -69,7 +76,8 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
       List<Location> locations = await locationFromAddress(address);
       if (locations.isNotEmpty) {
         setState(() {
-          restoranLocation = LatLng(locations.first.latitude, locations.first.longitude);
+          restoranLocation =
+              LatLng(locations.first.latitude, locations.first.longitude);
           isLoading = false;
         });
       }
@@ -105,11 +113,14 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   children: [
-                    Image.network(
-                      RPUrls.baseUrl + widget.restoran.gambar,
+                    CachedNetworkImage(
+                      imageUrl: RPUrls.baseUrl + widget.restoran.gambar,
                       width: double.infinity,
                       height: 500,
                       fit: BoxFit.cover,
+                      placeholder: (context, url) => RPImageLoading(),
+                      errorWidget: (context, url, error) => RPImageError(),
+                      cacheManager: RPCache.rpCacheManager,
                     ),
                     Positioned(
                       bottom: 0,
@@ -137,7 +148,7 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                             ),
                             const SizedBox(height: 8.0),
                             RatingBar.builder(
-                              initialRating: _rating,
+                              initialRating: widget.restoran.rating?.toDouble() ?? 0.0,
                               itemSize: 24,
                               direction: Axis.horizontal,
                               allowHalfRating: true,
@@ -145,7 +156,9 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                               itemCount: 5,
                               itemBuilder: (context, index) => Icon(
                                 Icons.star_rounded,
-                                color: index < _rating ? Colors.amber : Colors.grey,
+                                color: index < (widget.restoran.rating ?? 0)
+                                    ? Colors.amber
+                                    : Colors.grey,
                               ),
                               onRatingUpdate: (rating) {
                                 setState(() {
@@ -157,11 +170,14 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                             Row(
                               children: [
                                 Text(
-                                  isCurrentlyOpen(widget.restoran.jamBuka, widget.restoran.jamTutup)
+                                  isCurrentlyOpen(widget.restoran.jamBuka,
+                                          widget.restoran.jamTutup)
                                       ? 'Buka'
                                       : 'Tutup',
                                   style: TextStyle(
-                                    color: isCurrentlyOpen(widget.restoran.jamBuka, widget.restoran.jamTutup)
+                                    color: isCurrentlyOpen(
+                                            widget.restoran.jamBuka,
+                                            widget.restoran.jamTutup)
                                         ? Colors.greenAccent
                                         : Colors.redAccent,
                                     fontSize: 18.0,
@@ -207,18 +223,20 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                 labelColor: RPColors.biruMuda,
                 unselectedLabelColor: Colors.grey,
                 indicatorColor: RPColors.biruMuda,
-                  tabs: [
-                    Tab(text: 'Makanan'),
-                    Tab(text: 'Minuman'),
-                    Tab(text: 'Ulasan'),
-                    Tab(text: 'Forum'),
-                  ],
+                tabs: [
+                  Tab(text: 'Makanan'),
+                  Tab(text: 'Minuman'),
+                  Tab(text: 'Ulasan'),
+                  Tab(text: 'Forum'),
+                ],
               ),
               actions: [
                 IconButton(
                   icon: Icon(
                     Icons.favorite_border,
-                    color: _scrollOffset > _scrollThreshold ? Colors.black : Colors.white,
+                    color: _scrollOffset > _scrollThreshold
+                        ? Colors.black
+                        : Colors.white,
                   ),
                   onPressed: () {
                     // TODO: Tambah ke favorit
@@ -227,7 +245,9 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                 IconButton(
                   icon: Icon(
                     Icons.more_vert,
-                    color: _scrollOffset > _scrollThreshold ? Colors.black : Colors.white,
+                    color: _scrollOffset > _scrollThreshold
+                        ? Colors.black
+                        : Colors.white,
                   ),
                   onPressed: () {
                     _showRestoranOption(request);
@@ -237,7 +257,9 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
               leading: IconButton(
                 icon: Icon(
                   Icons.arrow_back,
-                  color: _scrollOffset > _scrollThreshold ? Colors.black : Colors.white,
+                  color: _scrollOffset > _scrollThreshold
+                      ? Colors.black
+                      : Colors.white,
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -275,21 +297,6 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
           Column(
             children: [
               ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Edit restoran'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RestoranEditForm(
-                        restoran: widget.restoran,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
                 leading: Icon(Icons.rice_bowl),
                 title: Text('Tambah makanan'),
                 onTap: () {
@@ -313,6 +320,21 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                     context,
                     MaterialPageRoute(
                       builder: (context) => MinumanTambahPage(
+                        restoran: widget.restoran,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Edit restoran'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RestoranEditForm(
                         restoran: widget.restoran,
                       ),
                     ),
@@ -427,10 +449,9 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
           return const Center(child: Text("Belum ada makanan"));
         } else {
           return _buildMenuGrid(
-            itemCount: snapshot.data.length,
-            type: 'makanan',
-            data: snapshot.data
-          );
+              itemCount: snapshot.data.length,
+              type: 'makanan',
+              data: snapshot.data);
         }
       },
     );
@@ -450,32 +471,36 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
           return _buildMenuGrid(
               itemCount: snapshot.data.length,
               type: 'minuman',
-              data: snapshot.data
-          );
+              data: snapshot.data);
         }
       },
     );
   }
 
   Widget _ulasanTab() {
-    return Text('ulasan');
+    return _ulasanPage;
   }
 
   Widget _forumTab() {
     return _forumPage;
   }
 
-  Widget _buildMenuGrid({
-    required int itemCount, List? data, String? type}) {
+  Widget _buildMenuGrid({required int itemCount, List? data, String? type}) {
     return RPMenuGridView(
       itemCount: itemCount,
       itemBuilder: (context, index) {
         if (type == 'makanan') {
           final makanan = data![index];
-          return RPMakananCard(makanan: makanan);
+          return RPMakananCard(
+            makanan: makanan,
+            lihatRestoran: false,
+          );
         } else if (type == 'minuman') {
           final minuman = data![index];
-          return RPMinumanCard(minuman: minuman);
+          return RPMinumanCard(
+            minuman: minuman,
+            lihatRestoran: false,
+          );
         } else {
           return RPMenuCardSkeleton();
         }
