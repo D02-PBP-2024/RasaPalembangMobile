@@ -129,8 +129,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: ClipOval(
                       child: CachedNetworkImage(
                         imageUrl: foto != ''
-                          ? RPUrls.baseUrl + foto
-                          : RPUrls.noProfileUrl,
+                            ? RPUrls.baseUrl + foto
+                            : RPUrls.noProfileUrl,
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
@@ -207,7 +207,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 if (widget.peran == 'pemilik_restoran')
                   Column(
                     children: [
-                      const SizedBox(height: 16.0),
                       FutureBuilder(
                         future: _restoranList,
                         builder: (context, AsyncSnapshot snapshot) {
@@ -235,7 +234,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 if (widget.peran == 'pengulas')
                   Column(children: [
-                    const SizedBox(height: 16.0),
                     FutureBuilder(
                       future: _ulasanList,
                       builder: (context, AsyncSnapshot snapshot) {
@@ -310,8 +308,9 @@ class _ProfilePageState extends State<ProfilePage> {
     List? data,
   }) {
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: RPListView(
+            paddingTop: 24,
             paddingBottom: 8.0,
             itemCount: itemCount,
             itemBuilder: (context, index) {
@@ -329,6 +328,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     RPUlasanCard(
                       ulasan: ulasan,
                       refreshList: refreshList,
+                      includeResto: true,
                     ),
                     if (index < itemCount - 1) SizedBox(height: 8.0),
                   ],

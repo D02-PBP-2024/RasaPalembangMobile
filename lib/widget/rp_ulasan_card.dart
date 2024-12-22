@@ -20,11 +20,13 @@ import 'package:rasapalembang/widget/rp_image_loading.dart';
 class RPUlasanCard extends StatelessWidget {
   final Ulasan ulasan;
   final VoidCallback refreshList;
+  final includeResto;
 
   RPUlasanCard({
     super.key,
     required this.ulasan,
     required this.refreshList,
+    this.includeResto = false,
   });
 
   final UlasanService ulasanService = UlasanService();
@@ -88,6 +90,13 @@ class RPUlasanCard extends StatelessWidget {
                           color: RPColors.textSecondary,
                         ),
                       ),
+                      SizedBox(height: 2.0),
+                      Text(
+                        ulasan.restoran,
+                        style: TextStyle(
+                          color: RPColors.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -102,7 +111,9 @@ class RPUlasanCard extends StatelessWidget {
                 ignoreGestures: true,
                 itemBuilder: (context, index) => Icon(
                   Icons.star_rounded,
-                  color: index < ulasan.nilai.toDouble() ? Colors.amber : Colors.grey,
+                  color: index < ulasan.nilai.toDouble()
+                      ? Colors.amber
+                      : Colors.grey,
                 ),
                 onRatingUpdate: (rating) {},
               ),
@@ -127,7 +138,6 @@ class RPUlasanCard extends StatelessWidget {
           onTap: () {
             Navigator.pop(context);
             Navigator.push(
-              // TODO: Tangani buat tanda balik ke halaman sebelumnya
               context,
               MaterialPageRoute(
                 builder: (context) => ProfilePage(
@@ -177,7 +187,7 @@ class RPUlasanCard extends StatelessWidget {
               Navigator.pop(context);
               String message;
               try {
-                final response = await ulasanService.deleteUlasan(ulasan);
+                await ulasanService.deleteUlasan(ulasan);
                 message = 'Ulasan berhasil dihapus';
               } catch (e) {
                 message = printException(e as Exception);
