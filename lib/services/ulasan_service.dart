@@ -26,6 +26,21 @@ class UlasanService extends UserService {
     }
   }
 
+  Future<List<Ulasan>> getByUsername(String username) async {
+    await init();
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/profile/$username/ulasan/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return ulasanFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
   Future<Ulasan> addUlasan(
       int nilai, String deskripsi, String idRestoran) async {
     await init();

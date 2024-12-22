@@ -52,7 +52,6 @@ class _RestoranDetailState extends State<RestoranDetail>
   final double _scrollThreshold = 340.0;
   late Widget _ulasanPage;
   late Widget _forumPage;
-  final double _rating = 3.5;
 
   @override
   void initState() {
@@ -148,7 +147,7 @@ class _RestoranDetailState extends State<RestoranDetail>
                             ),
                             const SizedBox(height: 8.0),
                             RatingBar.builder(
-                              initialRating: _rating,
+                              initialRating: widget.restoran.rating.toDouble(),
                               itemSize: 24,
                               direction: Axis.horizontal,
                               allowHalfRating: true,
@@ -156,7 +155,7 @@ class _RestoranDetailState extends State<RestoranDetail>
                               itemCount: 5,
                               itemBuilder: (context, index) => Icon(
                                 Icons.star_rounded,
-                                color: index < _rating
+                                color: index < widget.restoran.rating
                                     ? Colors.amber
                                     : Colors.grey,
                               ),

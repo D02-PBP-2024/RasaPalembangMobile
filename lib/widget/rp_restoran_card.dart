@@ -23,8 +23,6 @@ class RPRestoCard extends StatefulWidget {
 }
 
 class _RPRestoCardState extends State<RPRestoCard> {
-  final double _rating = 3.5;
-
   @override
   Widget build(BuildContext context) {
     Restoran restoran = widget.restoran;
@@ -115,7 +113,7 @@ class _RPRestoCardState extends State<RPRestoCard> {
                   const SizedBox(height: 4.0),
                   // Rating
                   RatingBar.builder(
-                    initialRating: _rating,
+                    initialRating: widget.restoran.rating,
                     itemSize: 20,
                     direction: Axis.horizontal,
                     allowHalfRating: true,
@@ -123,7 +121,9 @@ class _RPRestoCardState extends State<RPRestoCard> {
                     unratedColor: Colors.grey,
                     itemBuilder: (context, index) => Icon(
                       Icons.star_rounded,
-                      color: index < _rating ? Colors.amber : Colors.grey,
+                      color: index < widget.restoran.rating
+                          ? Colors.amber
+                          : Colors.grey,
                     ),
                     onRatingUpdate: (rating) {
                       setState(() {
