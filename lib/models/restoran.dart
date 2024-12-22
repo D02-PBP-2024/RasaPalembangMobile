@@ -41,6 +41,6 @@ class Restoran {
         nomorTelepon: json["fields"]["nomor_telepon"],
         gambar: json["fields"]["gambar"],
         user: json["fields"]["user"],
-        rating: json["fields"]["rating"],
+        rating: json["fields"]["rating"].toDouble(),
       );
 }

@@ -52,8 +52,6 @@ class _UlasanListPageState extends State<UlasanListPage> {
       return false;
     }
 
-    // ...existing code...
-
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -61,7 +59,7 @@ class _UlasanListPageState extends State<UlasanListPage> {
           future: _ulasanFuture,
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return _buildUlasanList(
+              return buildUlasanList(
                 itemCount: 4,
                 isLoading: true,
                 request: request,
@@ -69,16 +67,50 @@ class _UlasanListPageState extends State<UlasanListPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text("Error: ${snapshot.error}"));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text("Belum ada ulasan."));
+              bool isUserInList = isUserInUlasanList(
+                  snapshot.data, request.user?.username ?? '');
+
+              return Stack(
+                children: [
+                  Center(child: Text("Belum ada ulasan.")),
+                  if (!isUserInList &&
+                      request.user?.peran != 'pemilik_restoran')
+                    Positioned(
+                      bottom: 16.0,
+                      right: 16.0,
+                      child: RPFloatingButton(
+                        onPressed: () async {
+                          if (request.loggedIn) {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UlasanTambahPage(
+                                  restoran: widget.idRestoran,
+                                ),
+                              ),
+                            );
+                            _loadUlasanList();
+                          } else {
+                            showLoginBottom(context);
+                          }
+                        },
+                        icon:
+                            const Icon(Icons.add_reaction, color: Colors.white),
+                        tooltip: 'Tambah Ulasan',
+                      ),
+                    ),
+                ],
+              );
             } else {
               bool isUserInList = isUserInUlasanList(
                   snapshot.data, request.user?.username ?? '');
+
               return Stack(
                 children: [
                   Column(
                     children: [
                       Expanded(
-                        child: _buildUlasanList(
+                        child: buildUlasanList(
                           itemCount: snapshot.data.length,
                           isLoading: false,
                           data: snapshot.data,
@@ -122,34 +154,30 @@ class _UlasanListPageState extends State<UlasanListPage> {
     );
   }
 
-  Widget _buildUlasanList(
-      {required int itemCount,
-      bool isLoading = false,
-      List? data,
-      required UserService request}) {
+  Widget buildUlasanList({
+    required bool isLoading,
+    required int itemCount,
+    List? data,
+    required UserService request,
+  }) {
     return RPListView(
-        paddingBottom: request.user?.peran != 'pemilik_restoran' ? 80.0 : 8.0,
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          if (isLoading) {
-            return Column(
-              children: [
-                RPUlasanCardSkeleton(),
-                if (index < itemCount - 1) SizedBox(height: 8.0),
-              ],
-            );
-          } else {
-            final ulasan = data![index];
-            return Column(
-              children: [
-                RPUlasanCard(
-                  ulasan: ulasan,
-                  refreshList: _loadUlasanList,
-                ),
-                if (index < itemCount - 1) SizedBox(height: 8.0),
-              ],
-            );
-          }
-        });
+      paddingBottom: request.user?.peran != 'pemilik_restoran' ? 80.0 : 8.0,
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        final card = isLoading
+            ? RPUlasanCardSkeleton()
+            : RPUlasanCard(
+                ulasan: data![index],
+                refreshList: _loadUlasanList,
+              );
+
+        return Column(
+          children: [
+            card,
+            if (index < itemCount - 1) SizedBox(height: 8.0),
+          ],
+        );
+      },
+    );
   }
 }
