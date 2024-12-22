@@ -274,21 +274,6 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
           Column(
             children: [
               ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Edit restoran'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RestoranEditForm(
-                        restoran: widget.restoran,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
                 leading: Icon(Icons.rice_bowl),
                 title: Text('Tambah makanan'),
                 onTap: () {
@@ -312,6 +297,21 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                     context,
                     MaterialPageRoute(
                       builder: (context) => MinumanTambahPage(
+                        restoran: widget.restoran,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Edit restoran'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RestoranEditForm(
                         restoran: widget.restoran,
                       ),
                     ),
@@ -436,10 +436,16 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
       itemBuilder: (context, index) {
         if (type == 'makanan') {
           final makanan = data![index];
-          return RPMakananCard(makanan: makanan);
+          return RPMakananCard(
+            makanan: makanan,
+            lihatRestoran: false,
+          );
         } else if (type == 'minuman') {
           final minuman = data![index];
-          return RPMinumanCard(minuman: minuman);
+          return RPMinumanCard(
+            minuman: minuman,
+            lihatRestoran: false,
+          );
         } else {
           return RPMenuCardSkeleton();
         }

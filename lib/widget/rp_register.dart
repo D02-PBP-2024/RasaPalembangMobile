@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rasapalembang/providers/tab_provider.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
@@ -33,7 +32,6 @@ class _RPRegisterState extends State<RPRegister> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
-    final selectedTab = Provider.of<TabProvider>(context);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
