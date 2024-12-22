@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/ulasan.dart';
@@ -74,7 +75,7 @@ class RPUlasanCard extends StatelessWidget {
                       ),
                       SizedBox(height: 2.0),
                       Text(
-                        DateFormat('dd MMM yyyy, HH:mm')
+                        DateFormat('dd MMM yyyy, HH:mm', 'id_ID')
                             .format(ulasan.createdAt.toLocal()),
                         style: TextStyle(
                           color: RPColors.textSecondary,
@@ -86,14 +87,17 @@ class RPUlasanCard extends StatelessWidget {
               ),
               SizedBox(height: 8.0),
               // bintang nilai
-              Row(
-                children: List.generate(
-                  5,
-                  (index) => Icon(
-                    Icons.star,
-                    color: index < ulasan.nilai ? Colors.orange : Colors.grey,
-                  ),
+              RatingBar.builder(
+                itemSize: 24,
+                initialRating: ulasan.nilai.toDouble(),
+                itemCount: 5,
+                unratedColor: Colors.grey,
+                ignoreGestures: true,
+                itemBuilder: (context, index) => Icon(
+                  Icons.star_rounded,
+                  color: index < ulasan.nilai.toDouble() ? Colors.amber : Colors.grey,
                 ),
+                onRatingUpdate: (rating) {},
               ),
               SizedBox(height: 8.0),
               // ulasan

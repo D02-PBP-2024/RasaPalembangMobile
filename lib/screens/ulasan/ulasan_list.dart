@@ -50,16 +50,22 @@ class _UlasanListPageState extends State<UlasanListPage> {
           future: _ulasanFuture,
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return _buildUlasanList(itemCount: 4, isLoading: true);
+              return _buildUlasanList(
+                itemCount: 4,
+                isLoading: true,
+                request: request,
+              );
             } else if (snapshot.hasError) {
               return Center(child: Text("Error: ${snapshot.error}"));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return const Center(child: Text("Belum ada diskusi."));
             } else {
               return _buildUlasanList(
-                  itemCount: snapshot.data.length,
-                  isLoading: false,
-                  data: snapshot.data);
+                itemCount: snapshot.data.length,
+                isLoading: false,
+                data: snapshot.data,
+                request: request,
+              );
             }
           },
         ),
@@ -89,8 +95,9 @@ class _UlasanListPageState extends State<UlasanListPage> {
   }
 
   Widget _buildUlasanList(
-      {required int itemCount, bool isLoading = false, List? data}) {
+      {required int itemCount, bool isLoading = false, List? data, required UserService request}) {
     return RPListView(
+        paddingBottom: request.user?.peran != 'pemilik_restoran' ? 80.0 : 8.0,
         itemCount: itemCount,
         itemBuilder: (context, index) {
           if (isLoading) {

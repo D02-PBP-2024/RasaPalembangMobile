@@ -51,16 +51,22 @@ class _ForumListPageState extends State<ForumListPage> {
           future: _forumFuture,
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return _buildForumList(itemCount: 4, isLoading: true);
+              return _buildForumList(
+                itemCount: 4,
+                isLoading: true,
+                request: request,
+              );
             } else if (snapshot.hasError) {
               return Center(child: Text("Error: ${snapshot.error}"));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return const Center(child: Text("Belum ada diskusi."));
             } else {
               return _buildForumList(
-                  itemCount: snapshot.data.length,
-                  isLoading: false,
-                  data: snapshot.data);
+                itemCount: snapshot.data.length,
+                isLoading: false,
+                data: snapshot.data,
+                request: request,
+              );
             }
           },
         ),
@@ -90,37 +96,39 @@ class _ForumListPageState extends State<ForumListPage> {
   }
 
   Widget _buildForumList(
-      {required int itemCount, bool isLoading = false, List? data}) {
+      {required int itemCount, bool isLoading = false, List? data, required UserService request}) {
     return RPListView(
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          if (isLoading) {
-            return Column(
-              children: [
-                RPForumCardSkeleton(),
-                if (index < itemCount - 1) SizedBox(height: 8.0),
-              ],
-            );
-          } else {
-            final forum = data![index];
-            return Column(
-              children: [
-                RPForumCard(
-                  forum: forum,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ForumDetailPage(forum: forum),
-                      ),
-                    );
-                  },
-                  refreshList: _loadForumList,
-                ),
-                if (index < itemCount - 1) SizedBox(height: 8.0),
-              ],
-            );
-          }
-        });
+      paddingBottom: request.user?.peran != 'pemilik_restoran' ? 80.0 : 8.0,
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (isLoading) {
+          return Column(
+            children: [
+              RPForumCardSkeleton(),
+              if (index < itemCount - 1) SizedBox(height: 8.0),
+            ],
+          );
+        } else {
+          final forum = data![index];
+          return Column(
+            children: [
+              RPForumCard(
+                forum: forum,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ForumDetailPage(forum: forum),
+                    ),
+                  );
+                },
+                refreshList: _loadForumList,
+              ),
+              if (index < itemCount - 1) SizedBox(height: 8.0),
+            ],
+          );
+        }
+      }
+    );
   }
 }

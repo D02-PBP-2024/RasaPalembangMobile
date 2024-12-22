@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rasapalembang/models/ulasan.dart';
 import 'package:rasapalembang/services/ulasan_service.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
@@ -26,15 +27,15 @@ class UlasanForm extends StatefulWidget {
 
 class _UlasanFormState extends State<UlasanForm> {
   final _formKey = GlobalKey<FormState>();
-  final _nilaiController = TextEditingController();
   final _deskripsiController = TextEditingController();
+  late int _rating;
 
   @override
   void initState() {
     super.initState();
-
+    _rating = 0;
     if (widget.edit) {
-      _nilaiController.text = widget.ulasan!.nilai.toString();
+      _rating = widget.ulasan!.nilai;
       _deskripsiController.text = widget.ulasan!.deskripsi;
     }
   }
@@ -57,8 +58,22 @@ class _UlasanFormState extends State<UlasanForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                RPRatingFormField(
-                  controller: _nilaiController,
+                RatingBar.builder(
+                  itemSize: 48,
+                  initialRating: _rating.toDouble(),
+                  minRating: 1,
+                  itemCount: 5,
+                  glow: false,
+                  unratedColor: Colors.grey,
+                  itemBuilder: (context, index) => Icon(
+                    Icons.star_rounded,
+                    color: index < _rating.toDouble() ? Colors.amber : Colors.grey,
+                  ),
+                  onRatingUpdate: (rating) {
+                    setState(() {
+                      _rating = rating.toInt();
+                    });
+                  },
                 ),
                 const SizedBox(height: 16.0),
                 RPTextFormField(
@@ -68,7 +83,7 @@ class _UlasanFormState extends State<UlasanForm> {
                   maxLines: 5,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Pesan tidak boleh kosong!';
+                      return 'Deskripsi tidak boleh kosong!';
                     }
                     return null;
                   },
@@ -91,12 +106,12 @@ class _UlasanFormState extends State<UlasanForm> {
 
   void _onSubmit() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final nilai = _nilaiController.text;
       final deskripsi = _deskripsiController.text;
 
+      if (_rating != 0) {
       String message;
       if (widget.edit) {
-        widget.ulasan?.nilai = int.parse(nilai);
+        widget.ulasan?.nilai = _rating;
         widget.ulasan?.deskripsi = deskripsi;
 
         try {
@@ -106,7 +121,7 @@ class _UlasanFormState extends State<UlasanForm> {
           message = printException(e as Exception);
         }
 
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message),
@@ -115,22 +130,29 @@ class _UlasanFormState extends State<UlasanForm> {
           Navigator.pop(context, true);
         }
       } else {
-        try {
-          await ulasanService.addUlasan(
-              int.parse(nilai), deskripsi, widget.restoran);
-          message = "Ulasan berhasil ditambah";
-        } catch (e) {
-          message = e.toString();
-        }
+          try {
+            await ulasanService.addUlasan(
+                _rating, deskripsi, widget.restoran);
+            message = "Ulasan berhasil ditambah";
+          } catch (e) {
+            message = e.toString();
+          }
 
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-            ),
-          );
-          Navigator.pop(context, true);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+              ),
+            );
+            Navigator.pop(context, true);
+          }
         }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Jangan lupa kasih bintang!'),
+          ),
+        );
       }
     }
   }
