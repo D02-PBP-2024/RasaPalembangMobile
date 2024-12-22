@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -10,10 +11,12 @@ import 'package:rasapalembang/services/ulasan_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_navbar.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 import 'package:rasapalembang/widget/rp_floatingbutton.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 import 'package:rasapalembang/widget/rp_list_view.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
@@ -124,13 +127,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     top: 150,
                     left: 16,
                     child: ClipOval(
-                      child: Image.network(
-                        foto != ''
-                            ? RPUrls.baseUrl + foto
-                            : RPUrls.noProfileUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: foto != ''
+                          ? RPUrls.baseUrl + foto
+                          : RPUrls.noProfileUrl,
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => RPImageLoading(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        cacheManager: RPCache.rpCacheManager,
                       ),
                     ),
                   ),

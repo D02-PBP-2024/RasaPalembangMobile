@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -10,8 +11,11 @@ import 'package:rasapalembang/services/ulasan_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 
 class RPUlasanCard extends StatelessWidget {
   final Ulasan ulasan;
@@ -54,13 +58,16 @@ class RPUlasanCard extends StatelessWidget {
               Row(
                 children: [
                   ClipOval(
-                    child: Image.network(
-                      ulasan.user.foto != ''
+                    child: CachedNetworkImage(
+                      imageUrl: ulasan.user.foto != ''
                           ? RPUrls.baseUrl + ulasan.user.foto
                           : RPUrls.noProfileUrl,
                       height: 50,
                       width: 50,
                       fit: BoxFit.cover,
+                      placeholder: (context, url) => RPImageLoading(),
+                      errorWidget: (context, url, error) => RPImageError(),
+                      cacheManager: RPCache.rpCacheManager,
                     ),
                   ),
                   SizedBox(width: 8.0),
