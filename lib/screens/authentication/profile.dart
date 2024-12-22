@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/models/ulasan.dart';
 import 'package:rasapalembang/screens/authentication/profile_edit.dart';
-import 'package:rasapalembang/screens/restoran/restoran_form.dart';
+import 'package:rasapalembang/screens/restoran/restoran_tambah.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/services/ulasan_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
@@ -269,7 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RestoranFormPage(),
+                    builder: (context) => RestoranTambahPage(),
                   ),
                 );
               },

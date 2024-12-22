@@ -67,9 +67,9 @@ class RestoranService extends UserService {
 
     request.fields['nama'] = restoran.nama;
     request.fields['alamat'] = restoran.alamat;
-    request.fields['jamBuka'] = restoran.jamBuka;
-    request.fields['jamTutup'] = restoran.jamTutup;
-    request.fields['nomorTelepon'] = restoran.nomorTelepon;
+    request.fields['jam_buka'] = restoran.jamBuka;
+    request.fields['jam_tutup'] = restoran.jamTutup;
+    request.fields['nomor_telepon'] = restoran.nomorTelepon;
     request.files.add(await http.MultipartFile.fromPath('gambar', gambar.path));
 
     var streamedResponse = await request.send();
@@ -106,9 +106,9 @@ class RestoranService extends UserService {
 
     request.fields['nama'] = restoran.nama;
     request.fields['alamat'] = restoran.alamat;
-    request.fields['jamBuka'] = restoran.jamBuka;
-    request.fields['jamTutup'] = restoran.jamTutup;
-    request.fields['nomorTelepon'] = restoran.nomorTelepon;
+    request.fields['jam_buka'] = restoran.jamBuka;
+    request.fields['jam_tutup'] = restoran.jamTutup;
+    request.fields['nomor_telepon'] = restoran.nomorTelepon;
     if (gambar != null) {
       request.files
           .add(await http.MultipartFile.fromPath('gambar', gambar.path));
@@ -136,7 +136,7 @@ class RestoranService extends UserService {
     }
   }
 
-  Future<Restoran> delete(Restoran restoran) async {
+  Future<String> delete(Restoran restoran) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
@@ -150,7 +150,8 @@ class RestoranService extends UserService {
 
     switch (response.statusCode) {
       case 200:
-        return restoranFromJson(response.body);
+        final jsonResponse = json.decode(response.body);
+        return jsonResponse['message']; 
       case 401:
         throw Exception('User tidak terautentikasi');
       case 403:

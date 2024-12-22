@@ -113,7 +113,7 @@ class _RPRestoCardState extends State<RPRestoCard> {
                   const SizedBox(height: 4.0),
                   // Rating
                   RatingBar.builder(
-                    initialRating: widget.restoran.rating,
+                    initialRating: widget.restoran.rating ?? 0.0,
                     itemSize: 20,
                     direction: Axis.horizontal,
                     allowHalfRating: true,
@@ -121,7 +121,7 @@ class _RPRestoCardState extends State<RPRestoCard> {
                     unratedColor: Colors.grey,
                     itemBuilder: (context, index) => Icon(
                       Icons.star_rounded,
-                      color: index < widget.restoran.rating
+                      color: index < (widget.restoran.rating ?? 0)
                           ? Colors.amber
                           : Colors.grey,
                     ),

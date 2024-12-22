@@ -16,6 +16,7 @@ import 'package:rasapalembang/screens/ulasan/ulasan_list.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
+import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/is_open.dart';
 import 'package:rasapalembang/utils/rp_cache.dart';
@@ -147,7 +148,7 @@ class _RestoranDetailState extends State<RestoranDetail>
                             ),
                             const SizedBox(height: 8.0),
                             RatingBar.builder(
-                              initialRating: widget.restoran.rating.toDouble(),
+                              initialRating: widget.restoran.rating?.toDouble() ?? 0.0,
                               itemSize: 24,
                               direction: Axis.horizontal,
                               allowHalfRating: true,
@@ -155,7 +156,7 @@ class _RestoranDetailState extends State<RestoranDetail>
                               itemCount: 5,
                               itemBuilder: (context, index) => Icon(
                                 Icons.star_rounded,
-                                color: index < widget.restoran.rating
+                                color: index < (widget.restoran.rating ?? 0)
                                     ? Colors.amber
                                     : Colors.grey,
                               ),
@@ -352,8 +353,43 @@ class _RestoranDetailState extends State<RestoranDetail>
                   ),
                 ),
                 onTap: () async {
-                  Navigator.pop(context);
-                  // TODO: Hapus restoran
+                  Navigator.pop(context); // Menutup modal dialog
+
+                  try {
+                    final bool? confirmDelete = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Konfirmasi'),
+                          content: const Text('Apakah Anda yakin ingin menghapus restoran ini?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Batal'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Hapus'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    if (confirmDelete == true) {
+                      final RestoranService restoranService = RestoranService();
+                      final String message = await restoranService.delete(widget.restoran);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(message)),
+                      );
+                      if (context.mounted) Navigator.pop(context);
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Gagal menghapus restoran: $e')),
+                    );
+                  }
                 },
               ),
             ],
