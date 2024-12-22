@@ -117,6 +117,7 @@ class _RPRestoCardState extends State<RPRestoCard> {
                     itemSize: 20,
                     direction: Axis.horizontal,
                     allowHalfRating: true,
+                    ignoreGestures: true,
                     itemCount: 5,
                     unratedColor: Colors.grey,
                     itemBuilder: (context, index) => Icon(
@@ -125,11 +126,7 @@ class _RPRestoCardState extends State<RPRestoCard> {
                           ? Colors.amber
                           : Colors.grey,
                     ),
-                    onRatingUpdate: (rating) {
-                      setState(() {
-                        rating = rating;
-                      });
-                    },
+                    onRatingUpdate: (rating) { },
                   ),
                   const SizedBox(height: 4.0),
                   // Jam Operasional

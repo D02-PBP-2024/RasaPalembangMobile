@@ -152,6 +152,7 @@ class _RestoranDetailState extends State<RestoranDetail>
                               itemSize: 24,
                               direction: Axis.horizontal,
                               allowHalfRating: true,
+                              ignoreGestures: true,
                               unratedColor: Colors.grey,
                               itemCount: 5,
                               itemBuilder: (context, index) => Icon(
@@ -160,11 +161,7 @@ class _RestoranDetailState extends State<RestoranDetail>
                                     ? Colors.amber
                                     : Colors.grey,
                               ),
-                              onRatingUpdate: (rating) {
-                                setState(() {
-                                  rating = rating;
-                                });
-                              },
+                              onRatingUpdate: (rating) { },
                             ),
                             const SizedBox(height: 8.0),
                             Row(
@@ -380,15 +377,19 @@ class _RestoranDetailState extends State<RestoranDetail>
                       final RestoranService restoranService = RestoranService();
                       final String message = await restoranService.delete(widget.restoran);
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(message)),
-                      );
-                      if (context.mounted) Navigator.pop(context);
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(message)),
+                        );
+                        Navigator.pop(context);
+                      }
                     }
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Gagal menghapus restoran: $e')),
-                    );
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Gagal menghapus restoran: $e')),
+                      );
+                    }
                   }
                 },
               ),
