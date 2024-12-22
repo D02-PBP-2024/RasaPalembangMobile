@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/models/ulasan.dart';
 import 'package:rasapalembang/screens/authentication/profile_edit.dart';
 import 'package:rasapalembang/screens/restoran/restoran_form.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
+import 'package:rasapalembang/services/ulasan_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
@@ -12,9 +14,12 @@ import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_navbar.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 import 'package:rasapalembang/widget/rp_floatingbutton.dart';
+import 'package:rasapalembang/widget/rp_list_view.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_restoran_card.dart';
+import 'package:rasapalembang/widget/rp_ulasan_card.dart';
+import 'package:rasapalembang/widget/rp_ulasan_card_skeleton.dart';
 
 class ProfilePage extends StatefulWidget {
   final String username;
@@ -44,10 +49,12 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   RestoranService restoranService = RestoranService();
+  UlasanService ulasanService = UlasanService();
   late String nama;
   late String deskripsi;
   late String foto;
   late Future<List<Restoran>> _restoranList;
+  late Future<List<Ulasan>> _ulasanList;
 
   @override
   void initState() {
@@ -57,6 +64,8 @@ class _ProfilePageState extends State<ProfilePage> {
     foto = widget.foto;
     if (widget.peran == 'pemilik_restoran') {
       _restoranList = restoranService.getByUsername(widget.username);
+    } else {
+      _ulasanList = ulasanService.getByUsername(widget.username);
     }
   }
 
@@ -217,6 +226,32 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 72.0),
                     ],
                   ),
+                if (widget.peran == 'pengulas')
+                  Column(children: [
+                    FutureBuilder(
+                      future: _ulasanList,
+                      builder: (context, AsyncSnapshot snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return _buildUlasanList(
+                              itemCount: 2, isLoading: true);
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text("Error: ${snapshot.error}"));
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const SizedBox();
+                        } else {
+                          return _buildUlasanList(
+                            itemCount: snapshot.data.length,
+                            isLoading: false,
+                            data: snapshot.data,
+                          );
+                        }
+                      },
+                    ),
+                  ]),
+                const SizedBox(height: 72.0),
               ],
             ),
           ],
@@ -259,6 +294,39 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       },
     );
+  }
+
+  Widget _buildUlasanList({
+    required int itemCount,
+    bool isLoading = false,
+    List? data,
+  }) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: RPListView(
+            paddingBottom: 8.0,
+            itemCount: itemCount,
+            itemBuilder: (context, index) {
+              if (isLoading) {
+                return Column(
+                  children: [
+                    RPUlasanCardSkeleton(),
+                    if (index < itemCount - 1) SizedBox(height: 8.0),
+                  ],
+                );
+              } else {
+                final ulasan = data![index];
+                return Column(
+                  children: [
+                    RPUlasanCard(
+                      ulasan: ulasan,
+                      refreshList: refreshList,
+                    ),
+                    if (index < itemCount - 1) SizedBox(height: 8.0),
+                  ],
+                );
+              }
+            }));
   }
 
   void _showProfileOption(request) {
@@ -322,6 +390,12 @@ class _ProfilePageState extends State<ProfilePage> {
         MaterialPageRoute(builder: (context) => const RPBottomNavbar()),
       );
     }
+  }
+
+  void refreshList() {
+    setState(() {
+      _ulasanList = ulasanService.getByUsername(widget.username);
+    });
   }
 
   String _formatDate(DateTime date) {
