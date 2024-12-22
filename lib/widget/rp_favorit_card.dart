@@ -4,11 +4,15 @@ import 'package:rasapalembang/models/favorit.dart';
 class RPFavoritCard extends StatelessWidget {
   final Favorit favorit;
   final VoidCallback onTap;
+  final VoidCallback delete;
+  final VoidCallback edit;
 
   const RPFavoritCard({
     super.key,
     required this.favorit,
     required this.onTap,
+    required this.delete,
+    required this.edit,
   });
 
   @override
@@ -26,18 +30,63 @@ class RPFavoritCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                favorit.fields.restoran,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    favorit.fields.restoran != null
+                      ? favorit.fields.restoran!.nama
+                      : favorit.fields.makanan != null
+                        ? favorit.fields.makanan!.nama
+                        : favorit.fields.minuman!.nama,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: edit,
+                        child: Icon(Icons.edit),
+                      ),
+                      SizedBox(width: 15,),
+                      InkWell(
+                        onTap: delete,
+                        child: Icon(Icons.delete),
+                      )
+                    ],
+                  )
+                ],
               ),
               const SizedBox(height: 8),
-              Text('Makanan: ${favorit.fields.makanan}'),
-              Text('Minuman: ${favorit.fields.minuman}'),
-              const SizedBox(height: 8),
-              Text('Catatan: ${favorit.fields.catatan}'),
+              Image.network(
+                favorit.fields.restoran != null
+                  ? favorit.fields.restoran!.gambar
+                  : favorit.fields.makanan != null
+                    ? favorit.fields.makanan!.gambar
+                    : favorit.fields.minuman!.gambar,
+                errorBuilder: (context, error, stackTrace) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Icon(Icons.error),
+                          Text('Error loading image')
+                        ],
+                      )
+                    ],
+                  );
+                },
+              ),
+              if (favorit.fields.catatan != "")
+                Column(
+                  children: [
+                    SizedBox(height: 8),
+                    Text('Catatan: ${favorit.fields.catatan}'),
+                  ],
+                ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
