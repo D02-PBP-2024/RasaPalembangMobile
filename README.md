@@ -1,6 +1,8 @@
 # 🍽️ RasaPalembangMobile 🍽️
 ![rasapalembang](https://github.com/user-attachments/assets/317469a4-de19-450f-94ec-28102dd20121)
 
+[![Build status](https://build.appcenter.ms/v0.1/apps/9c4163b1-be7d-4317-af2f-26bd2e43306a/branches/master/badge)](https://appcenter.ms)
+
 ## Anggota Kelompok
 
 - [Athallah Damar Jiwanto](https://www.github.com/AthallahD)
