@@ -26,6 +26,26 @@ class MinumanService extends UserService {
     }
   }
 
+  Future<List<Minuman>> getKeyword(String keyword) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/minuman/?keyword=$keyword');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return minumanFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
   Future<List<Minuman>> getByRestoran(String idRestoran) async {
     await init();
     if (kIsWeb) {

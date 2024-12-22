@@ -96,7 +96,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     setState(() {
       balasan = null;
       _isEditBalasan = false;
-      _editBalasanController.text = '';
+      _editBalasanController.clear();
     });
   }
 

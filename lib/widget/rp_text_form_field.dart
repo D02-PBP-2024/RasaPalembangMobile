@@ -48,7 +48,8 @@ class RPTextFormField extends StatelessWidget {
               ),
             ],
           ),
-        const SizedBox(height: 8.0),
+        if (labelText != null)
+          const SizedBox(height: 8.0),
         TextFormField(
           focusNode: focusNode,
           maxLines: maxLines ?? 1,

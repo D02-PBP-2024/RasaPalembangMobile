@@ -27,6 +27,26 @@ class MakananService extends UserService {
     }
   }
 
+  Future<List<Makanan>> getKeyword(String keyword) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/makanan/?keyword=$keyword');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return makananFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
   Future<List<Makanan>> getByRestoran(String idRestoran) async {
     await init();
     if (kIsWeb) {

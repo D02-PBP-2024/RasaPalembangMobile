@@ -22,6 +22,21 @@ class RestoranService extends UserService {
     }
   }
 
+  Future<List<Restoran>> getKeyword(String keyword) async {
+    await init();
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/?keyword=$keyword');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return restoranFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
   Future<List<Restoran>> getByUsername(String username) async {
     await init();
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/profile/$username/restoran/');
