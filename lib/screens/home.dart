@@ -8,6 +8,7 @@ import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_makanan_card.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_minuman_card.dart';
+import 'package:rasapalembang/widget/rp_restoran_card.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class HomePage extends StatefulWidget {
@@ -156,6 +157,7 @@ class _HomePageState extends State<HomePage> {
                 }
               },
             ),
+            const SizedBox(height: 8.0),
           ],
         ),
       ),
@@ -172,7 +174,7 @@ class _HomePageState extends State<HomePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
             title,
             style: TextStyle(
@@ -183,13 +185,13 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 8.0),
         SizedBox(
-          height: 300,
+          height: 287,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: List.generate(itemCount, (index) {
               final EdgeInsets padding = EdgeInsets.only(
-                left: index == 0 ? 16.0 : 4.0,
-                right: index == itemCount - 1 ? 16.0 : 4.0,
+                left: index == 0 ? 8.0 : 4.0,
+                right: index == itemCount - 1 ? 8.0 : 4.0,
               );
 
               Widget item;
@@ -201,7 +203,7 @@ class _HomePageState extends State<HomePage> {
                 item = RPMakananCard(makanan: makanan);
               } else if (type == 'restoran') {
                 final restoran = data![index];
-                item = RPMenuCardSkeleton();
+                item = RPRestoCard(restoran: restoran);
               } else {
                 item = RPMenuCardSkeleton();
               }

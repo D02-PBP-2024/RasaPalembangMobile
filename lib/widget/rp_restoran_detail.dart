@@ -4,12 +4,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/screens/forum/forum_list.dart';
 import 'package:rasapalembang/screens/minuman/minuman_tambah.dart';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
 import 'package:rasapalembang/services/user_service.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
-import 'package:rasapalembang/widget/rp_ulasan_card.dart';
 
 class RPRestoDetail extends StatefulWidget {
   final Restoran restoran;
@@ -60,97 +59,98 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       extendBodyBehindAppBar: true,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Gambar Restoran dengan semua informasi
-            Stack(
-              children: [
+      body: Column(
+        children: [
+          // Gambar Restoran dengan semua informasi
+          Stack(
+            children: [
+              if (restoran.gambar.isNotEmpty)
                 Image.network(
-                  RPUrls.baseUrl + restoran.gambar,
+                  restoran.gambar,
                   width: double.infinity,
                   height: 500,
                   fit: BoxFit.cover,
                 ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.black87, Colors.transparent],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          restoran.nama,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 28.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          children: [
-                            Text(
-                              _isCurrentlyOpen(
-                                      restoran.jamBuka, restoran.jamTutup)
-                                  ? 'Buka'
-                                  : 'Tutup',
-                              style: TextStyle(
-                                color: _isCurrentlyOpen(
-                                        restoran.jamBuka, restoran.jamTutup)
-                                    ? Colors.greenAccent
-                                    : Colors.redAccent,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 8.0),
-                            Text(
-                              '${restoran.jamBuka} - ${restoran.jamTutup}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          restoran.alamat,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16.0,
-                          ),
-                        ),
-                        const SizedBox(height: 4.0),
-                        Text(
-                          restoran.nomorTelepon,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16.0,
-                          ),
-                        ),
-                      ],
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.black87, Colors.transparent],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
                     ),
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        restoran.nama,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 28.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      Row(
+                        children: [
+                          Text(
+                            _isCurrentlyOpen(
+                                    restoran.jamBuka, restoran.jamTutup)
+                                ? 'Buka'
+                                : 'Tutup',
+                            style: TextStyle(
+                              color: _isCurrentlyOpen(
+                                      restoran.jamBuka, restoran.jamTutup)
+                                  ? Colors.greenAccent
+                                  : Colors.redAccent,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 8.0),
+                          Text(
+                            '${restoran.jamBuka} - ${restoran.jamTutup}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8.0),
+                      Text(
+                        restoran.alamat,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        restoran.nomorTelepon,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
 
-            // Tombol Aksi dalam satu baris
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
+          // Tombol Aksi dalam satu baris
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                if (request.user?.username == restoran.user)
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
@@ -158,14 +158,7 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => RestoranEditForm(
-                              restoran: {
-                                'nama': restoran.nama,
-                                'alamat': restoran.alamat,
-                                'jamBuka': restoran.jamBuka,
-                                'jamTutup': restoran.jamTutup,
-                                'nomorTelepon': restoran.nomorTelepon,
-                                'gambar': restoran.gambar,
-                              },
+                              restoran: restoran,
                             ),
                           ),
                         );
@@ -198,74 +191,82 @@ class _RPRestoDetailState extends State<RPRestoDetail> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Aksi hapus restoran
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      ),
-                      child: const Text(
-                        'Hapus Restoran',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Aksi hapus restoran
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    ),
+                    child: const Text(
+                      'Hapus Restoran',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
+          ),
+
+          RPButton(
+            label: 'Forum Diskusi',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ForumListPage(
+                          idRestoran: restoran.pk,
+                        )),
+              );
+            },
+          ),
+
+          if (request.user?.username == restoran.user)
+            Column(
+              children: [
+                const SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RPButton(
+                      label: 'Tambah Makanan',
+                      onPressed: () {},
+                    ),
+                    const SizedBox(width: 8.0),
+                    RPButton(
+                      label: 'Tambah Minuman',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MinumanTambahPage(restoran: restoran),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
 
-            RPButton(
-              label: 'Forum Diskusi',
-              onPressed: () {},
-            ),
-
-            if (request.user?.username == restoran.user)
-              Column(
-                children: [
-                  const SizedBox(height: 8.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RPButton(
-                        label: 'Tambah Makanan',
-                        onPressed: () {},
-                      ),
-                      const SizedBox(width: 8.0),
-                      RPButton(
-                        label: 'Tambah Minuman',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  MinumanTambahPage(restoran: restoran),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-
-            // Tambahkan judul lokasi
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Lokasi',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+          // Tambahkan judul lokasi
+          const Padding(
+            padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Lokasi',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
+          ),
 
             // Lokasi Google Maps
             if (!isLoading && restoranLocation != null)
