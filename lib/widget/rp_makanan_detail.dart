@@ -6,18 +6,19 @@ import 'package:rasapalembang/utils/format_harga.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
-import 'package:rasapalembang/widget/rp_restoran_detail.dart';
 
 class RPMakananDetail extends StatefulWidget {
   final Makanan makanan;
+  final bool lihatRestoran;
 
   const RPMakananDetail({
     super.key,
     required this.makanan,
+    this.lihatRestoran = true,
   });
 
   @override
-  _RPMakananDetailState createState() => _RPMakananDetailState();
+  State<RPMakananDetail> createState() => _RPMakananDetailState();
 }
 
 class _RPMakananDetailState extends State<RPMakananDetail> {
@@ -42,9 +43,11 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
       setState(() {
         isLoadingKategori = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal memuat kategori: $e")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Gagal memuat kategori: $e")),
+        );
+      }
     }
   }
 
@@ -126,33 +129,43 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
                 ),
               ],
             ),
-            const SizedBox(height: 12.0),
-            Text(
-              'Kategori',
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: RPColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8.0),
-            // Ganti _buildCategoryChips dengan _buildCategoryCards
-            _buildCategoryCards(widget.makanan.kategori),
-            const SizedBox(height: 20.0),
-            RPButton(
-              label: 'Lihat Restoran',
-              width: double.infinity,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RestoranDetail(
-                      restoran: widget.makanan.restoran,
+            if (makanan.kategori.isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 12.0),
+                  Text(
+                    'Kategori',
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: RPColors.textPrimary,
                     ),
                   ),
-                );
-              },
-            ),
+                  const SizedBox(height: 8.0),
+                  _buildCategoryCards(widget.makanan.kategori),
+                ],
+              ),
+            if (widget.lihatRestoran)
+              Column(
+                children: [
+                  const SizedBox(height: 20.0),
+                  RPButton(
+                    label: 'Lihat Restoran',
+                    width: double.infinity,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RestoranDetail(
+                            restoran: widget.makanan.restoran,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
           ],
         ),
       ),

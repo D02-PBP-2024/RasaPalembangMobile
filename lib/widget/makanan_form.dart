@@ -76,9 +76,11 @@ class _MakananFormState extends State<MakananForm> {
         throw Exception("Tidak ada kategori ditemukan.");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memuat kategori: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memuat kategori: ${e.toString()}')),
+        );
+      }
     }
   }
 
@@ -231,7 +233,7 @@ class _MakananFormState extends State<MakananForm> {
           success = false;
         }
 
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message),
@@ -266,7 +268,7 @@ class _MakananFormState extends State<MakananForm> {
             success = false;
           }
 
-          if (context.mounted) {
+          if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(message),

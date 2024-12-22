@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
+import 'package:rasapalembang/widget/rp_button.dart';
 
 class RPMultiSelectWidget extends StatefulWidget {
   final List<String> items;
@@ -7,14 +8,14 @@ class RPMultiSelectWidget extends StatefulWidget {
   final ValueChanged<List<String>> onSelectionChanged;
 
   const RPMultiSelectWidget({
-    Key? key,
+    super.key,
     required this.items,
     required this.selectedItems,
     required this.onSelectionChanged,
-  }) : super(key: key);
+  });
 
   @override
-  _MultiSelectWidgetState createState() => _MultiSelectWidgetState();
+  State<RPMultiSelectWidget> createState() => _MultiSelectWidgetState();
 }
 
 class _MultiSelectWidgetState extends State<RPMultiSelectWidget> {
@@ -28,19 +29,37 @@ class _MultiSelectWidgetState extends State<RPMultiSelectWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _showMultiSelectRPBottomSheet(),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: "Pilih Kategori",
+    return Column(
+      children: [
+        Row(
+          children: [
+            const SizedBox(width: 8.0),
+            Text(
+              'Pilih kategori',
+              style: const TextStyle(
+                fontSize: 14.0,
+              ),
+            ),
+          ],
         ),
-        child: Text(
-          _selectedItems.isEmpty
-              ? ""
-              : _selectedItems.join(", "),
+        const SizedBox(height: 8.0),
+        GestureDetector(
+          onTap: () => _showMultiSelectRPBottomSheet(),
+          child: InputDecorator(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+            child: Text(
+              _selectedItems.isEmpty
+                  ? ""
+                  : _selectedItems.join(", "),
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -81,12 +100,16 @@ class _MultiSelectWidgetState extends State<RPMultiSelectWidget> {
           },
         ),
         const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: () {
-            widget.onSelectionChanged(_selectedItems);
-            Navigator.pop(context);
-          },
-          child: const Text("Simpan"),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: RPButton(
+            label: 'Simpan',
+            width: double.infinity,
+            onPressed: () {
+              widget.onSelectionChanged(_selectedItems);
+              Navigator.pop(context);
+            },
+          ),
         ),
       ],
     ).show();

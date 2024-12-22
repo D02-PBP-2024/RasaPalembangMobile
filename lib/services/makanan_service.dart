@@ -122,6 +122,8 @@ class MakananService extends UserService {
         throw Exception('User tidak terautentikasi');
       case 403:
         throw Exception('Tindakan tidak diizinkan');
+      case 404:
+        throw Exception('Makanan tidak ditemukan');
       default:
         throw Exception('Error lainnya');
     }
@@ -146,6 +148,8 @@ class MakananService extends UserService {
         throw Exception('User tidak terautentikasi');
       case 403:
         throw Exception('Tindakan tidak diizinkan');
+      case 404:
+        throw Exception('Makanan tidak ditemukan');
       default:
         throw Exception('Error lainnya');
     }

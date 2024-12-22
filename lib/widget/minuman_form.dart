@@ -213,22 +213,28 @@ class _MinumanFormState extends State<MinumanForm> {
         widget.minuman?.ukuran = ukuran!;
         widget.minuman?.tingkatKemanisan = tingkatKemanisan;
 
+        bool success;
         try {
           final response = await minumanService.edit(
             widget.minuman!,
             gambar,
           );
           message = 'Minuman berhasil diubah';
+          success = true;
         } catch(e) {
           message = printException(e as Exception);
+          success = false;
         }
 
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message),
             ),
           );
+          if (success) {
+            Navigator.pop(context);
+          }
         }
       } else {
         if (gambar != null) {
@@ -255,7 +261,7 @@ class _MinumanFormState extends State<MinumanForm> {
             success = false;
           }
 
-          if (context.mounted) {
+          if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(message),
