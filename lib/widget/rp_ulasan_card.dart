@@ -20,7 +20,7 @@ import 'package:rasapalembang/widget/rp_image_loading.dart';
 class RPUlasanCard extends StatelessWidget {
   final Ulasan ulasan;
   final VoidCallback refreshList;
-  final includeResto;
+  final bool includeResto;
 
   RPUlasanCard({
     super.key,
@@ -91,12 +91,13 @@ class RPUlasanCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 2.0),
-                      Text(
-                        ulasan.restoran,
-                        style: TextStyle(
-                          color: RPColors.textSecondary,
+                      if (includeResto)
+                        Text(
+                          ulasan.restoran,
+                          style: TextStyle(
+                            color: RPColors.textSecondary,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ],
