@@ -201,6 +201,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 if (widget.peran == 'pemilik_restoran')
                   Column(
                     children: [
+                      const SizedBox(height: 16.0),
                       FutureBuilder(
                         future: _restoranList,
                         builder: (context, AsyncSnapshot snapshot) {
@@ -228,6 +229,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 if (widget.peran == 'pengulas')
                   Column(children: [
+                    const SizedBox(height: 16.0),
                     FutureBuilder(
                       future: _ulasanList,
                       builder: (context, AsyncSnapshot snapshot) {
