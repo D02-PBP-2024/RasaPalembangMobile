@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_image_picker.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
@@ -69,14 +70,16 @@ class _RestoranFormPageState extends State<RestoranFormPage> {
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 RPImagePicker(
-                  initialGambar: widget.restoran?.gambar,
+                  initialGambar: widget.restoran?.gambar != null
+                      ? RPUrls.baseUrl + widget.restoran!.gambar
+                      : null,
                   buttonLabel: widget.imagePickerLabel,
                   onImagePicked: _onImagePicked,
-                  imagePreviewWidth: 400,
-                  imagePreviewHeight: 400,
+                  imagePreviewWidth: 200,
+                  imagePreviewHeight: 200,
                 ),
                 const SizedBox(height: 16),
                 RPTextFormField(

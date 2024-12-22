@@ -7,8 +7,8 @@ class RestoranTambahPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RestoranFormPage(
-      imagePickerLabel: 'Tambah Gambar Restoran',
-      saveButtonLabel: 'Simpan Restoran',
+      imagePickerLabel: 'Tambah gambar',
+      saveButtonLabel: 'Simpan',
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/widget/restoran_form.dart';
@@ -14,8 +13,8 @@ class RestoranEditForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RestoranFormPage(
-      imagePickerLabel: 'Edit Gambar',
-      saveButtonLabel: 'Simpan Perubahan',
+      imagePickerLabel: 'Edit gambar',
+      saveButtonLabel: 'Simpan',
       restoran: restoran,
       edit: true,
     );
