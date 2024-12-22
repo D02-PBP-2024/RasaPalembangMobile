@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/models/balasan.dart';
+import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/screens/authentication/show_login_bottom.dart';
 import 'package:rasapalembang/services/balasan_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
@@ -96,7 +96,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     setState(() {
       balasan = null;
       _isEditBalasan = false;
-      _editBalasanController.text = '';
+      _editBalasanController.clear();
     });
   }
 
@@ -125,7 +125,6 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +158,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                                 ClipOval(
                                   child: Image.network(
                                     widget.forum.user.foto != ''
-                                        ? RPUrls.baseUrl + widget.forum.user.foto
+                                        ? RPUrls.baseUrl +
+                                            widget.forum.user.foto
                                         : RPUrls.noProfileUrl,
                                     height: 50,
                                     width: 50,
@@ -259,7 +259,11 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                                 children: [
                                   const SizedBox(height: 8.0),
                                   Column(
-                                    children: balasanList.reversed.toList().asMap().entries.map((balasan) {
+                                    children: balasanList.reversed
+                                        .toList()
+                                        .asMap()
+                                        .entries
+                                        .map((balasan) {
                                       return Column(
                                         children: [
                                           RPBalasanCard(
@@ -267,7 +271,9 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                                             refreshList: loadBalasanList,
                                             editBalasan: editBalasan,
                                           ),
-                                          if (balasan.key < balasanList.length - 1) SizedBox(height: 8.0),
+                                          if (balasan.key <
+                                              balasanList.length - 1)
+                                            SizedBox(height: 8.0),
                                         ],
                                       );
                                     }).toList(),
@@ -283,22 +289,28 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                 ),
                 if (_isTypingBalasan)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                    padding: const EdgeInsets.only(
+                        bottom: 8.0, left: 8.0, right: 8.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: RPTextFormField(
+                            prefixIcon: Icons.close,
+                            iconOnPressed: () {
+                              setState(() {
+                                _isTypingBalasan = false;
+                                _balasanController.clear();
+                              });
+                            },
                             hintText: 'Ketik balasan...',
                             controller: _balasanController,
                             focusNode: _focusNode,
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(
-                              Icons.send_rounded,
-                              color: RPColors.biruMuda
-                          ),
+                          icon: const Icon(Icons.send_rounded,
+                              color: RPColors.biruMuda),
                           onPressed: _sendBalasan,
                         ),
                       ],
@@ -306,7 +318,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                   ),
                 if (_isEditBalasan)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                    padding: const EdgeInsets.only(
+                        bottom: 8.0, left: 8.0, right: 8.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -320,10 +333,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(
-                              Icons.send_rounded,
-                              color: RPColors.biruMuda
-                          ),
+                          icon: const Icon(Icons.send_rounded,
+                              color: RPColors.biruMuda),
                           onPressed: _sendEditBalasan,
                         ),
                       ],

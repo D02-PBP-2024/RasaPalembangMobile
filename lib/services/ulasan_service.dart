@@ -2,42 +2,43 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:rasapalembang/models/forum.dart';
+import 'package:rasapalembang/models/ulasan.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 
-class ForumService extends UserService {
-  Future<List<Forum>> get(String idRestoran) async {
+class UlasanService extends UserService {
+  Future<List<Ulasan>> get(String idRestoran) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
       c.withCredentials = true;
     }
 
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/forum/');
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/ulasan/');
 
     http.Response response = await client.get(uri, headers: headers);
     await updateCookie(response);
 
     if (response.statusCode == 200) {
-      return forumFromListJson(response.body);
+      return ulasanFromListJson(response.body);
     } else {
       throw Exception('Gagal mengambil data');
     }
   }
 
-  Future<Forum> addForum(String topik, String pesan, String idRestoran) async {
+  Future<Ulasan> addUlasan(
+      int nilai, String deskripsi, String idRestoran) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
       c.withCredentials = true;
     }
 
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/forum/');
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/$idRestoran/ulasan/');
 
     final body = jsonEncode({
-      'topik': topik,
-      'pesan': pesan,
+      'nilai': nilai,
+      'deskripsi': deskripsi,
     });
 
     // Add additional header
@@ -50,7 +51,7 @@ class ForumService extends UserService {
     await updateCookie(response);
 
     if (response.statusCode == 201) {
-      return forumFromJson(response.body);
+      return ulasanFromJson(response.body);
     } else if (response.statusCode == 401) {
       throw Exception('User tidak terautentikasi');
     } else if (response.statusCode == 403) {
@@ -60,18 +61,18 @@ class ForumService extends UserService {
     }
   }
 
-  Future<Forum> editForum(Forum forum) async {
+  Future<Ulasan> editUlasan(Ulasan ulasan) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
       c.withCredentials = true;
     }
 
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/forum/${forum.pk}/');
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/ulasan/${ulasan.pk}/');
 
     final body = jsonEncode({
-      'topik': forum.topik,
-      'pesan': forum.pesan,
+      'nilai': ulasan.nilai,
+      'deskripsi': ulasan.deskripsi,
     });
 
     // Add additional header
@@ -84,7 +85,7 @@ class ForumService extends UserService {
     await updateCookie(response);
 
     if (response.statusCode == 200) {
-      return forumFromJson(response.body);
+      return ulasanFromJson(response.body);
     } else if (response.statusCode == 401) {
       throw Exception('User tidak terautentikasi');
     } else if (response.statusCode == 403) {
@@ -94,21 +95,21 @@ class ForumService extends UserService {
     }
   }
 
-  Future<Forum> deleteForum(Forum forum) async {
+  Future<Ulasan> deleteUlasan(Ulasan ulasan) async {
     await init();
     if (kIsWeb) {
       dynamic c = client;
       c.withCredentials = true;
     }
 
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/forum/${forum.pk}/');
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/ulasan/${ulasan.pk}/');
 
     http.Response response = await client.delete(uri, headers: headers);
     await updateCookie(response);
 
     int code = response.statusCode;
     if (code == 200) {
-      return forumFromJson(response.body);
+      return ulasanFromJson(response.body);
     } else if (response.statusCode == 401) {
       throw Exception('User tidak terautentikasi');
     } else if (response.statusCode == 403) {

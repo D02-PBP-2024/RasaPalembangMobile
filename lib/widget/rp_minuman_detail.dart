@@ -153,9 +153,8 @@ class _RPMinumanDetailState extends State<RPMinumanDetail> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RestoranDetail(
-                              restoran: widget.minuman.restoran
-                          ),
+                          builder: (context) =>
+                              RestoranDetail(restoran: widget.minuman.restoran),
                         ),
                       );
                     },

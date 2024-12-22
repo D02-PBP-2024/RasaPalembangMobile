@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/screens/favorit/route.dart';
+import 'package:rasapalembang/screens/search.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
-import 'package:rasapalembang/widget/rp_makanan_card.dart';
-import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
-import 'package:rasapalembang/widget/rp_minuman_card.dart';
-import 'package:rasapalembang/widget/rp_restoran_card.dart';
+import 'package:rasapalembang/widget/rp_horizontal_list_all.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,6 +19,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController _keywordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _keywordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +49,11 @@ class _HomePageState extends State<HomePage> {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.3),
+                    ),
+                  ),
                   Positioned(
                     top: 100,
                     left: 16,
@@ -51,7 +61,11 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         ClipOval(
                           child: Image.network(
-                            RPUrls.noProfileUrl,
+                            request.loggedIn
+                                ? request.user!.foto != ''
+                                  ? RPUrls.baseUrl + request.user!.foto
+                                  : RPUrls.noProfileUrl
+                                : RPUrls.noProfileUrl,
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
@@ -62,21 +76,22 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Selamat datang,',
+                              'Selamat datang',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
                                 fontSize: 14,
                               ),
                             ),
-                            Text(
-                              'Guest',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                fontSize: 16,
+                            if (request.loggedIn)
+                              Text(
+                                request.user!.nama,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ],
@@ -114,7 +129,20 @@ class _HomePageState extends State<HomePage> {
                     right: 16,
                     child: RPTextFormField(
                       hintText: 'Cari',
+                      controller: _keywordController,
                       prefixIcon: Icons.search,
+                      iconOnPressed: () {
+                        if (_keywordController.text.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SearchPage(
+                                keywordController: _keywordController,
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -125,7 +153,7 @@ class _HomePageState extends State<HomePage> {
               future: restoranService.get(),
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _buildRecomendationList(
+                  return RPHorizontalListAll(
                     title: 'Top Restoran',
                     itemCount: 3,
                   );
@@ -134,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text("Belum ada minuman"));
                 } else {
-                  return _buildRecomendationList(
+                  return RPHorizontalListAll(
                     title: 'Top Restoran',
                     type: 'restoran',
                     itemCount: 6,
@@ -148,7 +176,7 @@ class _HomePageState extends State<HomePage> {
               future: makananService.get(),
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _buildRecomendationList(
+                  return RPHorizontalListAll(
                     title: 'Top Makanan',
                     itemCount: 3,
                   );
@@ -157,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text("Belum ada minuman"));
                 } else {
-                  return _buildRecomendationList(
+                  return RPHorizontalListAll(
                     title: 'Top Makanan',
                     type: 'makanan',
                     itemCount: 6,
@@ -171,7 +199,7 @@ class _HomePageState extends State<HomePage> {
               future: minumanService.get(),
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _buildRecomendationList(
+                  return RPHorizontalListAll(
                     title: 'Top Minuman',
                     itemCount: 3,
                   );
@@ -180,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text("Belum ada minuman"));
                 } else {
-                  return _buildRecomendationList(
+                  return RPHorizontalListAll(
                     title: 'Top Minuman',
                     type: 'minuman',
                     itemCount: 6,
@@ -193,64 +221,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildRecomendationList({
-    required String title,
-    required int itemCount,
-    List? data,
-    String? type,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8.0),
-        SizedBox(
-          height: 287,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: List.generate(itemCount, (index) {
-              final EdgeInsets padding = EdgeInsets.only(
-                left: index == 0 ? 8.0 : 4.0,
-                right: index == itemCount - 1 ? 8.0 : 4.0,
-              );
-
-              Widget item;
-              if (type == 'minuman') {
-                final minuman = data![index];
-                item = RPMinumanCard(minuman: minuman);
-              } else if (type == 'makanan') {
-                final makanan = data![index];
-                item = RPMakananCard(makanan: makanan);
-              } else if (type == 'restoran') {
-                final restoran = data![index];
-                item = RPRestoCard(restoran: restoran);
-              } else {
-                item = RPMenuCardSkeleton();
-              }
-
-              return Padding(
-                padding: padding,
-                child: SizedBox(
-                  width: 200,
-                  child: item,
-                ),
-              );
-            }),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -44,7 +44,9 @@ class _ForumFormState extends State<ForumForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: (widget.edit) ? const Text('Edit Forum') : const Text('Tambah Forum'),
+        title: (widget.edit)
+            ? const Text('Edit Forum')
+            : const Text('Tambah Forum'),
       ),
       body: SingleChildScrollView(
         child: Padding(

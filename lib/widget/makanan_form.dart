@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/makanan.dart';
 import 'package:rasapalembang/models/restoran.dart';
@@ -36,7 +37,8 @@ class _MakananFormState extends State<MakananForm> {
   final _hargaController = TextEditingController();
   final _deskripsiController = TextEditingController();
   final _kaloriController = TextEditingController();
-  final ValueNotifier<List<String>> _kategoriController = ValueNotifier<List<String>>([]);
+  final ValueNotifier<List<String>> _kategoriController =
+      ValueNotifier<List<String>>([]);
 
   bool _isLoadingCategories = true;
   List<String> _categories = [];
@@ -64,14 +66,14 @@ class _MakananFormState extends State<MakananForm> {
       if (kategoriMapFromBackend.isNotEmpty) {
         setState(() {
           kategoriMap = kategoriMapFromBackend; // Simpan UUID -> Nama
-          _categories = kategoriMapFromBackend.keys.toList(); // Simpan hanya UUID
+          _categories =
+              kategoriMapFromBackend.keys.toList(); // Simpan hanya UUID
           _isLoadingCategories = false;
         });
 
         setState(() {
           _isLoadingCategories = false;
         });
-
       } else {
         throw Exception("Tidak ada kategori ditemukan.");
       }
@@ -170,22 +172,26 @@ class _MakananFormState extends State<MakananForm> {
                 _isLoadingCategories
                     ? CircularProgressIndicator()
                     : RPMultiSelectWidget(
-                  items: _categories.map((id) {
-                    return kategoriMap[id] ?? ''; // Tampilkan nama kategori
-                  }).toList(),
-                  selectedItems: _kategoriController.value.map((id) => kategoriMap[id] ?? '').toList(),
-                  onSelectionChanged: (selectedNames) {
-                    setState(() {
-                      // Konversi nama kategori kembali ke UUID
-                      _kategoriController.value = selectedNames
-                          .map((name) => kategoriMap.entries
-                          .firstWhere((entry) => entry.value == name, orElse: () => MapEntry('', ''))
-                          .key)
-                          .where((key) => key.isNotEmpty)
-                          .toList();
-                    });
-                  },
-                ),
+                        items: _categories.map((id) {
+                          return kategoriMap[id] ??
+                              ''; // Tampilkan nama kategori
+                        }).toList(),
+                        selectedItems: _kategoriController.value
+                            .map((id) => kategoriMap[id] ?? '')
+                            .toList(),
+                        onSelectionChanged: (selectedNames) {
+                          setState(() {
+                            // Konversi nama kategori kembali ke UUID
+                            _kategoriController.value = selectedNames
+                                .map((name) => kategoriMap.entries
+                                    .firstWhere((entry) => entry.value == name,
+                                        orElse: () => MapEntry('', ''))
+                                    .key)
+                                .where((key) => key.isNotEmpty)
+                                .toList();
+                          });
+                        },
+                      ),
                 const SizedBox(height: 32.0),
                 RPButton(
                   width: double.infinity,
@@ -222,10 +228,7 @@ class _MakananFormState extends State<MakananForm> {
 
         bool success;
         try {
-          final response = await makananService.edit(
-            widget.makanan!,
-            gambar
-          );
+          final response = await makananService.edit(widget.makanan!, gambar);
           message = 'Makanan berhasil diubah';
           success = true;
         } catch (e) {
@@ -243,7 +246,7 @@ class _MakananFormState extends State<MakananForm> {
             Navigator.pop(context);
           }
         }
-      }else {
+      } else {
         if (gambar != null) {
           Makanan makanan = Makanan(
             nama: nama,
@@ -257,10 +260,7 @@ class _MakananFormState extends State<MakananForm> {
 
           bool success;
           try {
-            final response = await makananService.add(
-              makanan,
-              gambar
-            );
+            final response = await makananService.add(makanan, gambar);
             message = 'Makanan berhasil ditambah';
             success = true;
           } catch (e) {

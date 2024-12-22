@@ -18,14 +18,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider(
-          create: (_) {
-            UserService request = UserService();
-            return request;
-          },
-        ),
         ChangeNotifierProvider(
           create: (context) => TabProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserService(),
+          child: MyApp(),
         ),
       ],
       child: MaterialApp(

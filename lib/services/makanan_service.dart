@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rasapalembang/models/makanan.dart';
@@ -15,6 +16,26 @@ class MakananService extends UserService {
     }
 
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/makanan/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return makananFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
+  Future<List<Makanan>> getKeyword(String keyword) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/makanan/?keyword=$keyword');
 
     http.Response response = await client.get(uri, headers: headers);
     await updateCookie(response);
@@ -54,7 +75,8 @@ class MakananService extends UserService {
       c.withCredentials = true;
     }
 
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/${makanan.restoran.pk}/makanan/');
+    final uri = Uri.parse(
+        '${RPUrls.baseUrl}/v1/restoran/${makanan.restoran.pk}/makanan/');
 
     var request = http.MultipartRequest('POST', uri);
     request.headers.addAll(headers);
@@ -69,8 +91,7 @@ class MakananService extends UserService {
     var streamedResponse = await request.send();
     var body = await streamedResponse.stream.bytesToString();
     var response = http.Response(body, streamedResponse.statusCode,
-        headers: streamedResponse.headers
-    );
+        headers: streamedResponse.headers);
     await updateCookie(response);
 
     switch (response.statusCode) {
@@ -101,9 +122,8 @@ class MakananService extends UserService {
     request.fields['harga'] = '${makanan.harga}';
     request.fields['deskripsi'] = makanan.deskripsi;
     if (gambar != null) {
-      request.files.add(
-        await http.MultipartFile.fromPath('gambar', gambar.path)
-      );
+      request.files
+          .add(await http.MultipartFile.fromPath('gambar', gambar.path));
     }
     request.fields['kalori'] = '${makanan.kalori}';
     request.fields['kategori'] = makanan.kategori.join(',');
@@ -111,8 +131,7 @@ class MakananService extends UserService {
     var streamedResponse = await request.send();
     var body = await streamedResponse.stream.bytesToString();
     var response = http.Response(body, streamedResponse.statusCode,
-        headers: streamedResponse.headers
-    );
+        headers: streamedResponse.headers);
     await updateCookie(response);
 
     switch (response.statusCode) {
@@ -156,7 +175,8 @@ class MakananService extends UserService {
   }
 
   Future<Map<String, String>> fetchCategories() async {
-    final response = await http.get(Uri.parse('${RPUrls.baseUrl}/v1/makanan/kategori/'));
+    final response =
+        await http.get(Uri.parse('${RPUrls.baseUrl}/v1/makanan/kategori/'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body); // Decode respons JSON
 

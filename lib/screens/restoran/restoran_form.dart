@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class RestoranFormPage extends StatefulWidget {
   const RestoranFormPage({super.key});
@@ -114,7 +115,7 @@ class _RestoranFormPageState extends State<RestoranFormPage> {
                     const SizedBox(height: 16),
                   ],
                 );
-              }).toList(),
+              }),
               _buildImagePicker(),
               const SizedBox(height: 32),
               Center(

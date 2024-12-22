@@ -246,7 +246,8 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
       runSpacing: 4.0,
       children: kategori.map((kategoriId) {
         final kategoriNama = kategoriMap[kategoriId] ?? 'Tidak Diketahui';
-        return _infoCard(kategoriNama, Icons.label_important_outline_rounded); // Gunakan _infoCard
+        return _infoCard(kategoriNama,
+            Icons.label_important_outline_rounded); // Gunakan _infoCard
       }).toList(),
     );
   }
