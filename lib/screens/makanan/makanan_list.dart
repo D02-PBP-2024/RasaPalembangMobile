@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/makanan.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
-import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_makanan_card.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
+import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 
 class MakananListPage extends StatefulWidget {
   MakananListPage({super.key});
@@ -38,15 +38,15 @@ class _MakananListPageState extends State<MakananListPage> {
             return _buildMakananGrid(
                 itemCount: snapshot.data.length,
                 isLoading: false,
-                data: snapshot.data
-            );
+                data: snapshot.data);
           }
         },
       ),
     );
   }
 
-  Widget _buildMakananGrid({required int itemCount, bool isLoading = false, List? data}) {
+  Widget _buildMakananGrid(
+      {required int itemCount, bool isLoading = false, List? data}) {
     return RPMenuGridView(
       paddingTop: 24,
       itemCount: itemCount,
