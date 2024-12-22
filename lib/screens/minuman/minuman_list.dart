@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/minuman.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
-import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
+import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_minuman_card.dart';
 
 class MinumanListPage extends StatefulWidget {
@@ -33,20 +33,20 @@ class _MinumanListPageState extends State<MinumanListPage> {
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text("Belum ada minuman"));
+            return const Center(child: Text("Belum ada minuman"));
           } else {
             return _buildMinumanGrid(
-              itemCount: snapshot.data.length,
-              isLoading: false,
-              data: snapshot.data
-            );
+                itemCount: snapshot.data.length,
+                isLoading: false,
+                data: snapshot.data);
           }
         },
       ),
     );
   }
 
-  Widget _buildMinumanGrid({required int itemCount, bool isLoading = false, List? data}) {
+  Widget _buildMinumanGrid(
+      {required int itemCount, bool isLoading = false, List? data}) {
     return RPMenuGridView(
       paddingTop: 24,
       itemCount: itemCount,

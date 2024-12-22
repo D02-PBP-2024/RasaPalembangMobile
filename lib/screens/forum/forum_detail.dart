@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/models/balasan.dart';
+import 'package:rasapalembang/models/forum.dart';
 import 'package:rasapalembang/screens/authentication/show_login_bottom.dart';
 import 'package:rasapalembang/services/balasan_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
@@ -96,7 +96,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     setState(() {
       balasan = null;
       _isEditBalasan = false;
-      _editBalasanController.text = '';
+      _editBalasanController.clear();
     });
   }
 

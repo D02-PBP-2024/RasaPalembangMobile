@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/restoran.dart';
 
@@ -27,7 +28,8 @@ class _RestoranEditFormState extends State<RestoranEditForm> {
     alamatController = TextEditingController(text: widget.restoran.alamat);
     jamBukaController = TextEditingController(text: widget.restoran.jamBuka);
     jamTutupController = TextEditingController(text: widget.restoran.jamTutup);
-    nomorTeleponController = TextEditingController(text: widget.restoran.nomorTelepon);
+    nomorTeleponController =
+        TextEditingController(text: widget.restoran.nomorTelepon);
   }
 
   @override
@@ -47,11 +49,14 @@ class _RestoranEditFormState extends State<RestoranEditForm> {
               const SizedBox(height: 16.0),
               _buildTextField(alamatController, "Alamat Restoran"),
               const SizedBox(height: 16.0),
-              _buildTextField(jamBukaController, "Jam Buka (HH:MM)", TextInputType.datetime),
+              _buildTextField(jamBukaController, "Jam Buka (HH:MM)",
+                  TextInputType.datetime),
               const SizedBox(height: 16.0),
-              _buildTextField(jamTutupController, "Jam Tutup (HH:MM)", TextInputType.datetime),
+              _buildTextField(jamTutupController, "Jam Tutup (HH:MM)",
+                  TextInputType.datetime),
               const SizedBox(height: 16.0),
-              _buildTextField(nomorTeleponController, "Nomor Telepon", TextInputType.phone),
+              _buildTextField(
+                  nomorTeleponController, "Nomor Telepon", TextInputType.phone),
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
@@ -78,7 +83,7 @@ class _RestoranEditFormState extends State<RestoranEditForm> {
         ),
       ),
     );
-  } 
+  }
 
   Widget _buildTextField(TextEditingController controller, String label,
       [TextInputType keyboardType = TextInputType.text]) {

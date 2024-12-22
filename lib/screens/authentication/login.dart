@@ -9,7 +9,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  final selectedTab = Provider.of<TabProvider>(context);
+    final selectedTab = Provider.of<TabProvider>(context);
     return Scaffold(
       body: Center(
         child: RPLogin(

@@ -1,15 +1,31 @@
+import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
-import 'dart:convert';
 
 class RestoranService extends UserService {
   Future<List<Restoran>> get() async {
     await init();
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return restoranFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
+  Future<List<Restoran>> getKeyword(String keyword) async {
+    await init();
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/?keyword=$keyword');
 
     http.Response response = await client.get(uri, headers: headers);
     await updateCookie(response);
@@ -94,9 +110,8 @@ class RestoranService extends UserService {
     request.fields['jamTutup'] = restoran.jamTutup;
     request.fields['nomorTelepon'] = restoran.nomorTelepon;
     if (gambar != null) {
-      request.files.add(
-        await http.MultipartFile.fromPath('gambar', gambar.path)
-      );
+      request.files
+          .add(await http.MultipartFile.fromPath('gambar', gambar.path));
     }
 
     var streamedResponse = await request.send();
@@ -130,8 +145,7 @@ class RestoranService extends UserService {
 
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/${restoran.pk}/');
 
-    http.Response response =
-      await client.delete(uri, headers: headers);
+    http.Response response = await client.delete(uri, headers: headers);
     await updateCookie(response);
 
     switch (response.statusCode) {
@@ -157,8 +171,7 @@ class RestoranService extends UserService {
 
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/get_user_flutter/');
 
-    http.Response response =
-        await client.post(uri, body: {}, headers: headers);
+    http.Response response = await client.post(uri, body: {}, headers: headers);
     await updateCookie(response);
 
     return json.decode(response.body);
