@@ -9,15 +9,12 @@ void showRegisterBottom(BuildContext context) {
     context: context,
     widgets: [
       const SizedBox(height: 32.0),
-      RPRegister(
-        redirect: () {
-          Navigator.pop(context);
-        },
-        loginPage: () {
-          Navigator.pop(context);
-          showLoginBottom(context);
-        }
-      ),
+      RPRegister(redirect: () {
+        Navigator.pop(context);
+      }, loginPage: () {
+        Navigator.pop(context);
+        showLoginBottom(context);
+      }),
     ],
   ).show();
 }

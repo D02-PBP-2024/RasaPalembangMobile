@@ -6,10 +6,7 @@ import 'package:rasapalembang/widget/makanan_form.dart';
 class MakananTambahPage extends StatelessWidget {
   final Restoran restoran;
 
-  MakananTambahPage({
-    super.key,
-    required this.restoran
-  });
+  MakananTambahPage({super.key, required this.restoran});
 
   @override
   Widget build(BuildContext context) {
