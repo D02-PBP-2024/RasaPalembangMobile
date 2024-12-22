@@ -68,26 +68,26 @@ class RPUlasanCardSkeleton extends StatelessWidget {
             SizedBox(height: 8.0),
             Row(
               children: [
-                // Shimmer effect for the topic
-                Expanded(
-                  child: Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      height: 18,
-                      color: Colors.white,
-                    ),
+                // Shimmer effect for rating stars
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: 80,
+                    height: 16,
+                    color: Colors.white,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            // Shimmer effect for message text
+            // Shimmer effect for description
             Shimmer.fromColors(
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
               child: Container(
-                height: 40,
+                width: double.infinity,
+                height: 16,
                 color: Colors.white,
               ),
             ),
