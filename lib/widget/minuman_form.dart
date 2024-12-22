@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/minuman.dart';
 import 'package:rasapalembang/models/restoran.dart';
@@ -74,8 +75,8 @@ class _MinumanFormState extends State<MinumanForm> {
               children: [
                 RPImagePicker(
                   initialGambar: widget.minuman?.gambar != null
-                    ? RPUrls.baseUrl + widget.minuman!.gambar
-                    : null,
+                      ? RPUrls.baseUrl + widget.minuman!.gambar
+                      : null,
                   buttonLabel: widget.imagePickerLabel,
                   onImagePicked: _onImagePicked,
                   imagePreviewHeight: 200,
@@ -161,8 +162,8 @@ class _MinumanFormState extends State<MinumanForm> {
                   hintText: 'Pilih ukuran',
                   items: const ['Kecil', 'Sedang', 'Besar'],
                   selectedItem: widget.minuman?.ukuran != null
-                    ? _title(widget.minuman!.ukuran)
-                    : null,
+                      ? _title(widget.minuman!.ukuran)
+                      : null,
                   onChanged: (String? value) {
                     if (value == 'Kecil') {
                       _ukuranController.value = 'KECIL';
@@ -221,7 +222,7 @@ class _MinumanFormState extends State<MinumanForm> {
           );
           message = 'Minuman berhasil diubah';
           success = true;
-        } catch(e) {
+        } catch (e) {
           message = printException(e as Exception);
           success = false;
         }
@@ -256,7 +257,7 @@ class _MinumanFormState extends State<MinumanForm> {
             );
             message = 'Minuman berhasil ditambah';
             success = true;
-          } catch(e) {
+          } catch (e) {
             message = printException(e as Exception);
             success = false;
           }

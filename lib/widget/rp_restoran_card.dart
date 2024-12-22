@@ -52,26 +52,25 @@ class _RPRestoCardState extends State<RPRestoCard> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(8.0)
-                  ),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(8.0)),
                   child: restoran.gambar.isNotEmpty
-                    ? Image.network(
-                      RPUrls.baseUrl + restoran.gambar,
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      )
-                    : Container(
-                      width: double.infinity,
-                      height: 200,
-                      color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
-                    ),
+                      ? Image.network(
+                          RPUrls.baseUrl + restoran.gambar,
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          width: double.infinity,
+                          height: 200,
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                        ),
                 ),
                 Positioned(
                   top: 4,

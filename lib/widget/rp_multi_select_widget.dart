@@ -50,9 +50,7 @@ class _MultiSelectWidgetState extends State<RPMultiSelectWidget> {
               border: OutlineInputBorder(),
             ),
             child: Text(
-              _selectedItems.isEmpty
-                  ? ""
-                  : _selectedItems.join(", "),
+              _selectedItems.isEmpty ? "" : _selectedItems.join(", "),
               style: TextStyle(
                 fontSize: 16,
               ),

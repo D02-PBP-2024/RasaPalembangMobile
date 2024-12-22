@@ -19,7 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
@@ -107,11 +106,10 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: Text("Belum ada minuman"));
                 } else {
                   return _buildRecomendationList(
-                    title: 'Top Restoran',
-                    type: 'restoran',
-                    itemCount: 6,
-                    data: snapshot.data
-                  );
+                      title: 'Top Restoran',
+                      type: 'restoran',
+                      itemCount: 6,
+                      data: snapshot.data);
                 }
               },
             ),
@@ -130,11 +128,10 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: Text("Belum ada minuman"));
                 } else {
                   return _buildRecomendationList(
-                    title: 'Top Makanan',
-                    type: 'makanan',
-                    itemCount: 6,
-                    data: snapshot.data
-                  );
+                      title: 'Top Makanan',
+                      type: 'makanan',
+                      itemCount: 6,
+                      data: snapshot.data);
                 }
               },
             ),
@@ -153,11 +150,10 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: Text("Belum ada minuman"));
                 } else {
                   return _buildRecomendationList(
-                    title: 'Top Minuman',
-                    type: 'minuman',
-                    itemCount: 6,
-                    data: snapshot.data
-                  );
+                      title: 'Top Minuman',
+                      type: 'minuman',
+                      itemCount: 6,
+                      data: snapshot.data);
                 }
               },
             ),

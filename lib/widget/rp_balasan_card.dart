@@ -42,8 +42,7 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
     return GestureDetector(
       onLongPress: () {
         HapticFeedback.lightImpact();
-        _showBalasanOption(
-            context, widget.balasan, isBalasanUser, request);
+        _showBalasanOption(context, widget.balasan, isBalasanUser, request);
       },
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,8 +53,7 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
               ClipOval(
                 child: Image.network(
                   widget.balasan.user.foto != ''
-                      ? RPUrls.baseUrl +
-                      widget.balasan.user.foto
+                      ? RPUrls.baseUrl + widget.balasan.user.foto
                       : RPUrls.noProfileUrl,
                   height: 40,
                   width: 40,
@@ -100,8 +98,7 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
                         ),
                       ),
                     ],
-                  )
-              ),
+                  )),
             ),
           ),
         ],
@@ -109,8 +106,8 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
     );
   }
 
-  void _showBalasanOption(
-      BuildContext context, Balasan balasan, bool isBalasanUser, UserService request) {
+  void _showBalasanOption(BuildContext context, Balasan balasan,
+      bool isBalasanUser, UserService request) {
     RPBottomSheet(
       context: context,
       widgets: [
@@ -176,4 +173,3 @@ class _RPBalasanCardState extends State<RPBalasanCard> {
     ).show();
   }
 }
-

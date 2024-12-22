@@ -9,8 +9,8 @@ import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
-import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 import 'package:rasapalembang/widget/rp_bottom_navbar.dart';
+import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 import 'package:rasapalembang/widget/rp_floatingbutton.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
@@ -34,7 +34,7 @@ class ProfilePage extends StatefulWidget {
     required this.peran,
     required this.foto,
     required this.poin,
-    required this. dateJoined,
+    required this.dateJoined,
     required this.loggedInUsername,
   });
 
@@ -117,8 +117,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: ClipOval(
                       child: Image.network(
                         foto != ''
-                          ? RPUrls.baseUrl + foto
-                          : RPUrls.noProfileUrl,
+                            ? RPUrls.baseUrl + foto
+                            : RPUrls.noProfileUrl,
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
@@ -139,7 +139,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 56.0),
                       Text(
                         nama,
-                        style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 24.0, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '@${widget.username}',
@@ -156,7 +157,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           Icon(Icons.person_outline, color: Colors.grey[600]),
                           const SizedBox(width: 4.0),
                           Text(
-                            widget.peran == 'pengulas' ? 'Pengulas' : 'Pemilik Restoran',
+                            widget.peran == 'pengulas'
+                                ? 'Pengulas'
+                                : 'Pemilik Restoran',
                             style: const TextStyle(color: Colors.grey),
                           ),
                         ],
@@ -192,11 +195,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       FutureBuilder(
                         future: _restoranList,
                         builder: (context, AsyncSnapshot snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return _buildRestoranGrid(itemCount: 2, isLoading: true);
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return _buildRestoranGrid(
+                                itemCount: 2, isLoading: true);
                           } else if (snapshot.hasError) {
-                            return Center(child: Text("Error: ${snapshot.error}"));
-                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(
+                                child: Text("Error: ${snapshot.error}"));
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
                             return const SizedBox();
                           } else {
                             return _buildRestoranGrid(
@@ -216,22 +223,22 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       floatingActionButton: widget.peran == 'pemilik_restoran' && isLoggedInUser
-        ? RPFloatingButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RestoranFormPage(),
-                ),
-              );
-            },
-            tooltip: 'Tambah restoran',
-            icon: Icon(
-              Icons.storefront,
-              color: Colors.white,
-            ),
-          )
-        : null,
+          ? RPFloatingButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RestoranFormPage(),
+                  ),
+                );
+              },
+              tooltip: 'Tambah restoran',
+              icon: Icon(
+                Icons.storefront,
+                color: Colors.white,
+              ),
+            )
+          : null,
     );
   }
 
@@ -301,7 +308,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final response = await request.logout();
       message = 'Sampai jumpa ${response?.username}!';
-    } catch(e) {
+    } catch (e) {
       message = printException(e as Exception);
     }
     if (mounted) {
@@ -312,9 +319,7 @@ class _ProfilePageState extends State<ProfilePage> {
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) => const RPBottomNavbar()
-        ),
+        MaterialPageRoute(builder: (context) => const RPBottomNavbar()),
       );
     }
   }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/minuman.dart';
+import 'package:rasapalembang/screens/minuman/minuman_edit.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
-import 'package:rasapalembang/screens/minuman/minuman_edit.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
@@ -45,7 +45,8 @@ class _RPMinumanCardState extends State<RPMinumanCard> {
         ).show();
       },
       onLongPress: () {
-        if (widget.lihatRestoran || request.user?.username == widget.minuman.restoran.user) {
+        if (widget.lihatRestoran ||
+            request.user?.username == widget.minuman.restoran.user) {
           HapticFeedback.lightImpact();
           _showMinumanOption(request);
         }
@@ -114,7 +115,7 @@ class _RPMinumanCardState extends State<RPMinumanCard> {
               try {
                 final response = await minumanService.delete(widget.minuman);
                 message = 'Minuman berhasil dihapus';
-              } catch(e) {
+              } catch (e) {
                 message = printException(e as Exception);
               }
 
