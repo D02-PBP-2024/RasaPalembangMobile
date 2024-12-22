@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rasapalembang/models/minuman.dart';
@@ -52,7 +53,8 @@ class MinumanService extends UserService {
       c.withCredentials = true;
     }
 
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/${minuman.restoran.pk}/minuman/');
+    final uri = Uri.parse(
+        '${RPUrls.baseUrl}/v1/restoran/${minuman.restoran.pk}/minuman/');
 
     var request = http.MultipartRequest('POST', uri);
     request.headers.addAll(headers);
@@ -98,9 +100,8 @@ class MinumanService extends UserService {
     request.fields['harga'] = '${minuman.harga}';
     request.fields['deskripsi'] = minuman.deskripsi;
     if (gambar != null) {
-      request.files.add(
-        await http.MultipartFile.fromPath('gambar', gambar.path)
-      );
+      request.files
+          .add(await http.MultipartFile.fromPath('gambar', gambar.path));
     }
     request.fields['ukuran'] = minuman.ukuran;
     request.fields['tingkat_kemanisan'] = '${minuman.tingkatKemanisan}';
@@ -134,8 +135,7 @@ class MinumanService extends UserService {
 
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/minuman/${minuman.pk}/');
 
-    http.Response response =
-      await client.delete(uri, headers: headers);
+    http.Response response = await client.delete(uri, headers: headers);
     await updateCookie(response);
 
     switch (response.statusCode) {

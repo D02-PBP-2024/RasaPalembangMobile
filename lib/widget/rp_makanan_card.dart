@@ -90,7 +90,7 @@ class _RPMakananCardState extends State<RPMakananCard> {
             try {
               final response = await makananService.delete(widget.makanan);
               message = 'Makanan berhasil dihapus';
-            } catch(e) {
+            } catch (e) {
               message = printException(e as Exception);
             }
 

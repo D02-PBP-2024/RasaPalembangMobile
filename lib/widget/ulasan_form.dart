@@ -1,52 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:rasapalembang/models/forum.dart';
-import 'package:rasapalembang/services/forum_service.dart';
+import 'package:rasapalembang/models/ulasan.dart';
+import 'package:rasapalembang/services/ulasan_service.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
+import 'package:rasapalembang/widget/rp_rating_form_field.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
-class ForumForm extends StatefulWidget {
-  final Forum? forum;
+class UlasanForm extends StatefulWidget {
+  final Ulasan? ulasan;
   final String saveButtonLabel;
   final String restoran;
   final bool edit;
 
-  const ForumForm({
+  const UlasanForm({
     super.key,
-    this.forum,
+    this.ulasan,
     required this.saveButtonLabel,
     required this.restoran,
     this.edit = false,
   });
 
   @override
-  State<ForumForm> createState() => _ForumFormState();
+  State<UlasanForm> createState() => _UlasanFormState();
 }
 
-class _ForumFormState extends State<ForumForm> {
+class _UlasanFormState extends State<UlasanForm> {
   final _formKey = GlobalKey<FormState>();
-  final _topikController = TextEditingController();
-  final _pesanController = TextEditingController();
+  final _nilaiController = TextEditingController();
+  final _deskripsiController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
     if (widget.edit) {
-      _topikController.text = widget.forum!.topik;
-      _pesanController.text = widget.forum!.pesan;
+      _nilaiController.text = widget.ulasan!.nilai.toString();
+      _deskripsiController.text = widget.ulasan!.deskripsi;
     }
   }
 
-  final forumService = ForumService();
+  final ulasanService = UlasanService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: (widget.edit)
-            ? const Text('Edit Forum')
-            : const Text('Tambah Forum'),
+            ? const Text('Edit Ulasan')
+            : const Text('Tambah Ulasan'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -56,22 +57,14 @@ class _ForumFormState extends State<ForumForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                RPTextFormField(
-                  controller: _topikController,
-                  labelText: 'Topik',
-                  hintText: 'Masukkan topik forum',
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Topik tidak boleh kosong!';
-                    }
-                    return null;
-                  },
+                RPRatingFormField(
+                  controller: _nilaiController,
                 ),
                 const SizedBox(height: 16.0),
                 RPTextFormField(
-                  controller: _pesanController,
-                  labelText: 'Pesan',
-                  hintText: 'Masukkan pesan forum',
+                  controller: _deskripsiController,
+                  labelText: 'Deskripsi',
+                  hintText: 'Masukkan deskripsi ulasan',
                   maxLines: 5,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -98,17 +91,17 @@ class _ForumFormState extends State<ForumForm> {
 
   void _onSubmit() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final topik = _topikController.text;
-      final pesan = _pesanController.text;
+      final nilai = _nilaiController.text;
+      final deskripsi = _deskripsiController.text;
 
       String message;
       if (widget.edit) {
-        widget.forum?.topik = topik;
-        widget.forum?.pesan = pesan;
+        widget.ulasan?.nilai = int.parse(nilai);
+        widget.ulasan?.deskripsi = deskripsi;
 
         try {
-          final response = await forumService.editForum(widget.forum!);
-          message = "Forum berhasil diubah";
+          await ulasanService.editUlasan(widget.ulasan!);
+          message = "Ulasan berhasil diubah";
         } catch (e) {
           message = printException(e as Exception);
         }
@@ -123,11 +116,11 @@ class _ForumFormState extends State<ForumForm> {
         }
       } else {
         try {
-          final response =
-              await forumService.addForum(topik, pesan, widget.restoran);
-          message = "Forum berhasil ditambah";
+          await ulasanService.addUlasan(
+              int.parse(nilai), deskripsi, widget.restoran);
+          message = "Ulasan berhasil ditambah";
         } catch (e) {
-          message = printException(e as Exception);
+          message = e.toString();
         }
 
         if (context.mounted) {

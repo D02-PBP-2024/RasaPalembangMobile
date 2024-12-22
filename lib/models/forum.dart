@@ -4,10 +4,12 @@
 //     final forumList = forumFromListJson(listJsonString);
 
 import 'dart:convert';
+
 import 'package:rasapalembang/models/user.dart';
 
 Forum forumFromJson(String str) => Forum.fromJson(json.decode(str));
-List<Forum> forumFromListJson(String str) => List<Forum>.from(json.decode(str).map((x) => Forum.fromJson(x)));
+List<Forum> forumFromListJson(String str) =>
+    List<Forum>.from(json.decode(str).map((x) => Forum.fromJson(x)));
 
 class Forum {
   String pk;
@@ -27,11 +29,11 @@ class Forum {
   });
 
   factory Forum.fromJson(Map<String, dynamic> json) => Forum(
-    pk: json["pk"],
-    topik: json["fields"]["topik"],
-    pesan: json["fields"]["pesan"],
-    tanggalPosting: DateTime.parse(json["fields"]["tanggal_posting"]),
-    user: User.fromJson(json["fields"]["user"]),
-    restoran: json["fields"]["restoran"],
-  );
+        pk: json["pk"],
+        topik: json["fields"]["topik"],
+        pesan: json["fields"]["pesan"],
+        tanggalPosting: DateTime.parse(json["fields"]["tanggal_posting"]),
+        user: User.fromJson(json["fields"]["user"]),
+        restoran: json["fields"]["restoran"],
+      );
 }

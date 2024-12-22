@@ -8,8 +8,8 @@ import 'package:rasapalembang/services/forum_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/date_time_extension.dart';
-import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
+import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 
 class RPForumCard extends StatelessWidget {
@@ -115,7 +115,8 @@ class RPForumCard extends StatelessWidget {
     );
   }
 
-  void _showForumOption(BuildContext context, bool isForumUser, UserService request) {
+  void _showForumOption(
+      BuildContext context, bool isForumUser, UserService request) {
     RPBottomSheet(
       context: context,
       widgets: [
@@ -124,7 +125,8 @@ class RPForumCard extends StatelessWidget {
           title: Text('Lihat profil'),
           onTap: () {
             Navigator.pop(context);
-            Navigator.push( // TODO: Tangani buat tanda balik ke halaman sebelumnya
+            Navigator.push(
+              // TODO: Tangani buat tanda balik ke halaman sebelumnya
               context,
               MaterialPageRoute(
                 builder: (context) => ProfilePage(
@@ -142,54 +144,54 @@ class RPForumCard extends StatelessWidget {
           },
         ),
         if (isForumUser)
-        ListTile(
-          leading: Icon(Icons.edit),
-          title: Text('Edit forum'),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ForumEditPage(
-                  forum: forum,
-                ),
-              ),
-            );
-            refreshList();
-          },
-        ),
-        if (isForumUser)
-        ListTile(
-          leading: Icon(
-            Icons.delete,
-            color: RPColors.merahMuda,
-          ),
-          title: Text(
-            'Hapus forum',
-            style: TextStyle(
-              color: RPColors.merahMuda,
-            ),
-          ),
-          onTap: () async {
-            Navigator.pop(context);
-            String message;
-            try {
-              final response = await forumService.deleteForum(forum);
-              message = 'Forum berhasil dihapus';
-            } catch (e) {
-              message = printException(e as Exception);
-            }
-
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(message),
+          ListTile(
+            leading: Icon(Icons.edit),
+            title: Text('Edit forum'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ForumEditPage(
+                    forum: forum,
+                  ),
                 ),
               );
-            }
-            refreshList();
-          },
-        ),
+              refreshList();
+            },
+          ),
+        if (isForumUser)
+          ListTile(
+            leading: Icon(
+              Icons.delete,
+              color: RPColors.merahMuda,
+            ),
+            title: Text(
+              'Hapus forum',
+              style: TextStyle(
+                color: RPColors.merahMuda,
+              ),
+            ),
+            onTap: () async {
+              Navigator.pop(context);
+              String message;
+              try {
+                final response = await forumService.deleteForum(forum);
+                message = 'Forum berhasil dihapus';
+              } catch (e) {
+                message = printException(e as Exception);
+              }
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(message),
+                  ),
+                );
+              }
+              refreshList();
+            },
+          ),
       ],
     ).show();
   }

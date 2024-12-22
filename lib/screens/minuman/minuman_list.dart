@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/minuman.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
-import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
+import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_minuman_card.dart';
 
 class MinumanListPage extends StatefulWidget {
