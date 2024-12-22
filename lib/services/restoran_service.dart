@@ -67,9 +67,9 @@ class RestoranService extends UserService {
 
     request.fields['nama'] = restoran.nama;
     request.fields['alamat'] = restoran.alamat;
-    request.fields['jamBuka'] = restoran.jamBuka;
-    request.fields['jamTutup'] = restoran.jamTutup;
-    request.fields['nomorTelepon'] = restoran.nomorTelepon;
+    request.fields['jam_buka'] = restoran.jamBuka;
+    request.fields['jam_tutup'] = restoran.jamTutup;
+    request.fields['nomor_telepon'] = restoran.nomorTelepon;
     request.files.add(await http.MultipartFile.fromPath('gambar', gambar.path));
 
     var streamedResponse = await request.send();

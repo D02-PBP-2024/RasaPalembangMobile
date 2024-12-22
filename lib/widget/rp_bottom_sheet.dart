@@ -7,8 +7,8 @@ class RPBottomSheet {
 
   RPBottomSheet({required this.context, required this.widgets});
 
-  void show() {
-    showModalBottomSheet(
+  Future<void> show() {
+    return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
