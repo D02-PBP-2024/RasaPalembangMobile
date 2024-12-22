@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rasapalembang/screens/search.dart';
@@ -5,8 +6,11 @@ import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_horizontal_list_all.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class HomePage extends StatefulWidget {
@@ -58,15 +62,18 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       children: [
                         ClipOval(
-                          child: Image.network(
-                            request.loggedIn
-                                ? request.user!.foto != ''
-                                  ? RPUrls.baseUrl + request.user!.foto
-                                  : RPUrls.noProfileUrl
-                                : RPUrls.noProfileUrl,
+                          child: CachedNetworkImage(
+                            imageUrl: request.loggedIn
+                              ? request.user!.foto != ''
+                                ? RPUrls.baseUrl + request.user!.foto
+                                : RPUrls.noProfileUrl
+                              : RPUrls.noProfileUrl,
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
+                            placeholder: (context, url) => RPImageLoading(),
+                            errorWidget: (context, url, error) => RPImageError(),
+                            cacheManager: RPCache.rpCacheManager,
                           ),
                         ),
                         const SizedBox(width: 16.0),

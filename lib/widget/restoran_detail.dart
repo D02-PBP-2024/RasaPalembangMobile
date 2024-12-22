@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -17,9 +18,12 @@ import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/is_open.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 import 'package:rasapalembang/widget/rp_makanan_card.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
@@ -109,11 +113,14 @@ class _RestoranDetailState extends State<RestoranDetail>
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   children: [
-                    Image.network(
-                      RPUrls.baseUrl + widget.restoran.gambar,
+                    CachedNetworkImage(
+                      imageUrl: RPUrls.baseUrl + widget.restoran.gambar,
                       width: double.infinity,
                       height: 500,
                       fit: BoxFit.cover,
+                      placeholder: (context, url) => RPImageLoading(),
+                      errorWidget: (context, url, error) => RPImageError(),
+                      cacheManager: RPCache.rpCacheManager,
                     ),
                     Positioned(
                       bottom: 0,

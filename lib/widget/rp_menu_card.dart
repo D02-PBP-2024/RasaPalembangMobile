@@ -1,7 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/format_harga.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 
 class RPMenuCard extends StatelessWidget {
   final String id;
@@ -39,11 +43,14 @@ class RPMenuCard extends StatelessWidget {
           Stack(
             children: [
               ClipRRect(
-                child: Image.network(
-                  '${RPUrls.baseUrl}$gambar',
+                child: CachedNetworkImage(
+                  imageUrl: '${RPUrls.baseUrl}$gambar',
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) => RPImageLoading(),
+                  errorWidget: (context, url, error) => RPImageError(),
+                  cacheManager: RPCache.rpCacheManager,
                 ),
               ),
               Positioned(

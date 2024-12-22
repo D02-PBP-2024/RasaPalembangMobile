@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 
 class RPImagePicker extends StatefulWidget {
   final Function(File?) onImagePicked;
@@ -64,11 +68,14 @@ class _RPImagePickerState extends State<RPImagePicker> {
   }
 
   Widget _withInitialImage() {
-    return Image.network(
-      widget.initialGambar!,
+    return CachedNetworkImage(
+      imageUrl: widget.initialGambar!,
       height: widget.imagePreviewHeight,
       width: widget.imagePreviewWidth,
       fit: BoxFit.cover,
+      placeholder: (context, url) => RPImageLoading(),
+      errorWidget: (context, url, error) => RPImageError(),
+      cacheManager: RPCache.rpCacheManager,
     );
   }
 

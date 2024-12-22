@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -9,8 +10,11 @@ import 'package:rasapalembang/services/user_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/date_time_extension.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 
 class RPForumCard extends StatelessWidget {
   final Forum forum;
@@ -56,13 +60,16 @@ class RPForumCard extends StatelessWidget {
               Row(
                 children: [
                   ClipOval(
-                    child: Image.network(
-                      forum.user.foto != ''
+                    child: CachedNetworkImage(
+                      imageUrl: forum.user.foto != ''
                           ? RPUrls.baseUrl + forum.user.foto
                           : RPUrls.noProfileUrl,
                       height: 50,
                       width: 50,
                       fit: BoxFit.cover,
+                      placeholder: (context, url) => RPImageLoading(),
+                      errorWidget: (context, url, error) => RPImageError(),
+                      cacheManager: RPCache.rpCacheManager,
                     ),
                   ),
                   SizedBox(width: 8.0),

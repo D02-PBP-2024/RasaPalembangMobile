@@ -1,10 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/utils/is_open.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 
 class RPRestoCard extends StatefulWidget {
   final Restoran restoran;
@@ -55,11 +59,14 @@ class _RPRestoCardState extends State<RPRestoCard> {
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(8.0)),
                   child: restoran.gambar.isNotEmpty
-                      ? Image.network(
-                          RPUrls.baseUrl + restoran.gambar,
+                      ? CachedNetworkImage(
+                          imageUrl: RPUrls.baseUrl + restoran.gambar,
                           width: double.infinity,
                           height: 200,
                           fit: BoxFit.cover,
+                          placeholder: (context, url) => RPImageLoading(),
+                          errorWidget: (context, url, error) => RPImageError(),
+                          cacheManager: RPCache.rpCacheManager,
                         )
                       : Container(
                           width: double.infinity,

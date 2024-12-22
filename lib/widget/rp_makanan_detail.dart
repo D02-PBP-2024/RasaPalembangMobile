@@ -1,11 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/makanan.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/format_harga.dart';
+import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
+import 'package:rasapalembang/widget/rp_image_loading.dart';
 
 class RPMakananDetail extends StatefulWidget {
   final Makanan makanan;
@@ -66,11 +70,14 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
-                  child: Image.network(
-                    '${RPUrls.baseUrl}${makanan.gambar}',
+                  child: CachedNetworkImage(
+                    imageUrl: '${RPUrls.baseUrl}${makanan.gambar}',
                     width: double.infinity,
                     height: screenWidth - 32,
                     fit: BoxFit.cover,
+                    placeholder: (context, url) => RPImageLoading(),
+                    errorWidget: (context, url, error) => RPImageError(),
+                    cacheManager: RPCache.rpCacheManager,
                   ),
                 ),
                 Positioned(
