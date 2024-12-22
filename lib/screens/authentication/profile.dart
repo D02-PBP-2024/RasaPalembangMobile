@@ -11,6 +11,7 @@ import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_navbar.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
+import 'package:rasapalembang/widget/rp_floatingbutton.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_restoran_card.dart';
@@ -222,7 +223,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       floatingActionButton: widget.peran == 'pemilik_restoran' && isLoggedInUser
-          ? FloatingActionButton(
+          ? RPFloatingButton(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -231,7 +232,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 );
               },
-              child: Icon(Icons.storefront),
+              tooltip: 'Tambah restoran',
+              icon: Icon(
+                Icons.storefront,
+                color: Colors.white,
+              ),
             )
           : null,
     );

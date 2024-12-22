@@ -7,20 +7,21 @@ import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
 
-class RPMenuDetail extends StatefulWidget {
+class RPMinumanDetail extends StatefulWidget {
   final Minuman minuman;
+  final bool lihatRestoran;
 
-  const RPMenuDetail({
+  const RPMinumanDetail({
     super.key,
     required this.minuman,
+    this.lihatRestoran = true,
   });
 
   @override
-  _RPMenuDetailState createState() => _RPMenuDetailState();
+  State<RPMinumanDetail> createState() => _RPMinumanDetailState();
 }
 
-class _RPMenuDetailState extends State<RPMenuDetail> {
-
+class _RPMinumanDetailState extends State<RPMinumanDetail> {
   MinumanService minumanService = MinumanService();
 
   @override
@@ -101,21 +102,25 @@ class _RPMenuDetailState extends State<RPMenuDetail> {
                 ),
               ],
             ),
-            const SizedBox(height: 20.0),
-            RPButton(
-              label: 'Lihat Restoran',
-              width: double.infinity,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RestoranDetail(
-                      restoran: widget.minuman.restoran
-                    ),
+            if (widget.lihatRestoran)
+              Column(
+                children: [
+                  const SizedBox(height: 20.0),
+                  RPButton(
+                    label: 'Lihat Restoran',
+                    width: double.infinity,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              RestoranDetail(restoran: widget.minuman.restoran),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
+                ],
+              ),
           ],
         ),
       ),
