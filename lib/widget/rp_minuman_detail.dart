@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/minuman.dart';
+import 'package:rasapalembang/screens/favorit/route.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/format_harga.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
+
+import '../models/favorit.dart';
+import '../services/favorit_service.dart';
 
 class RPMinumanDetail extends StatefulWidget {
   final Minuman minuman;
@@ -23,6 +27,32 @@ class RPMinumanDetail extends StatefulWidget {
 
 class _RPMinumanDetailState extends State<RPMinumanDetail> {
   MinumanService minumanService = MinumanService();
+
+  final FavoritService favoritService = FavoritService();
+  List<Favorit> favoritList = [];
+  bool isFavorited = false;
+  String favoritePK = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _isInFavorite();
+  }
+
+  Future<void> _isInFavorite() async {
+    favoritList = await favoritService.get();
+    for (var i in favoritList) {
+      if (i.fields.minuman != null ) {
+        if (i.fields.minuman!.pk == widget.minuman.pk) {
+          setState(() {
+            isFavorited = true;
+            favoritePK = i.pk;
+          });
+          break;
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +79,21 @@ class _RPMinumanDetailState extends State<RPMinumanDetail> {
                   top: 4,
                   right: 4,
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       // TODO: menambah ke favorit
+                      String? newPK = await favoritService.add(widget.minuman.pk!, "minuman");
+                        if (newPK != null) {
+                          setState(() {
+                            isFavorited = true;
+                            favoritePK = newPK;
+                          });
+                          Navigator.push(
+                            context, MaterialPageRoute(
+                              builder: (context) => FavoritRoute()));
+                        }
                     },
-                    child: const CircleAvatar(
-                      backgroundColor: Colors.transparent,
+                    child: CircleAvatar(
+                      backgroundColor: isFavorited ? Colors.red : Colors.black,
                       child: Icon(
                         Icons.favorite_border,
                         color: Colors.white,

@@ -8,6 +8,7 @@ import 'package:rasapalembang/screens/minuman/route.dart';
 import 'package:rasapalembang/screens/restoran/route.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 
+
 class RPBottomNavbar extends StatefulWidget {
   const RPBottomNavbar({super.key});
 
@@ -16,17 +17,18 @@ class RPBottomNavbar extends StatefulWidget {
 }
 
 class _RPBottomNavbarState extends State<RPBottomNavbar> {
-  final List _pages = [
-    const HomePage(),
-    const MakananRoute(),
-    const MinumanRoute(),
-    const RestoranRoute(),
-    const AkunRoute(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final selectedTab = Provider.of<TabProvider>(context);
+
+    final List<Widget> _pages = [
+      const HomePage(),
+      const MakananRoute(),
+      const MinumanRoute(),
+      const RestoranRoute(),
+      const AkunRoute(),
+    ];
+
     return Scaffold(
       body: _pages[selectedTab.tab],
       bottomNavigationBar: BottomNavigationBar(
@@ -36,24 +38,24 @@ class _RPBottomNavbarState extends State<RPBottomNavbar> {
         selectedFontSize: 12,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Beranda',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.rice_bowl),
             label: 'Makanan',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.wine_bar),
             label: 'Minuman',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.storefront),
             label: 'Restoran',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'Akun',
           ),

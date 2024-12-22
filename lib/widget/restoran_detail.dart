@@ -24,6 +24,10 @@ import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_minuman_card.dart';
 
+import '../models/favorit.dart';
+import '../screens/favorit/route.dart';
+import '../services/favorit_service.dart';
+
 class RestoranDetail extends StatefulWidget {
   final Restoran restoran;
 
@@ -47,6 +51,12 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
   late Widget _forumPage;
   final double _rating = 3.5;
 
+  final FavoritService favoritService = FavoritService();
+  List<Favorit> favoritList = [];
+  bool isFavorited = false;
+  String favoritePK = "";
+
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +71,22 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
       });
     });
     _forumPage = ForumListPage(idRestoran: widget.restoran.pk);
+    _isInFavorite();
+  }
+
+  Future<void> _isInFavorite() async {
+    favoritList = await favoritService.get();
+    for (var i in favoritList) {
+      if (i.fields.restoran != null ) {
+        if (i.fields.restoran!.pk == widget.restoran.pk) {
+          setState(() {
+            isFavorited = true;
+            favoritePK = i.pk;
+          });
+          break;
+        }
+      }
+    }
   }
 
   Future<void> _getCoordinatesFromAddress(String address) async {
@@ -214,15 +240,25 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                   ],
               ),
               actions: [
-                IconButton(
-                  icon: Icon(
-                    Icons.favorite_border,
-                    color: _scrollOffset > _scrollThreshold ? Colors.black : Colors.white,
+                if (_scrollOffset > _scrollThreshold)
+                  IconButton(
+                    icon: Icon(
+                      isFavorited ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorited ? Colors.red : Colors.black,
+                    ),
+                    onPressed: () async {
+                      String? newPK = await favoritService.add(widget.restoran.pk, "restoran");
+                        if (newPK != null) {
+                          setState(() {
+                            isFavorited = true;
+                            favoritePK = newPK;
+                          });
+                          Navigator.push(
+                            context, MaterialPageRoute(
+                              builder: (context) => FavoritRoute()));
+                        }
+                    }, 
                   ),
-                  onPressed: () {
-                    // TODO: Tambah ke favorit
-                  },
-                ),
                 IconButton(
                   icon: Icon(
                     Icons.more_vert,
@@ -440,6 +476,8 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
             makanan: makanan,
             lihatRestoran: false,
           );
+          return RPMakananCard(
+            makanan: makanan);
         } else if (type == 'minuman') {
           final minuman = data![index];
           return RPMinumanCard(

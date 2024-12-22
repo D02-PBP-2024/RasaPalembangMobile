@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rasapalembang/screens/favorit/route.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
+import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_makanan_card.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
@@ -80,6 +82,32 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
+                  if (request.loggedIn)
+                    Positioned(
+                      top: 120,
+                      right: 40,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context, MaterialPageRoute(
+                              builder: (context) => FavoritRoute()));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          child: Text(
+                            'Favorit',
+                            style: TextStyle(
+                              color: Colors.grey.shade800,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                        ),
+                      )
+                    ),
                   Positioned(
                     top: 165,
                     left: 16,

@@ -3,7 +3,10 @@ import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/format_harga.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 
-class RPMenuCard extends StatelessWidget {
+import '../models/favorit.dart';
+import '../services/favorit_service.dart';
+
+class RPMenuCard extends StatefulWidget {
   final String id;
   final String gambar;
   final String nama;
@@ -19,6 +22,41 @@ class RPMenuCard extends StatelessWidget {
     required this.restoran,
   });
 
+  @override
+  State<RPMenuCard> createState() => _RPMenuCardState();
+}
+
+class _RPMenuCardState extends State<RPMenuCard> {
+  final FavoritService favoritService = FavoritService();
+  List<Favorit> favoritList = [];
+  bool isFavorited = false;
+  String favoritePK = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _isInFavorite();
+  }
+
+  Future<void> _isInFavorite() async {
+    favoritList = await favoritService.get();
+    for (var favorit in favoritList) {
+      final minuman = favorit.fields.minuman;
+      final makanan = favorit.fields.makanan;
+
+      // Check if either minuman or makanan matches the widget ID
+      if ((minuman != null && minuman.pk == widget.id) ||
+          (makanan != null && makanan.pk == widget.id)) {
+        setState(() {
+          isFavorited = true;
+          favoritePK = favorit.pk;
+        });
+        break;
+      }
+    }
+  }
+
+  
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -40,28 +78,46 @@ class RPMenuCard extends StatelessWidget {
             children: [
               ClipRRect(
                 child: Image.network(
-                  '${RPUrls.baseUrl}$gambar',
+                  '${RPUrls.baseUrl}${widget.gambar}',
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
                 ),
               ),
-              Positioned(
-                top: 4,
-                right: 4,
-                child: GestureDetector(
-                  onTap: () {
-                    // TODO: menambah ke favorit
-                  },
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: Icon(
-                      Icons.favorite_border,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   top: 4,
+              //   right: 4,
+              //   child: GestureDetector(
+              //     onTap: () async {
+              //       // TODO: menambah ke favorit
+              //       if (!isFavorited) {
+              //         String? newPK = await favoritService.add(widget.id, "makanan");
+              //         newPK ??  await favoritService.add(widget.id, "minuman");
+              //         if (newPK != null) {
+              //           setState(() {
+              //             isFavorited = true;
+              //             favoritePK = newPK;
+              //           });
+              //         }
+              //       } else {
+              //         bool isDeleted = await favoritService.delete(favoritePK);
+              //         if (isDeleted) {
+              //           setState(() {
+              //             isFavorited = false;
+              //             favoritePK = "";
+              //           });
+              //         } 
+              //       }
+              //     },
+              //     child: CircleAvatar(
+              //       backgroundColor: isFavorited ? Colors.red : Colors.black,
+              //       child: Icon(
+              //         Icons.favorite_border,
+              //         color: Colors.white,
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           Padding(
@@ -70,7 +126,7 @@ class RPMenuCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  nama,
+                  widget.nama,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 16,
@@ -79,7 +135,7 @@ class RPMenuCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4.0),
                 Text(
-                  restoran,
+                  widget.restoran,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -89,7 +145,7 @@ class RPMenuCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4.0),
                 Text(
-                  FormatHarga.format(harga),
+                  FormatHarga.format(widget.harga),
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
