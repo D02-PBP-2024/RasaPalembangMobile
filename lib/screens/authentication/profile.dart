@@ -23,7 +23,6 @@ import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
 import 'package:rasapalembang/widget/rp_restoran_card.dart';
 import 'package:rasapalembang/widget/rp_ulasan_card.dart';
 import 'package:rasapalembang/widget/rp_ulasan_card_skeleton.dart';
-import 'package:rasapalembang/screens/restoran/restoran_form.dart';
 
 class ProfilePage extends StatefulWidget {
   final String username;
@@ -272,7 +271,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RestoranFormPage(),
+                    builder: (context) => RestoranTambahPage(),
                   ),
                 );
               },
