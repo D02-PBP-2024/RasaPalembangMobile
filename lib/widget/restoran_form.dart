@@ -189,26 +189,37 @@ class _RestoranFormPageState extends State<RestoranFormPage> {
           gambar: widget.restoran?.gambar ?? '',
         );
 
+        String message;
+        bool success;
         if (widget.edit) {
           await _restoranService.edit(restoran, gambar);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Restoran berhasil diperbarui')),
-          );
+          message = 'Restoran berhasil diperbarui';
+          success = true;
         } else {
-          await _restoranService.add(restoran, gambar!);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Restoran berhasil ditambahkan')),
-          );
+          if (gambar != null) {
+            await _restoranService.add(restoran, gambar);
+            message = 'Restoran berhasil ditambahkan';
+            success = true;
+          } else {
+            message = 'Gambar tidak boleh kosong!';
+            success = false;
+          }
         }
 
-        if (context.mounted) Navigator.pop(context);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message)),
+          );
+          if (success) {
+            Navigator.pop(context);
+          }
+        }
       } catch (e) {
-        String errorMessage = e is Exception
-            ? printException(e)
-            : 'Terjadi kesalahan yang tidak terduga: ${e.toString()}';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(printException(e as Exception))),
+          );
+        }
       }
     }
   }

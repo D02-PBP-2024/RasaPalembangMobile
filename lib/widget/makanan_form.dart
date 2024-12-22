@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:rasapalembang/models/makanan.dart';
 import 'package:rasapalembang/models/restoran.dart';
@@ -130,6 +129,7 @@ class _MakananFormState extends State<MakananForm> {
                   controller: _hargaController,
                   labelText: 'Harga',
                   hintText: 'Masukkan harga makanan',
+                  keyboardType: TextInputType.number,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
                       return 'Harga tidak boleh kosong!';
@@ -158,6 +158,7 @@ class _MakananFormState extends State<MakananForm> {
                   controller: _kaloriController,
                   labelText: 'Kalori',
                   hintText: 'Masukkan jumlah kalori makanan',
+                  keyboardType: TextInputType.number,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
                       return 'Kalori tidak boleh kosong!';
