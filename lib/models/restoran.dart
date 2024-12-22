@@ -16,7 +16,7 @@ class Restoran {
   String jamTutup;
   String nomorTelepon;
   String gambar;
-  String user;
+  String? user;
 
   Restoran({
     required this.pk,
@@ -26,7 +26,7 @@ class Restoran {
     required this.jamTutup,
     required this.nomorTelepon,
     required this.gambar,
-    required this.user,
+    this.user,
   });
 
   factory Restoran.fromJson(Map<String, dynamic> json) => Restoran(

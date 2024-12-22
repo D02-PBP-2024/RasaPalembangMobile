@@ -14,6 +14,7 @@ import 'package:rasapalembang/screens/makanan/makanan_tambah.dart';
 import 'package:rasapalembang/screens/minuman/minuman_tambah.dart';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
 import 'package:rasapalembang/services/user_service.dart';
+import 'package:rasapalembang/services/restoran_service.dart';
 import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/is_open.dart';
 import 'package:rasapalembang/utils/size_constants.dart';
@@ -330,8 +331,43 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
                   ),
                 ),
                 onTap: () async {
-                  Navigator.pop(context);
-                  // TODO: Hapus restoran
+                  Navigator.pop(context); // Menutup modal dialog
+
+                  try {
+                    final bool? confirmDelete = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Konfirmasi'),
+                          content: const Text('Apakah Anda yakin ingin menghapus restoran ini?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Batal'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Hapus'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    if (confirmDelete == true) {
+                      final RestoranService restoranService = RestoranService();
+                      final String message = await restoranService.delete(widget.restoran);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(message)),
+                      );
+                      if (context.mounted) Navigator.pop(context);
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Gagal menghapus restoran: $e')),
+                    );
+                  }
                 },
               ),
             ],

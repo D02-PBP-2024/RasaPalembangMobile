@@ -168,35 +168,31 @@ class _RestoranFormPageState extends State<RestoranFormPage> {
 
   Future<void> _onSubmit() async {
     if (_formKey.currentState?.validate() ?? false) {
-      if (_selectedImage == null && !widget.edit) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gambar restoran harus dipilih!')),
-        );
-        return;
-      }
+      String nama = _namaController.text.trim();
+      String alamat = _alamatController.text.trim();
+      String jamBuka = _jamBukaController.text.trim();
+      String jamTutup = _jamTutupController.text.trim();
+      String nomorTelepon = _nomorTeleponController.text.trim();
+      File? gambar = _selectedImage;
 
       try {
-        final userData = await _restoranService.fetchUserData();
-        final String userId = userData['id'].toString();
-
         final restoran = Restoran(
           pk: widget.restoran?.pk ?? '',
-          nama: _namaController.text.trim(),
-          alamat: _alamatController.text.trim(),
-          jamBuka: _jamBukaController.text.trim(),
-          jamTutup: _jamTutupController.text.trim(),
-          nomorTelepon: _nomorTeleponController.text.trim(),
+          nama: nama,
+          alamat: alamat,
+          jamBuka: jamBuka,
+          jamTutup: jamTutup,
+          nomorTelepon: nomorTelepon,
           gambar: widget.restoran?.gambar ?? '',
-          user: userId,
         );
 
         if (widget.edit) {
-          await _restoranService.edit(restoran, _selectedImage);
+          await _restoranService.edit(restoran, gambar);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Restoran berhasil diperbarui')),
           );
         } else {
-          await _restoranService.add(restoran, _selectedImage!);
+          await _restoranService.add(restoran, gambar!);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Restoran berhasil ditambahkan')),
           );
