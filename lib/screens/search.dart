@@ -155,12 +155,16 @@ class _SearchPageState extends State<SearchPage> {
       future: Future.wait([_restoranList, _makananList, _minumanList]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          bool allEmpty = snapshot.data!.every((data) => (data as List).isEmpty);
-          if (allEmpty) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: const Center(child: Text("Tidak ada data yang ditemukan"))
-            );
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else {
+            bool allEmpty = snapshot.data!.every((data) => (data as List).isEmpty);
+            if (allEmpty) {
+              return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: const Center(child: Text("Tidak ada data yang ditemukan"))
+              );
+            }
           }
         }
         return const SizedBox();
