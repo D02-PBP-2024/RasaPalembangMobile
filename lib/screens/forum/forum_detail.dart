@@ -296,6 +296,13 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                       children: [
                         Expanded(
                           child: RPTextFormField(
+                            prefixIcon: Icons.close,
+                            iconOnPressed: () {
+                              setState(() {
+                                _isTypingBalasan = false;
+                                _balasanController.clear();
+                              });
+                            },
                             hintText: 'Ketik balasan...',
                             controller: _balasanController,
                             focusNode: _focusNode,

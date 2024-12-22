@@ -126,7 +126,6 @@ class RPForumCard extends StatelessWidget {
           onTap: () {
             Navigator.pop(context);
             Navigator.push(
-              // TODO: Tangani buat tanda balik ke halaman sebelumnya
               context,
               MaterialPageRoute(
                 builder: (context) => ProfilePage(
