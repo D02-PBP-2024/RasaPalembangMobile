@@ -42,18 +42,17 @@ class _UlasanListPageState extends State<UlasanListPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
-    bool ulasanUser = false;
 
-    // cek apakah username user ada di dalam list ulasan
-    if (request.loggedIn) {
-      _ulasanFuture.then((ulasanList) {
-        ulasanList.forEach((ulasan) {
-          if (ulasan.user.username == request.user?.username) {
-            ulasanUser = true;
-          }
-        });
-      });
+    bool isUserInUlasanList(List<Ulasan> ulasanList, String username) {
+      for (var ulasan in ulasanList) {
+        if (ulasan.user.username == request.user?.username) {
+          return true;
+        }
+      }
+      return false;
     }
+
+    // ...existing code...
 
     return Scaffold(
       body: Padding(
@@ -70,40 +69,56 @@ class _UlasanListPageState extends State<UlasanListPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text("Error: ${snapshot.error}"));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text("Belum ada diskusi."));
+              return const Center(child: Text("Belum ada ulasan."));
             } else {
-              return _buildUlasanList(
-                itemCount: snapshot.data.length,
-                isLoading: false,
-                data: snapshot.data,
-                request: request,
+              bool isUserInList = isUserInUlasanList(
+                  snapshot.data, request.user?.username ?? '');
+              return Stack(
+                children: [
+                  Column(
+                    children: [
+                      Expanded(
+                        child: _buildUlasanList(
+                          itemCount: snapshot.data.length,
+                          isLoading: false,
+                          data: snapshot.data,
+                          request: request,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (!isUserInList &&
+                      request.user?.peran != 'pemilik_restoran')
+                    Positioned(
+                      bottom: 16.0,
+                      right: 16.0,
+                      child: RPFloatingButton(
+                        onPressed: () async {
+                          if (request.loggedIn) {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UlasanTambahPage(
+                                  restoran: widget.idRestoran,
+                                ),
+                              ),
+                            );
+                            _loadUlasanList();
+                          } else {
+                            showLoginBottom(context);
+                          }
+                        },
+                        icon:
+                            const Icon(Icons.add_reaction, color: Colors.white),
+                        tooltip: 'Tambah Ulasan',
+                      ),
+                    ),
+                ],
               );
             }
           },
         ),
       ),
-      floatingActionButton:
-          request.user?.peran != 'pemilik_restoran' && ulasanUser
-              ? RPFloatingButton(
-                  onPressed: () async {
-                    if (request.loggedIn) {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UlasanTambahPage(
-                            restoran: widget.idRestoran,
-                          ),
-                        ),
-                      );
-                      _loadUlasanList();
-                    } else {
-                      showLoginBottom(context);
-                    }
-                  },
-                  icon: const Icon(Icons.add_reaction, color: Colors.white),
-                  tooltip: 'Tambah Ulasan',
-                )
-              : null,
     );
   }
 
