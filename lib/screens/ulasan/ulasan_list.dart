@@ -42,6 +42,18 @@ class _UlasanListPageState extends State<UlasanListPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
+    bool ulasanUser = false;
+
+    // cek apakah username user ada di dalam list ulasan
+    if (request.loggedIn) {
+      _ulasanFuture.then((ulasanList) {
+        ulasanList.forEach((ulasan) {
+          if (ulasan.user.username == request.user?.username) {
+            ulasanUser = true;
+          }
+        });
+      });
+    }
 
     return Scaffold(
       body: Padding(
@@ -70,32 +82,36 @@ class _UlasanListPageState extends State<UlasanListPage> {
           },
         ),
       ),
-      floatingActionButton: request.user?.peran != 'pemilik_restoran'
-          ? RPFloatingButton(
-              onPressed: () async {
-                if (request.loggedIn) {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UlasanTambahPage(
-                        restoran: widget.idRestoran,
-                      ),
-                    ),
-                  );
-                  _loadUlasanList();
-                } else {
-                  showLoginBottom(context);
-                }
-              },
-              icon: const Icon(Icons.add_reaction, color: Colors.white),
-              tooltip: 'Tambah Ulasan',
-            )
-          : null,
+      floatingActionButton:
+          request.user?.peran != 'pemilik_restoran' && ulasanUser
+              ? RPFloatingButton(
+                  onPressed: () async {
+                    if (request.loggedIn) {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UlasanTambahPage(
+                            restoran: widget.idRestoran,
+                          ),
+                        ),
+                      );
+                      _loadUlasanList();
+                    } else {
+                      showLoginBottom(context);
+                    }
+                  },
+                  icon: const Icon(Icons.add_reaction, color: Colors.white),
+                  tooltip: 'Tambah Ulasan',
+                )
+              : null,
     );
   }
 
   Widget _buildUlasanList(
-      {required int itemCount, bool isLoading = false, List? data, required UserService request}) {
+      {required int itemCount,
+      bool isLoading = false,
+      List? data,
+      required UserService request}) {
     return RPListView(
         paddingBottom: request.user?.peran != 'pemilik_restoran' ? 80.0 : 8.0,
         itemCount: itemCount,
