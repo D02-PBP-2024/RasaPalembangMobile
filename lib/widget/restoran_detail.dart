@@ -8,11 +8,13 @@ import 'package:provider/provider.dart';
 import 'package:rasapalembang/models/makanan.dart';
 import 'package:rasapalembang/models/minuman.dart';
 import 'package:rasapalembang/models/restoran.dart';
+import 'package:rasapalembang/screens/authentication/show_login_bottom.dart';
 import 'package:rasapalembang/screens/forum/forum_list.dart';
 import 'package:rasapalembang/screens/makanan/makanan_tambah.dart';
 import 'package:rasapalembang/screens/minuman/minuman_tambah.dart';
 import 'package:rasapalembang/screens/restoran/restoran_edit_form.dart';
 import 'package:rasapalembang/screens/ulasan/ulasan_list.dart';
+import 'package:rasapalembang/services/favorit_service.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
 import 'package:rasapalembang/services/user_service.dart';
@@ -39,8 +41,8 @@ class RestoranDetail extends StatefulWidget {
   _RestoranDetailState createState() => _RestoranDetailState();
 }
 
-class _RestoranDetailState extends State<RestoranDetail>
-    with SingleTickerProviderStateMixin {
+class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProviderStateMixin {
+  FavoritService favoritService = FavoritService();
   MakananService makananService = MakananService();
   MinumanService minumanService = MinumanService();
   late Future<List<Makanan>> _makananList;
@@ -53,6 +55,7 @@ class _RestoranDetailState extends State<RestoranDetail>
   final double _scrollThreshold = 340.0;
   late Widget _ulasanPage;
   late Widget _forumPage;
+  late bool _favorited;
 
   @override
   void initState() {
@@ -69,6 +72,7 @@ class _RestoranDetailState extends State<RestoranDetail>
     });
     _ulasanPage = UlasanListPage(idRestoran: widget.restoran.pk);
     _forumPage = ForumListPage(idRestoran: widget.restoran.pk);
+    _favorited = widget.restoran.favorit != null;
   }
 
   Future<void> _getCoordinatesFromAddress(String address) async {
@@ -229,14 +233,33 @@ class _RestoranDetailState extends State<RestoranDetail>
               ),
               actions: [
                 IconButton(
-                  icon: Icon(
-                    Icons.favorite_border,
-                    color: _scrollOffset > _scrollThreshold
-                        ? Colors.black
-                        : Colors.white,
-                  ),
-                  onPressed: () {
-                    // TODO: Tambah ke favorit
+                  icon: _favorited
+                    ? Icon(
+                      Icons.favorite_rounded,
+                      color: RPColors.merahMuda,
+                    )
+                    : Icon(
+                      Icons.favorite_outline_rounded,
+                      color: _scrollOffset > _scrollThreshold
+                          ? Colors.black
+                          : Colors.white,
+                      ),
+                  onPressed: () async {
+                    if (_favorited) {
+                      await favoritService.delete(widget.restoran.favorit!);
+                      setState(() {
+                        _favorited = false;
+                      });
+                    } else {
+                     if (request.loggedIn) {
+                       await favoritService.add(null, null, widget.restoran);
+                       setState(() {
+                         _favorited = true;
+                       });
+                     } else {
+                       showLoginBottom(context);
+                     }
+                    }
                   },
                 ),
                 IconButton(

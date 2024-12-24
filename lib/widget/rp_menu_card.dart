@@ -13,6 +13,7 @@ class RPMenuCard extends StatelessWidget {
   final String nama;
   final int harga;
   final String restoran;
+  final Widget? favoritButton;
 
   const RPMenuCard({
     super.key,
@@ -21,6 +22,7 @@ class RPMenuCard extends StatelessWidget {
     required this.nama,
     required this.harga,
     required this.restoran,
+    this.favoritButton,
   });
 
   @override
@@ -53,22 +55,8 @@ class RPMenuCard extends StatelessWidget {
                   cacheManager: RPCache.rpCacheManager,
                 ),
               ),
-              Positioned(
-                top: 4,
-                right: 4,
-                child: GestureDetector(
-                  onTap: () {
-                    // TODO: menambah ke favorit
-                  },
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: Icon(
-                      Icons.favorite_border,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+              if (favoritButton != null)
+                favoritButton as Widget
             ],
           ),
           Padding(

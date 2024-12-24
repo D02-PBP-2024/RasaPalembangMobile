@@ -11,6 +11,7 @@ List<Restoran> restoranFromListJson(String str) =>
 
 class Restoran {
   String pk;
+  String? favorit;
   String nama;
   String alamat;
   String jamBuka;
@@ -22,6 +23,7 @@ class Restoran {
 
   Restoran({
     required this.pk,
+    this.favorit,
     required this.nama,
     required this.alamat,
     required this.jamBuka,
@@ -33,14 +35,15 @@ class Restoran {
   });
 
   factory Restoran.fromJson(Map<String, dynamic> json) => Restoran(
-        pk: json["pk"],
-        nama: json["fields"]["nama"],
-        alamat: json["fields"]["alamat"],
-        jamBuka: json["fields"]["jam_buka"],
-        jamTutup: json["fields"]["jam_tutup"],
-        nomorTelepon: json["fields"]["nomor_telepon"],
-        gambar: json["fields"]["gambar"],
-        user: json["fields"]["user"],
-        rating: json["fields"]["rating"].toDouble(),
-      );
+    pk: json["pk"],
+    favorit: json["favorit"],
+    nama: json["fields"]["nama"],
+    alamat: json["fields"]["alamat"],
+    jamBuka: json["fields"]["jam_buka"],
+    jamTutup: json["fields"]["jam_tutup"],
+    nomorTelepon: json["fields"]["nomor_telepon"],
+    gambar: json["fields"]["gambar"],
+    user: json["fields"]["user"],
+    rating: json["fields"]["rating"].toDouble(),
+  );
 }

@@ -9,6 +9,7 @@ import 'package:rasapalembang/utils/color_constants.dart';
 import 'package:rasapalembang/utils/print_exception.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
+import 'package:rasapalembang/widget/rp_favorit_button.dart';
 import 'package:rasapalembang/widget/rp_menu_card.dart';
 import 'package:rasapalembang/widget/rp_minuman_detail.dart';
 
@@ -57,6 +58,10 @@ class _RPMinumanCardState extends State<RPMinumanCard> {
         nama: widget.minuman.nama,
         harga: widget.minuman.harga,
         restoran: widget.minuman.restoran.nama,
+        favoritButton: RPFavoritButton(
+          favorit: widget.minuman.favorit,
+          minuman: widget.minuman,
+        ),
       ),
     );
   }
