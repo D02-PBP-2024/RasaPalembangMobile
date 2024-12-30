@@ -20,9 +20,9 @@ class Cookie {
         expireTimestamp = json['expireTimestamp'];
 
   Map toJson() => {
-    "name": name,
-    "value": value,
-    "expireTimestamp": expireTimestamp,
+    'name': name,
+    'value': value,
+    'expireTimestamp': expireTimestamp,
   };
 }
 
@@ -43,6 +43,7 @@ class UserService with ChangeNotifier {
       cookies = _loadSharedPrefs();
       if (cookies['sessionid'] != null) {
         loggedIn = true;
+        await _loadUser();
         headers['cookie'] = _generateCookieHeader();
       }
     }
@@ -50,7 +51,7 @@ class UserService with ChangeNotifier {
   }
 
   Map<String, Cookie> _loadSharedPrefs() {
-    String? savedCookies = local.getString("cookies");
+    String? savedCookies = local.getString('cookies');
     if (savedCookies == null) {
       return {};
     }
@@ -68,6 +69,116 @@ class UserService with ChangeNotifier {
     }
 
     return convCookies;
+  }
+
+  Future<void> saveUser(User user) async {
+    this.user = user;
+
+    String userJson = jsonEncode(user.toJson());
+
+    await local.setString('user', userJson);
+    notifyListeners();
+  }
+
+  Future<void> _loadUser() async {
+    String? userJson = local.getString('user');
+    if (userJson != null) {
+      user = userFromJson(userJson);
+      notifyListeners();
+    }
+  }
+
+  Future persist(String cookies) async {
+    local.setString('cookies', cookies);
+  }
+
+  Future updateCookie(http.Response response) async {
+    await init();
+
+    String? allSetCookie = response.headers['set-cookie'];
+
+    if (allSetCookie != null) {
+      // Hacky way to simply ignore expires
+      allSetCookie = allSetCookie.replaceAll(
+        RegExp(r'expires=.+?;', caseSensitive: false),
+        '',
+      );
+      var setCookies = allSetCookie.split(',');
+
+      for (var cookie in setCookies) {
+        _setCookie(cookie);
+      }
+
+      headers['cookie'] = _generateCookieHeader();
+      String cookieObject = (const JsonEncoder()).convert(cookies);
+      persist(cookieObject);
+    }
+  }
+
+  void _setCookie(String rawCookie) {
+    if (rawCookie.isEmpty) {
+      return;
+    }
+
+    var cookieProps = rawCookie.split(';');
+
+    // First part of cookie will always be the key-value pair
+    var keyValue = cookieProps[0].split('=');
+    if (keyValue.length != 2) {
+      return;
+    }
+
+    String cookieName = keyValue[0].trim();
+    String cookieValue = keyValue[1];
+
+    int? cookieExpire;
+    // Iterate through every props and find max-age
+    // Expires works but Django always returns max-age, and according to MDN
+    // max-age has higher prio
+
+    for (var props in cookieProps.sublist(1)) {
+      var keyval = props.split('=');
+      if (keyval.length != 2) {
+        continue;
+      }
+
+      var key = keyval[0].trim().toLowerCase();
+      if (key != 'max-age') {
+        continue;
+      }
+
+      int? deltaTime = int.tryParse(keyval[1]);
+      if (deltaTime != null) {
+        cookieExpire = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+        cookieExpire += deltaTime;
+      }
+      break;
+    }
+    cookies[cookieName] = Cookie(cookieValue, cookieValue, cookieExpire);
+  }
+
+  String _generateCookieHeader() {
+    int currTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    String cookie = '';
+
+    for (var key in cookies.keys) {
+      if (cookie.isNotEmpty) cookie += ';';
+      Cookie? curr = cookies[key];
+
+      if (curr == null) continue;
+      if (curr.expireTimestamp != null && currTime >= curr.expireTimestamp!) {
+        loggedIn = false;
+        user = null;
+        cookies = {};
+        local.clear();
+        notifyListeners();
+      }
+
+      String newCookie = curr.value;
+      cookie += '$key=$newCookie';
+    }
+
+    return cookie;
   }
 
   Future<User?> register(String nama, String username, String password1, String password2, String peran) async {
@@ -90,17 +201,17 @@ class UserService with ChangeNotifier {
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
     http.Response response =
-      await client.post(uri, body: data, headers: headers);
+    await client.post(uri, body: data, headers: headers);
 
     // Remove used additional header
     headers.remove('Content-Type');
     await updateCookie(response);
-    notifyListeners();
 
     int code = response.statusCode;
     if (code == 201) {
       loggedIn = true;
       user = userFromJson(response.body);
+      await saveUser(user!);
       return user;
     } else if (code == 400){
       loggedIn = false;
@@ -127,17 +238,17 @@ class UserService with ChangeNotifier {
     // Add additional header
     headers['Content-Type'] = 'application/json; charset=UTF-8';
     http.Response response =
-      await client.post(uri, body: data, headers: headers);
+    await client.post(uri, body: data, headers: headers);
 
     // Remove used additional header
     headers.remove('Content-Type');
     await updateCookie(response);
-    notifyListeners();
 
     int code = response.statusCode;
     if (code == 200) {
       loggedIn = true;
       user = userFromJson(response.body);
+      await saveUser(user!);
       return user;
     } else if (code == 401) {
       loggedIn = false;
@@ -158,14 +269,16 @@ class UserService with ChangeNotifier {
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/logout/');
 
     http.Response response =
-      await client.post(uri, headers: headers);
-
-    loggedIn = false;
-    cookies = {};
-    user = null;
+    await client.post(uri, headers: headers);
 
     int code = response.statusCode;
     if (code == 200) {
+      loggedIn = false;
+      cookies = {};
+      user = null;
+      await local.remove('user');
+      await local.remove('cookies');
+      notifyListeners();
       return userFromJson(response.body);
     } else if (code == 401) {
       throw Exception('User tidak terautentikasi');
@@ -229,100 +342,5 @@ class UserService with ChangeNotifier {
     } else {
       throw Exception('Request gagal!');
     }
-  }
-
-  Future persist(String cookies) async {
-    local.setString("cookies", cookies);
-  }
-
-  Future updateCookie(http.Response response) async {
-    await init();
-
-    String? allSetCookie = response.headers['set-cookie'];
-
-    if (allSetCookie != null) {
-      // Hacky way to simply ignore expires
-      allSetCookie = allSetCookie.replaceAll(
-        RegExp(r'expires=.+?;', caseSensitive: false),
-        "",
-      );
-      var setCookies = allSetCookie.split(',');
-
-      for (var cookie in setCookies) {
-        _setCookie(cookie);
-      }
-
-      headers['cookie'] = _generateCookieHeader();
-      String cookieObject = (const JsonEncoder()).convert(cookies);
-      persist(cookieObject);
-    }
-  }
-
-  void _setCookie(String rawCookie) {
-    if (rawCookie.isEmpty) {
-      return;
-    }
-
-    var cookieProps = rawCookie.split(";");
-
-    // First part of cookie will always be the key-value pair
-    var keyValue = cookieProps[0].split('=');
-    if (keyValue.length != 2) {
-      return;
-    }
-
-    String cookieName = keyValue[0].trim();
-    String cookieValue = keyValue[1];
-
-    int? cookieExpire;
-    // Iterate through every props and find max-age
-    // Expires works but Django always returns max-age, and according to MDN
-    // max-age has higher prio
-
-    for (var props in cookieProps.sublist(1)) {
-      var keyval = props.split("=");
-      if (keyval.length != 2) {
-        continue;
-      }
-
-      var key = keyval[0].trim().toLowerCase();
-      if (key != 'max-age') {
-        continue;
-      }
-
-      int? deltaTime = int.tryParse(keyval[1]);
-      if (deltaTime != null) {
-        cookieExpire = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-        cookieExpire += deltaTime;
-      }
-      break;
-    }
-    cookies[cookieName] = Cookie(cookieValue, cookieValue, cookieExpire);
-  }
-
-  String _generateCookieHeader() {
-    int currTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    String cookie = "";
-
-    for (var key in cookies.keys) {
-      if (cookie.isNotEmpty) cookie += ";";
-      Cookie? curr = cookies[key];
-
-      if (curr == null) continue;
-      if (curr.expireTimestamp != null && currTime >= curr.expireTimestamp!) {
-        if (curr.name == "sessionid") {
-          // Reset all states if sessionId got changed
-          loggedIn = false;
-          user = null;
-          cookies = {};
-        }
-        continue;
-      }
-
-      String newCookie = curr.value;
-      cookie += '$key=$newCookie';
-    }
-
-    return cookie;
   }
 }
