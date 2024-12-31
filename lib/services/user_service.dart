@@ -154,7 +154,7 @@ class UserService with ChangeNotifier {
       }
       break;
     }
-    cookies[cookieName] = Cookie(cookieValue, cookieValue, cookieExpire);
+    cookies[cookieName] = Cookie(cookieName, cookieValue, cookieExpire);
   }
 
   String _generateCookieHeader() {
@@ -167,11 +167,15 @@ class UserService with ChangeNotifier {
 
       if (curr == null) continue;
       if (curr.expireTimestamp != null && currTime >= curr.expireTimestamp!) {
-        loggedIn = false;
-        user = null;
-        cookies = {};
-        local.clear();
-        notifyListeners();
+        if (curr.name == 'sessionid') {
+          loggedIn = false;
+          user = null;
+          cookies = {};
+          local.remove('user');
+          local.remove('cookies');
+          notifyListeners();
+        }
+        continue;
       }
 
       String newCookie = curr.value;
