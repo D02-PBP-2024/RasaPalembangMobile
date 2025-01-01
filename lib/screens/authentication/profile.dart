@@ -16,10 +16,12 @@ import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_bottom_navbar.dart';
 import 'package:rasapalembang/widget/rp_bottom_sheet.dart';
 import 'package:rasapalembang/widget/rp_floatingbutton.dart';
+import 'package:rasapalembang/widget/rp_image_error.dart';
 import 'package:rasapalembang/widget/rp_image_loading.dart';
 import 'package:rasapalembang/widget/rp_list_view.dart';
 import 'package:rasapalembang/widget/rp_menu_card_skeleton.dart';
 import 'package:rasapalembang/widget/rp_menu_grid_view.dart';
+import 'package:rasapalembang/widget/rp_refresh_indicator.dart';
 import 'package:rasapalembang/widget/rp_restoran_card.dart';
 import 'package:rasapalembang/widget/rp_ulasan_card.dart';
 import 'package:rasapalembang/widget/rp_ulasan_card_skeleton.dart';
@@ -67,8 +69,20 @@ class _ProfilePageState extends State<ProfilePage> {
     foto = widget.foto;
     if (widget.peran == 'pemilik_restoran') {
       _restoranList = restoranService.getByUsername(widget.username);
-    } else {
+    } else if (widget.peran == 'pengulas') {
       _ulasanList = ulasanService.getByUsername(widget.username);
+    }
+  }
+
+  Future<void> _refresh() async {
+    if (widget.peran == 'pemilik_restoran') {
+      setState(() {
+        _restoranList = restoranService.getByUsername(widget.username);
+      });
+    } else if (widget.peran == 'pengulas') {
+      setState(() {
+        _ulasanList = ulasanService.getByUsername(widget.username);
+      });
     }
   }
 
@@ -108,8 +122,10 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       extendBodyBehindAppBar: true,
-      body: SingleChildScrollView(
-        child: Column(
+      body: RPRefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: [
             Container(
               width: double.infinity,
@@ -129,13 +145,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: ClipOval(
                       child: CachedNetworkImage(
                         imageUrl: foto != ''
-                            ? RPUrls.baseUrl + foto
-                            : RPUrls.noProfileUrl,
+                          ? RPUrls.baseUrl + foto
+                          : RPUrls.noProfileUrl,
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
                         placeholder: (context, url) => RPImageLoading(),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        errorWidget: (context, url, error) => RPImageError(),
                         cacheManager: RPCache.rpCacheManager,
                       ),
                     ),
@@ -143,143 +159,127 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 56.0),
+                  Text(
+                    nama,
+                    style: const TextStyle(
+                        fontSize: 24.0, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '@${widget.username}',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    deskripsi == '' ? 'Belum ada bio.' : deskripsi,
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Row(
                     children: [
-                      const SizedBox(height: 56.0),
+                      Icon(Icons.person_outline, color: Colors.grey[600]),
+                      const SizedBox(width: 4.0),
                       Text(
-                        nama,
-                        style: const TextStyle(
-                            fontSize: 24.0, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '@${widget.username}',
+                        widget.peran == 'pengulas'
+                            ? 'Pengulas'
+                            : 'Pemilik Restoran',
                         style: const TextStyle(color: Colors.grey),
                       ),
-                      const SizedBox(height: 8.0),
-                      Text(
-                        deskripsi == '' ? 'Belum ada bio.' : deskripsi,
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 8.0),
-                      Row(
-                        children: [
-                          Icon(Icons.person_outline, color: Colors.grey[600]),
-                          const SizedBox(width: 4.0),
-                          Text(
-                            widget.peran == 'pengulas'
-                                ? 'Pengulas'
-                                : 'Pemilik Restoran',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8.0),
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_today, color: Colors.grey[600]),
-                          const SizedBox(width: 4.0),
-                          Text(
-                            'Bergabung ${_formatDate(widget.dateJoined)}',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8.0),
-                      Row(
-                        children: [
-                          Icon(Icons.monetization_on, color: Colors.grey[600]),
-                          const SizedBox(width: 4.0),
-                          Text(
-                            '${widget.poin} Poin',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
-                ),
-                if (widget.peran == 'pemilik_restoran')
-                  Column(
+                  const SizedBox(height: 8.0),
+                  Row(
                     children: [
-                      FutureBuilder(
-                        future: _restoranList,
-                        builder: (context, AsyncSnapshot snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return _buildRestoranGrid(
-                                itemCount: 2, isLoading: true);
-                          } else if (snapshot.hasError) {
-                            return Center(
-                                child: Text("Error: ${snapshot.error}"));
-                          } else if (!snapshot.hasData ||
-                              snapshot.data!.isEmpty) {
-                            return const SizedBox();
-                          } else {
-                            return _buildRestoranGrid(
-                              itemCount: snapshot.data.length,
-                              isLoading: false,
-                              data: snapshot.data,
-                            );
-                          }
-                        },
+                      Icon(Icons.calendar_today, color: Colors.grey[600]),
+                      const SizedBox(width: 4.0),
+                      Text(
+                        'Bergabung ${_formatDate(widget.dateJoined)}',
+                        style: const TextStyle(color: Colors.grey),
                       ),
-                      const SizedBox(height: 72.0),
                     ],
                   ),
-                if (widget.peran == 'pengulas')
-                  Column(children: [
-                    FutureBuilder(
-                      future: _ulasanList,
-                      builder: (context, AsyncSnapshot snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return _buildUlasanList(
-                              itemCount: 2, isLoading: true);
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text("Error: ${snapshot.error}"));
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return const SizedBox();
-                        } else {
-                          return _buildUlasanList(
-                            itemCount: snapshot.data.length,
-                            isLoading: false,
-                            data: snapshot.data,
-                          );
-                        }
-                      },
-                    ),
-                  ]),
-                const SizedBox(height: 72.0),
-              ],
+                  const SizedBox(height: 8.0),
+                  Row(
+                    children: [
+                      Icon(Icons.monetization_on, color: Colors.grey[600]),
+                      const SizedBox(width: 4.0),
+                      Text(
+                        '${widget.poin} Poin',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
+            if (widget.peran == 'pemilik_restoran')
+              Column(
+                children: [
+                  FutureBuilder(
+                    future: _restoranList,
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return _buildRestoranGrid(itemCount: 2, isLoading: true);
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const SizedBox();
+                      } else {
+                        return _buildRestoranGrid(
+                          itemCount: snapshot.data.length,
+                          isLoading: false,
+                          data: snapshot.data,
+                        );
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 72.0),
+                ],
+              ),
+            if (widget.peran == 'pengulas')
+              FutureBuilder(
+                future: _ulasanList,
+                builder: (context, AsyncSnapshot snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return _buildUlasanList(itemCount: 2, isLoading: true);
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const SizedBox();
+                  } else {
+                    return _buildUlasanList(
+                      itemCount: snapshot.data.length,
+                      isLoading: false,
+                      data: snapshot.data,
+                    );
+                  }
+                },
+              ),
           ],
         ),
       ),
       floatingActionButton: widget.peran == 'pemilik_restoran' && isLoggedInUser
-          ? RPFloatingButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RestoranTambahPage(),
-                  ),
-                );
-              },
-              tooltip: 'Tambah restoran',
-              icon: Icon(
-                Icons.storefront,
-                color: Colors.white,
-              ),
-            )
-          : null,
+        ? RPFloatingButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RestoranTambahPage(),
+                ),
+              );
+            },
+            tooltip: 'Tambah restoran',
+            icon: Icon(
+              Icons.storefront,
+              color: Colors.white,
+            ),
+          )
+        : null,
     );
   }
 
@@ -288,17 +288,20 @@ class _ProfilePageState extends State<ProfilePage> {
     bool isLoading = false,
     List? data,
   }) {
-    return RPMenuGridView(
-      paddingTop: 24,
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        if (isLoading) {
-          return RPMenuCardSkeleton();
-        } else {
-          final restoran = data![index];
-          return RPRestoCard(restoran: restoran);
-        }
-      },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: RPMenuGridView(
+        paddingTop: 24.0,
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          if (isLoading) {
+            return RPMenuCardSkeleton();
+          } else {
+            final restoran = data![index];
+            return RPRestoCard(restoran: restoran);
+          }
+        },
+      ),
     );
   }
 
@@ -308,33 +311,24 @@ class _ProfilePageState extends State<ProfilePage> {
     List? data,
   }) {
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: RPListView(
-            paddingTop: 24,
-            paddingBottom: 8.0,
-            itemCount: itemCount,
-            itemBuilder: (context, index) {
-              if (isLoading) {
-                return Column(
-                  children: [
-                    RPUlasanCardSkeleton(),
-                    if (index < itemCount - 1) SizedBox(height: 8.0),
-                  ],
-                );
-              } else {
-                final ulasan = data![index];
-                return Column(
-                  children: [
-                    RPUlasanCard(
-                      ulasan: ulasan,
-                      refreshList: refreshList,
-                      includeResto: true,
-                    ),
-                    if (index < itemCount - 1) SizedBox(height: 8.0),
-                  ],
-                );
-              }
-            }));
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: RPListView(
+        paddingTop: 24.0,
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          if (isLoading) {
+            return RPUlasanCardSkeleton();
+          } else {
+            final ulasan = data![index];
+            return RPUlasanCard(
+              ulasan: ulasan,
+              refreshList: _refresh,
+              includeResto: true,
+            );
+          }
+        }
+      ),
+    );
   }
 
   void _showProfileOption(request) {
@@ -398,12 +392,6 @@ class _ProfilePageState extends State<ProfilePage> {
         MaterialPageRoute(builder: (context) => const RPBottomNavbar()),
       );
     }
-  }
-
-  void refreshList() {
-    setState(() {
-      _ulasanList = ulasanService.getByUsername(widget.username);
-    });
   }
 
   String _formatDate(DateTime date) {

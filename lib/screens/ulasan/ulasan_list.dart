@@ -22,6 +22,7 @@ class UlasanListPage extends StatefulWidget {
 class _UlasanListPageState extends State<UlasanListPage> {
   late Future<List<Ulasan>> _ulasanFuture;
   late UlasanService ulasanService;
+  bool isUserInList = false;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _UlasanListPageState extends State<UlasanListPage> {
     setState(() {
       _ulasanFuture = ulasanService.get(widget.idRestoran).then((ulasanList) {
         ulasanList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        isUserInList = ulasanList.any((ulasan) => ulasan.user.username == context.read<UserService>().user?.username);
         return ulasanList;
       });
     });
@@ -42,15 +44,6 @@ class _UlasanListPageState extends State<UlasanListPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
-
-    bool isUserInUlasanList(List<Ulasan> ulasanList, String username) {
-      for (var ulasan in ulasanList) {
-        if (ulasan.user.username == request.user?.username) {
-          return true;
-        }
-      }
-      return false;
-    }
 
     return Scaffold(
       body: Padding(
@@ -67,14 +60,10 @@ class _UlasanListPageState extends State<UlasanListPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text("Error: ${snapshot.error}"));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              bool isUserInList = isUserInUlasanList(
-                  snapshot.data, request.user?.username ?? '');
-
               return Stack(
                 children: [
                   Center(child: Text("Belum ada ulasan.")),
-                  if (!isUserInList &&
-                      request.user?.peran != 'pemilik_restoran')
+                  if (!isUserInList && request.user?.peran != 'pemilik_restoran')
                     Positioned(
                       bottom: 16.0,
                       right: 16.0,
@@ -102,9 +91,6 @@ class _UlasanListPageState extends State<UlasanListPage> {
                 ],
               );
             } else {
-              bool isUserInList = isUserInUlasanList(
-                  snapshot.data, request.user?.username ?? '');
-
               return Stack(
                 children: [
                   Column(
@@ -119,11 +105,10 @@ class _UlasanListPageState extends State<UlasanListPage> {
                       ),
                     ],
                   ),
-                  if (!isUserInList &&
-                      request.user?.peran != 'pemilik_restoran')
+                  if (!isUserInList && request.user?.peran != 'pemilik_restoran')
                     Positioned(
                       bottom: 16.0,
-                      right: 16.0,
+                      right: 8.0,
                       child: RPFloatingButton(
                         onPressed: () async {
                           if (request.loggedIn) {
@@ -161,22 +146,17 @@ class _UlasanListPageState extends State<UlasanListPage> {
     required UserService request,
   }) {
     return RPListView(
-      paddingBottom: request.user?.peran != 'pemilik_restoran' ? 80.0 : 8.0,
+      paddingBottom: request.user?.peran != 'pemilik_restoran' && !isUserInList ? 80.0 : 8.0,
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        final card = isLoading
-            ? RPUlasanCardSkeleton()
-            : RPUlasanCard(
-                ulasan: data![index],
-                refreshList: _loadUlasanList,
-              );
-
-        return Column(
-          children: [
-            card,
-            if (index < itemCount - 1) SizedBox(height: 8.0),
-          ],
-        );
+        if (isLoading) {
+          return RPUlasanCardSkeleton();
+        } else {
+          return RPUlasanCard(
+            ulasan: data![index],
+            refreshList: _loadUlasanList,
+          );
+        }
       },
     );
   }

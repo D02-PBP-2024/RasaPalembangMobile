@@ -47,6 +47,26 @@ class MinumanService extends UserService {
     }
   }
 
+  Future<List<Minuman>> getRandom(int max) async {
+    await init();
+    if (kIsWeb) {
+      dynamic c = client;
+      c.withCredentials = true;
+    }
+
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/minuman/?random=$max');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return minumanFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
   Future<List<Minuman>> getByRestoran(String idRestoran) async {
     await init();
     if (kIsWeb) {
