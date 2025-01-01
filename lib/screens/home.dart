@@ -2,6 +2,9 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rasapalembang/models/makanan.dart';
+import 'package:rasapalembang/models/minuman.dart';
+import 'package:rasapalembang/models/restoran.dart';
 import 'package:rasapalembang/screens/search.dart';
 import 'package:rasapalembang/services/makanan_service.dart';
 import 'package:rasapalembang/services/minuman_service.dart';
@@ -12,6 +15,7 @@ import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/rp_horizontal_list_all.dart';
 import 'package:rasapalembang/widget/rp_image_error.dart';
 import 'package:rasapalembang/widget/rp_image_loading.dart';
+import 'package:rasapalembang/widget/rp_refresh_indicator.dart';
 import 'package:rasapalembang/widget/rp_text_form_field.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,6 +27,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _keywordController = TextEditingController();
+  final RestoranService restoranService = RestoranService();
+  final MakananService makananService = MakananService();
+  final MinumanService minumanService = MinumanService();
+  late Future<List<Makanan>> _makananList;
+  late Future<List<Minuman>> _minumanList;
+  late Future<List<Restoran>> _restoranList;
 
   @override
   void dispose() {
@@ -31,14 +41,29 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _makananList = makananService.getRandom(6);
+    _minumanList = minumanService.getRandom(6);
+    _restoranList = restoranService.getRandom(6);
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _makananList = makananService.getRandom(6);
+      _minumanList = minumanService.getRandom(6);
+      _restoranList = restoranService.getRandom(6);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final request = context.watch<UserService>();
-    final RestoranService restoranService = RestoranService();
-    final MakananService makananService = MakananService();
-    final MinumanService minumanService = MinumanService();
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
+      body: RPRefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: [
             Container(
               width: double.infinity,
@@ -65,10 +90,10 @@ class _HomePageState extends State<HomePage> {
                         ClipOval(
                           child: CachedNetworkImage(
                             imageUrl: request.loggedIn
-                              ? request.user!.foto != ''
+                                ? request.user!.foto != ''
                                 ? RPUrls.baseUrl + request.user!.foto
                                 : RPUrls.noProfileUrl
-                              : RPUrls.noProfileUrl,
+                                : RPUrls.noProfileUrl,
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
@@ -130,11 +155,11 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 38.0),
             FutureBuilder(
-              future: restoranService.get(),
+              future: _restoranList,
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return RPHorizontalListAll(
-                    title: 'Top Restoran',
+                    title: 'Rekomendasi Restoran',
                     itemCount: 3,
                   );
                 } else if (snapshot.hasError) {
@@ -143,21 +168,21 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: Text("Belum ada minuman"));
                 } else {
                   return RPHorizontalListAll(
-                    title: 'Top Restoran',
-                    type: 'restoran',
-                    itemCount: min(6, snapshot.data.length),
-                    data: snapshot.data
+                      title: 'Rekomendasi Restoran',
+                      type: 'restoran',
+                      itemCount: min(6, snapshot.data.length),
+                      data: snapshot.data
                   );
                 }
               },
             ),
             const SizedBox(height: 16.0),
             FutureBuilder(
-              future: makananService.get(),
+              future: _makananList,
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return RPHorizontalListAll(
-                    title: 'Top Makanan',
+                    title: 'Rekomendasi Makanan',
                     itemCount: 3,
                   );
                 } else if (snapshot.hasError) {
@@ -166,21 +191,21 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: Text("Belum ada minuman"));
                 } else {
                   return RPHorizontalListAll(
-                    title: 'Top Makanan',
-                    type: 'makanan',
-                    itemCount: min(6, snapshot.data.length),
-                    data: snapshot.data
+                      title: 'Rekomendasi Makanan',
+                      type: 'makanan',
+                      itemCount: min(6, snapshot.data.length),
+                      data: snapshot.data
                   );
                 }
               },
             ),
             const SizedBox(height: 16.0),
             FutureBuilder(
-              future: minumanService.get(),
+              future: _minumanList,
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return RPHorizontalListAll(
-                    title: 'Top Minuman',
+                    title: 'Rekomendasi Minuman',
                     itemCount: 3,
                   );
                 } else if (snapshot.hasError) {
@@ -189,10 +214,10 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: Text("Belum ada minuman"));
                 } else {
                   return RPHorizontalListAll(
-                    title: 'Top Minuman',
-                    type: 'minuman',
-                    itemCount: min(6, snapshot.data.length),
-                    data: snapshot.data
+                      title: 'Rekomendasi Minuman',
+                      type: 'minuman',
+                      itemCount: min(6, snapshot.data.length),
+                      data: snapshot.data
                   );
                 }
               },

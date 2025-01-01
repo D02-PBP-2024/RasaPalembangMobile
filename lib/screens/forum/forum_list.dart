@@ -102,30 +102,20 @@ class _ForumListPageState extends State<ForumListPage> {
       itemCount: itemCount,
       itemBuilder: (context, index) {
         if (isLoading) {
-          return Column(
-            children: [
-              RPForumCardSkeleton(),
-              if (index < itemCount - 1) SizedBox(height: 8.0),
-            ],
-          );
+          return RPForumCardSkeleton();
         } else {
           final forum = data![index];
-          return Column(
-            children: [
-              RPForumCard(
-                forum: forum,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ForumDetailPage(forum: forum),
-                    ),
-                  );
-                },
-                refreshList: _loadForumList,
-              ),
-              if (index < itemCount - 1) SizedBox(height: 8.0),
-            ],
+          return RPForumCard(
+            forum: forum,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ForumDetailPage(forum: forum),
+                ),
+              );
+            },
+            refreshList: _loadForumList,
           );
         }
       }

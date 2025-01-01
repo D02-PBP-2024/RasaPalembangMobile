@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -38,7 +37,7 @@ class RestoranDetail extends StatefulWidget {
   const RestoranDetail({super.key, required this.restoran});
 
   @override
-  _RestoranDetailState createState() => _RestoranDetailState();
+  State<RestoranDetail> createState() => _RestoranDetailState();
 }
 
 class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProviderStateMixin {
@@ -102,9 +101,6 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarIconBrightness: Brightness.light,
-    ));
     final request = context.watch<UserService>();
     return Scaffold(
       body: NestedScrollView(
@@ -510,25 +506,28 @@ class _RestoranDetailState extends State<RestoranDetail> with SingleTickerProvid
   }
 
   Widget _buildMenuGrid({required int itemCount, List? data, String? type}) {
-    return RPMenuGridView(
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        if (type == 'makanan') {
-          final makanan = data![index];
-          return RPMakananCard(
-            makanan: makanan,
-            lihatRestoran: false,
-          );
-        } else if (type == 'minuman') {
-          final minuman = data![index];
-          return RPMinumanCard(
-            minuman: minuman,
-            lihatRestoran: false,
-          );
-        } else {
-          return RPMenuCardSkeleton();
-        }
-      },
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      child: RPMenuGridView(
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          if (type == 'makanan') {
+            final makanan = data![index];
+            return RPMakananCard(
+              makanan: makanan,
+              lihatRestoran: false,
+            );
+          } else if (type == 'minuman') {
+            final minuman = data![index];
+            return RPMinumanCard(
+              minuman: minuman,
+              lihatRestoran: false,
+            );
+          } else {
+            return RPMenuCardSkeleton();
+          }
+        },
+      ),
     );
   }
 }
