@@ -22,8 +22,7 @@ class MyApp extends StatelessWidget {
           create: (context) => TabProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => UserService(),
-          child: MyApp(),
+          create: (context) => UserService()..init(),
         ),
       ],
       child: MaterialApp(

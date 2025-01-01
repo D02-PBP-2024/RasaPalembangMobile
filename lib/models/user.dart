@@ -37,4 +37,17 @@ class User {
     poin: json["fields"]["poin"],
     dateJoined: DateTime.parse(json["fields"]["date_joined"]),
   );
+
+  Map<String, dynamic> toJson() => {
+    "pk": pk,
+    "fields": {
+      "username": username,
+      "nama": nama,
+      "deskripsi": deskripsi,
+      "peran": peran,
+      "foto": foto,
+      "poin": poin,
+      "date_joined": dateJoined.toIso8601String(),
+    },
+  };
 }
