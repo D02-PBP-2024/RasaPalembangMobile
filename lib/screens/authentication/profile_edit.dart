@@ -32,12 +32,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   final _namaController = TextEditingController();
   final _deskripsiController = TextEditingController();
   File? _selectedImage;
+  late bool _isLoading;
 
   @override
   void initState() {
     super.initState();
     _namaController.text = widget.nama;
     _deskripsiController.text = widget.deskripsi;
+    _isLoading = false;
   }
 
   void _onImagePicked(File? image) {
@@ -90,40 +92,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 RPButton(
                   width: double.infinity,
                   label: 'Simpan',
+                  isLoading: _isLoading,
                   onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      String nama = _namaController.text;
-                      String deskripsi = _deskripsiController.text;
-                      File? foto = _selectedImage;
-
-                      final user = request.user;
-                      if (user != null) {
-                        String message;
-                        User? response;
-                        try {
-                          response = await request.editProfile(
-                            nama,
-                            deskripsi,
-                            foto,
-                          );
-                          message = 'Berhasil mengubah profile!';
-                        } catch (e) {
-                          message = printException(e as Exception);
-                        }
-                        if (context.mounted) {
-                          widget.onChanged(
-                            nama,
-                            deskripsi,
-                            response!.foto,
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(message),
-                            ),
-                          );
-                        }
-                      }
-                    }
+                    _onSubmit(context, request);
                   },
                 ),
               ],
@@ -132,5 +103,47 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         ),
       ),
     );
+  }
+
+  void _onSubmit(BuildContext context, UserService request) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      String nama = _namaController.text;
+      String deskripsi = _deskripsiController.text;
+      File? foto = _selectedImage;
+
+      final user = request.user;
+      if (user != null) {
+        String message;
+        User? response;
+        try {
+          setState(() {
+            _isLoading = true;
+          });
+          response = await request.editProfile(
+            nama,
+            deskripsi,
+            foto,
+          );
+          message = 'Berhasil mengubah profile!';
+        } catch (e) {
+          message = printException(e as Exception);
+        }
+        if (context.mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          widget.onChanged(
+            nama,
+            deskripsi,
+            response!.foto,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+            ),
+          );
+        }
+      }
+    }
   }
 }

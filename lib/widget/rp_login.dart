@@ -24,6 +24,13 @@ class _RPLoginState extends State<RPLogin> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  late bool _isLoading;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,54 +73,12 @@ class _RPLoginState extends State<RPLogin> {
               ),
               const SizedBox(height: 32.0),
               RPButton(
-                  width: double.infinity,
-                  label: 'Masuk',
-                  onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      String username = _usernameController.text;
-                      String password = _passwordController.text;
-
-                      String message;
-                      bool success = false;
-                      try {
-                        final response = await request.login(
-                          username,
-                          password,
-                        );
-                        message = 'Selamat datang ${response?.username}!';
-                        success = true;
-                      } catch (e) {
-                        message = printException(e as Exception);
-                      }
-
-                      if (context.mounted) {
-                        if (success && request.loggedIn) {
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(
-                              SnackBar(content: Text(message)),
-                            );
-                          widget.redirect();
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Login Gagal'),
-                              content: Text(message),
-                              actions: [
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      }
-                    }
-                  }
+                width: double.infinity,
+                label: 'Masuk',
+                isLoading: _isLoading,
+                onPressed: () async {
+                  _onSubmit(context, request);
+                },
               ),
               const SizedBox(height: 16.0),
               Center(
@@ -141,5 +106,58 @@ class _RPLoginState extends State<RPLogin> {
         ),
       ),
     );
+  }
+
+  void _onSubmit(BuildContext context, UserService request) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      String username = _usernameController.text;
+      String password = _passwordController.text;
+
+      String message;
+      bool success = false;
+      try {
+        setState(() {
+          _isLoading = true;
+        });
+        final response = await request.login(
+          username,
+          password,
+        );
+        message = 'Selamat datang ${response?.username}!';
+        success = true;
+      } catch (e) {
+        message = printException(e as Exception);
+      }
+
+      if (context.mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        if (success && request.loggedIn) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+          widget.redirect();
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Login Gagal'),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    }
   }
 }
