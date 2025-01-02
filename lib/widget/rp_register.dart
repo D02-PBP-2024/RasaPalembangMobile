@@ -25,6 +25,13 @@ class _RPRegisterState extends State<RPRegister> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final ValueNotifier<String?> _peranController = ValueNotifier<String?>(null);
+  late bool _isLoading;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,8 +102,8 @@ class _RPRegisterState extends State<RPRegister> {
               ),
               const SizedBox(height: 16.0),
               RPDropdownButton<String>(
-                labelText: 'Role',
-                hintText: 'Pilih role Anda',
+                labelText: 'Peran',
+                hintText: 'Pilih peran Anda',
                 items: const ['Pengulas', 'Pemilik Restoran'],
                 selectedItem: null,
                 onChanged: (String? value) {
@@ -108,67 +115,20 @@ class _RPRegisterState extends State<RPRegister> {
                 },
                 validator: (value) {
                   if (value == null) {
-                    return 'Role tidak boleh kosong!';
+                    return 'Peran tidak boleh kosong!';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 32.0),
               RPButton(
-                  width: double.infinity,
-                  label: 'Daftar',
-                  onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      String nama = _nameController.text;
-                      String username = _usernameController.text;
-                      String password1 = _passwordController.text;
-                      String password2 = _confirmPasswordController.text;
-                      String? peran = _peranController.value;
-
-                      String message;
-                      bool success = false;
-                      try {
-                        final response = await request.register(
-                          nama,
-                          username,
-                          password1,
-                          password2,
-                          peran!,
-                        );
-                        message = 'Selamat datang ${response?.username}!';
-                        success = true;
-                      } catch (e) {
-                        message = printException(e as Exception);
-                      }
-
-                      if (context.mounted) {
-                        if (success && request.loggedIn) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(message),
-                            ),
-                          );
-                          widget.redirect();
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Registrasi Gagal'),
-                              content: Text(message),
-                              actions: [
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      }
-                    }
-                  }),
+                width: double.infinity,
+                label: 'Daftar',
+                isLoading: _isLoading,
+                onPressed: () async {
+                  _onSubmit(context, request);
+                }
+              ),
               const SizedBox(height: 16.0),
               Center(
                 child: Row(
@@ -195,5 +155,64 @@ class _RPRegisterState extends State<RPRegister> {
         ),
       ),
     );
+  }
+
+  void _onSubmit(BuildContext context, UserService request) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      String nama = _nameController.text;
+      String username = _usernameController.text;
+      String password1 = _passwordController.text;
+      String password2 = _confirmPasswordController.text;
+      String? peran = _peranController.value;
+
+      String message;
+      bool success = false;
+      try {
+        setState(() {
+          _isLoading = true;
+        });
+        final response = await request.register(
+          nama,
+          username,
+          password1,
+          password2,
+          peran!,
+        );
+        message = 'Selamat datang ${response?.username}!';
+        success = true;
+      } catch (e) {
+        message = printException(e as Exception);
+      }
+
+      if (context.mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        if (success && request.loggedIn) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+            ),
+          );
+          widget.redirect();
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Registrasi Gagal'),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    }
   }
 }

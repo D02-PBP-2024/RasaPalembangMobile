@@ -38,6 +38,21 @@ class RestoranService extends UserService {
     }
   }
 
+  Future<List<Restoran>> getRandom(int max) async {
+    await init();
+    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/?random=$max');
+
+    http.Response response = await client.get(uri, headers: headers);
+    await updateCookie(response);
+
+    switch (response.statusCode) {
+      case 200:
+        return restoranFromListJson(response.body);
+      default:
+        throw Exception('Gagal mengambil data');
+    }
+  }
+
   Future<List<Restoran>> getByUsername(String username) async {
     await init();
     final uri = Uri.parse('${RPUrls.baseUrl}/v1/profile/$username/restoran/');
@@ -161,20 +176,5 @@ class RestoranService extends UserService {
       default:
         throw Exception('Error lainnya');
     }
-  }
-
-  Future<dynamic> fetchUserData() async {
-    await init();
-    if (kIsWeb) {
-      dynamic c = client;
-      c.withCredentials = true;
-    }
-
-    final uri = Uri.parse('${RPUrls.baseUrl}/v1/restoran/get_user_flutter/');
-
-    http.Response response = await client.post(uri, body: {}, headers: headers);
-    await updateCookie(response);
-
-    return json.decode(response.body);
   }
 }

@@ -11,6 +11,7 @@ List<Minuman> minumanFromListJson(String str) => List<Minuman>.from(json.decode(
 
 class Minuman {
   String? pk;
+  String? favorit;
   String nama;
   int harga;
   String deskripsi;
@@ -21,6 +22,7 @@ class Minuman {
 
   Minuman({
     this.pk,
+    this.favorit,
     required this.nama,
     required this.harga,
     required this.deskripsi,
@@ -32,6 +34,7 @@ class Minuman {
 
   factory Minuman.fromJson(Map<String, dynamic> json) => Minuman(
     pk: json["pk"],
+    favorit: json["favorit"],
     nama: json["fields"]["nama"],
     harga: json["fields"]["harga"],
     deskripsi: json["fields"]["deskripsi"],

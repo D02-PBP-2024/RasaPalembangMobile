@@ -8,6 +8,7 @@ import 'package:rasapalembang/utils/rp_cache.dart';
 import 'package:rasapalembang/utils/urls_constants.dart';
 import 'package:rasapalembang/widget/restoran_detail.dart';
 import 'package:rasapalembang/widget/rp_button.dart';
+import 'package:rasapalembang/widget/rp_favorit_button.dart';
 import 'package:rasapalembang/widget/rp_image_error.dart';
 import 'package:rasapalembang/widget/rp_image_loading.dart';
 
@@ -80,21 +81,9 @@ class _RPMakananDetailState extends State<RPMakananDetail> {
                     cacheManager: RPCache.rpCacheManager,
                   ),
                 ),
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: GestureDetector(
-                    onTap: () {
-                      // TODO: menambah ke favorit
-                    },
-                    child: const CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      child: Icon(
-                        Icons.favorite_border,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                RPFavoritButton(
+                  favorit: makanan.favorit,
+                  makanan: makanan,
                 ),
               ],
             ),
